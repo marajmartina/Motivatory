@@ -1,0 +1,2 @@
+# Motivatory
+Autotest vnitřních motivátorů
