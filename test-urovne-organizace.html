@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test spirální dynamiky firmy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#C0392B; --orange:#E67E22; --yellow:#F1C40F; --green:#27AE60; --teal:#1ABC9C;
+  --red-l:#fdf0ef; --orange-l:#fef5ec; --yellow-l:#fefde7; --green-l:#eafaf1; --teal-l:#e8faf7;
+  --bg:#FAFAF7; --text:#1a1a1a; --muted:#888; --border:#e8e8e2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+header{text-align:center;padding:48px 24px 36px;background:white;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:-80px;left:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(26,188,156,.08) 0%,transparent 70%);pointer-events:none}
+header::after{content:'';position:absolute;bottom:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(192,57,43,.08) 0%,transparent 70%);pointer-events:none}
+.level-dots{display:flex;gap:6px;justify-content:center;margin-bottom:18px;position:relative;z-index:1}
+.level-dot{width:16px;height:16px;border-radius:50%}
+header h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:900;margin-bottom:8px;position:relative;z-index:1}
+header p{color:var(--muted);font-size:.9rem;max-width:560px;margin-inline:auto;line-height:1.7;position:relative;z-index:1}
+
+/* PROGRESS */
+.progress-bar{height:4px;background:var(--border);position:sticky;top:0;z-index:100}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--teal));transition:width .4s}
+
+main{max-width:760px;margin:0 auto;padding:36px 20px 60px}
+
+/* AREA HEADER */
+.area-header{text-align:center;margin-bottom:28px}
+.area-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.area-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:4px;color:var(--text)}
+.area-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:6px}
+.area-desc{font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* QUESTION */
+.question-card{background:white;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1.5px solid var(--border)}
+.question-text{font-weight:600;font-size:.95rem;margin-bottom:16px;line-height:1.5}
+.question-num{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none;background:white}
+.option:hover{border-color:#aaa;background:var(--bg)}
+.option.selected-red{background:var(--red-l);border-color:var(--red)}
+.option.selected-orange{background:var(--orange-l);border-color:var(--orange)}
+.option.selected-yellow{background:var(--yellow-l);border-color:#d4ac0d}
+.option.selected-green{background:var(--green-l);border-color:var(--green)}
+.option.selected-teal{background:var(--teal-l);border-color:var(--teal)}
+.option-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.option-text{font-size:.86rem;line-height:1.5}
+
+/* NAV */
+.nav{display:flex;gap:12px;justify-content:space-between;margin-top:28px}
+.btn-nav{padding:13px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-prev{background:var(--bg);color:var(--muted);border:1.5px solid var(--border)}
+.btn-prev:hover{background:#eee}
+.btn-next{background:var(--text);color:white}
+.btn-next:hover{background:#333;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.btn-next:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* RESULTS */
+#results{display:none}
+.result-hero{text-align:center;padding:32px 24px;background:white;border-radius:20px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.result-hero h2{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:8px}
+.result-hero p{color:var(--muted);font-size:.88rem;margin-bottom:20px}
+
+/* OVERALL LEVEL */
+.overall-level{border-radius:16px;padding:24px;text-align:center;margin-bottom:24px;border:2px solid}
+.overall-pct{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;line-height:1;margin-bottom:4px}
+.overall-name{font-size:1.1rem;font-weight:700;margin-bottom:6px}
+.overall-desc{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.overall-bar-bg{height:10px;border-radius:5px;background:rgba(0,0,0,.1);overflow:hidden}
+.overall-bar-fill{height:100%;border-radius:5px;transition:width 1.2s cubic-bezier(.34,1,.64,1)}
+
+/* AREA RESULTS */
+.area-result{background:white;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1.5px solid var(--border)}
+.ar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ar-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+.ar-level-badge{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.ar-bar-bg{height:8px;border-radius:4px;background:#f0f0ec;overflow:hidden;margin-bottom:10px}
+.ar-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1,.64,1)}
+.ar-recommendation{font-size:.82rem;line-height:1.7;color:var(--text);background:var(--bg);border-radius:10px;padding:12px 14px;border-left:3px solid}
+.ar-recommendation strong{display:block;margin-bottom:4px;font-weight:700}
+
+/* LEVEL LEGEND */
+.level-legend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;justify-content:center}
+.ll-item{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px}
+.ll-dot{width:8px;height:8px;border-radius:50%}
+
+/* PRINT */
+@media print{
+  .progress-bar,.nav,#quiz,.no-print{display:none!important}
+  #results{display:block!important}
+  .area-result{box-shadow:none;border:1px solid #eee;page-break-inside:avoid}
+  body{background:white}
+}
+@media(max-width:600px){
+  .nav{flex-direction:column}
+  .btn-nav{width:100%}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="level-dots">
+    <div class="level-dot" style="background:var(--red)"></div>
+    <div class="level-dot" style="background:var(--orange)"></div>
+    <div class="level-dot" style="background:var(--yellow)"></div>
+    <div class="level-dot" style="background:var(--green)"></div>
+    <div class="level-dot" style="background:var(--teal)"></div>
+  </div>
+  <h1>Test spirální dynamiky firmy</h1>
+  <p>Týmový test konceptu Tyrkysových organizací (F. Laloux). Odpovídejte jako tým – vyberte odpověď, která nejlépe popisuje vaši každodenní realitu, nikoliv tu, kterou byste si přáli mít.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+<main>
+  <div id="quiz"></div>
+  <div id="results"></div>
+</main>
+
+<script>
+var LEVELS = [
+  {id:'red',    name:'Červená – Impulzivní', color:'#C0392B', bg:'#fdf0ef', score:1},
+  {id:'orange', name:'Jantarová – Konformní', color:'#E67E22', bg:'#fef5ec', score:2},
+  {id:'yellow', name:'Oranžová – Dosahující',  color:'#d4ac0d', bg:'#fefde7', score:3},
+  {id:'green',  name:'Zelená – Pluralitní',    color:'#27AE60', bg:'#eafaf1', score:4},
+  {id:'teal',   name:'Tyrkysová – Evoluční',   color:'#1ABC9C', bg:'#e8faf7', score:5}
+];
+
+var AREAS = [
+  {
+    id:'struktura',
+    title:'Organizační struktura a role',
+    desc:'Jak je firma poskládaná a jakým způsobem lidé vědí, co mají dělat.',
+    color:'#1ABC9C',
+    questions:[
+      {q:'Vznikne nová agenda nebo úkol, který nikdo nemá na starosti. Jak se určí, kdo to bude dělat?', opts:[
+        'Vedení rozhodne a informaci předá. Ostatní přijmou zadání bez diskuse.',
+        'Předložím nadřízenému. Ten se podívá do směrnic a úkol přidělí příslušnému tabulkovému místu.',
+        'Manažer zadá úkol tomu, kdo má nejlepší výkonové předpoklady nebo volnou kapacitu.',
+        'Sejdeme se jako tým, probereme jak se kdo cítí, a hledáme konsensus aby byli všichni v pohodě.',
+        'Úkol se vyvěsí do systému. Kdokoli v něm vidí smysl a má kapacitu, si roli dobrovolně vezme.'
+      ]},
+      {q:'Chcete změnit náplň své práce, protože vám nedává smysl. Co musíte udělat?', opts:[
+        'Musím jít za majitelem. Výsledek závisí na jeho aktuálním rozpoložení.',
+        'Podám oficiální žádost nadřízenému, ten to postoupí na HR a musí se přepsat pracovní smlouva.',
+        'Musím manažerovi na datech dokázat, že moje nová náplň práce přinese firmě větší zisk nebo efektivitu.',
+        'Otevřu to na týmovém kruhu. Pokud s tím všichni kolegové souhlasí, manažer mi změnu posvětí.',
+        'Starou roli vrátím do banku a vezmu si jinou volnou roli. Pouze to zkonzultuji s lidmi, kterých se to dotkne.'
+      ]},
+      {q:'Jak je dokumentováno, kdo má co na starosti? Jak často a kým se to mění?', opts:[
+        'Nikde to napsané není. V případě nejasností rozhoduje slovo šéfa.',
+        'Máme rigidní organizační schéma a popisy pozic. Mění se zřídka při velkých reorganizacích shora.',
+        'Máme organizační strukturu navázanou na střediska a rozpočty. Mění se při ročním plánování.',
+        'Máme popisy pozic zaměřené na lidský rozvoj. Upravujeme je jednou za rok při hodnotících pohovorech.',
+        'Využíváme software na mapování dynamických rolí. Měníme je klidně každý týden na týmové schůzce.'
+      ]},
+      {q:'Jak se u vás koordinuje spolupráce mezi odděleními?', opts:[
+        'Přes šéfa – vše jde přes jednu osobu.',
+        'Přes formální procesy, schůzky a schvalovací řetězce.',
+        'Přes projektové struktury a jasně definované zodpovědnosti.',
+        'Přes dobrovolnou spolupráci a sdílené hodnoty.',
+        'Týmy si spolupráci organizují samy podle aktuální potřeby.'
+      ]},
+      {q:'Jak organizace reaguje na změnu potřeb trhu nebo zákazníků?', opts:[
+        'Šéf rozhodne, ostatní se přizpůsobí.',
+        'Proběhne schválení změny přes hierarchii, pak se implementuje.',
+        'Změna se vyhodnotí analyticky a implementuje projektově.',
+        'Tým diskutuje, jak změnu uchopit s ohledem na všechny.',
+        'Tým nejblíže zákazníkovi reaguje sám a okamžitě.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Zavedení základního řádu: Vytvořte první jasná pravidla a struktury platné pro každého. Lídr musí začít předávat část operativní agendy.'},
+      {level:'orange', text:'Orientace na výsledky: Začněte lidi hodnotit podle toho, co reálně doručili. Zaveďte kariérní postup na základě kompetencí, ne odpracovaných let.'},
+      {level:'yellow', text:'Definování firemní kultury: Otevřete téma hodnot a kultury. Investujte do rozvoje lidí jako celků, nejen jejich odborných dovedností.'},
+      {level:'green',  text:'Poradní proces: Přejděte od konsensu k modelu, kde jednotlivec nese odpovědnost za rozhodnutí, ale musí si vyžádat rady od kolegů.'},
+      {level:'teal',   text:'Udržení tyrkysové kultury: Pravidelně kultivujte ego lídrů. Průběžně čistěte a revidujte role – neexistují fixní pozice, jen aktuální potřeby.'}
+    ]
+  },
+  {
+    id:'rozhodovani',
+    title:'Rozhodování a distribuce moci',
+    desc:'Kdo má v organizaci skutečné právo rozhodnout a jak se distribuuje moc.',
+    color:'#C0392B',
+    questions:[
+      {q:'Jak probíhal poslední velký nákup nebo investice, která se vás týkala?', opts:[
+        'Věc jsem předložil vedení, které na místě rozhodlo. Proces se neřešil.',
+        'Sepsal se požadavek, prověřil se rozpočet a nákup podepsalo několik lidí podle oficiálního podpisového řádu.',
+        'Vypracoval se model návratnosti (ROI). Protože splňoval parametry efektivity a budgetu, manažer to schválil.',
+        'Dlouho jsme to rozebírali na poradě oddělení. Když jsme dosáhli všeobecné shody, vedoucí nákup odklepl.',
+        'Využil jsem poradní proces. Zkonzultoval jsem to s IT a financemi, rozhodnutí i nákup jsem pak udělal sám.'
+      ]},
+      {q:'Dva kolegové na stejné úrovni se nedokážou shodnout na postupu. Jak se to vyřeší?', opts:[
+        'Věc se předloží vedení, které autoritativně rozhodne. Druhý se podřídí.',
+        'Podíváme se do procesní metodiky, kdo má na to formální právo. Pokud to tam není, rozhodne liniový šéf.',
+        'Rozhodnou tvrdá data nebo analýza přínosů. Pokud jsou argumenty vyrovnané, rozhodne projektový manažer.',
+        'Sedneme si s týmem a mluvíme o tom tak dlouho, dokud nenajdeme kompromis se kterým jsou všichni v pohodě.',
+        'Podíváme se, kdo drží danou roli. Ten má plné právo rozhodnout. Ostatní mohou podat námitku jen pokud to firmu prokazatelně poškodí.'
+      ]},
+      {q:'Jaký finanční limit můžete utratit jako řadový zaměstnanec bez schválení kohokoli dalšího?', opts:[
+        'Nula. Bez šéfa nemůžu koupit ani balík papíru do tiskárny.',
+        'Nula. Výdaje schvaluje vedoucí týmu nebo ředitel podle interní směrnice.',
+        'Mám přidělený projektový rozpočet. V jeho rámci nakupuji volně, pokud plním stanovená KPI.',
+        'Pevné limity nemáme, ale o každém výdeji nad rámec běžného provozu se předem radíme v týmu.',
+        'Žádný limit není. Mohu schválit částku v jakékoli výši, pokud projdu poradním procesem a máme na to peníze.'
+      ]},
+      {q:'Jak se u vás přistupuje k delegování odpovědnosti?', opts:[
+        'Téměř nedelegujeme – šéf chce mít vše pod kontrolou.',
+        'Deleguje se přesně to, co je popsáno v pracovní smlouvě.',
+        'Deleguje se s jasnými cíli a pravidelným reportingem.',
+        'Snažíme se lidem dávat prostor a důvěřovat jejich úsudku.',
+        'Odpovědnost je plně u lidí – vedení nezasahuje do způsobu práce.'
+      ]},
+      {q:'Jak se řeší konflikty a neshody v týmu?', opts:[
+        'Šéf rozhodne autoritativně, ostatní se podřídí.',
+        'Eskalace přes nadřízeného podle předepsaného postupu.',
+        'Hledá se řešení, které maximalizuje výsledek.',
+        'Konflikt se řeší otevřeně s důrazem na pocity a vztahy.',
+        'Kolegové si konflikty řeší sami pomocí dohodnutých rituálů.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Delegování: Lídr musí přestat kontrolovat každé rozhodnutí. Začněte malými kroky – svěřte týmu konkrétní oblast, kde mohou rozhodovat sami.'},
+      {level:'orange', text:'Meritokracie v rozhodování: Dejte lidem pravomoc rozhodovat v oblastech jejich odbornosti. Zaveďte jasná pravidla kdo co schvaluje.'},
+      {level:'yellow', text:'Empowerment: Přejděte od hierarchického rozhodování k modelu, kde má každý jasné kompetence a zodpovědnost za výsledek.'},
+      {level:'green',  text:'Poradní proces (Advice Process): Zaveďte pravidlo – kdokoli může rozhodnout cokoliv, pokud si předem vyžádá radu od odborníků a dotčených.'},
+      {level:'teal',   text:'Udržení distribuované moci: Hlídejte tendenci k regresu v krizi. Pravidelně revidujte, zda se moc nezačíná opět centralizovat.'}
+    ]
+  },
+  {
+    id:'informace',
+    title:'Tok informací a transparentnost',
+    desc:'Jak moc vedení věří lidem a jaká data jim dává k dispozici.',
+    color:'#E67E22',
+    questions:[
+      {q:'Které finanční nebo provozní ukazatele firmy jsou pro vás běžně dostupné? Kde je najdete?', opts:[
+        'Nevím nic. Čísla zná jen majitel a účetní, informace o penězích jsou ve firmě tabu.',
+        'Běžně se k provozním číslům nedostanu. Jednou za rok vidím výroční zprávu, platy jsou přísně tajné.',
+        'V systému vidím výsledky svého střediska (obrat, marže, plnění plánu). Celofiremní čísla nebo cizí platy jsou skryté.',
+        'Vedení nám na kvartálních prezentacích ukazuje celkové zisky firmy. Platy sice tajné jsou, ale známe průměry pozic.',
+        'Všichni máme přístup do živého dashboardu, kde vidíme cash-flow, náklady týmů i přesné platy všech kolegů včetně CEO.'
+      ]},
+      {q:'Když firma neplní cíle nebo má finanční potíže, jak a kdy se to dozvíte?', opts:[
+        'Informace se k nám dostane se zpožděním – obvykle až tehdy, kdy jsou důsledky již viditelné.',
+        'Dozvíme se to s velkým zpožděním, až když přijde oficiální oběžník s úspornými škrty shora.',
+        'Vidíme to v KPIs na konci měsíce. Management hned svolá schůzku a představí krizový plán.',
+        'Vedení s námi sedne ke kulatému stolu, otevřeně přizná problémy a citlivě řeší jak to zvládnout.',
+        'Lidé to vědí dřív než to nastane, protože sledují firemní účty. Tým sám okamžitě reaguje a upravuje výdaje.'
+      ]},
+      {q:'Potřebujete znát strategické záměry vedení na další rok. Jak se k nim dostanete?', opts:[
+        'Strategie je to, co šéfa zrovna napadne. Žádný dokument neexistuje, musím poslouchat aktuální příkazy.',
+        'Strategický plán je neveřejný. Dostanu se pouze k té části, kterou mi nadřízený oficiálně zadá.',
+        'Prezentuje se to všem na začátku roku formou prezentace s cíli pro divize. Slajdy jsou na intranetu.',
+        'Strategie vzniká participativně – vedení sbírá podněty zespodu a ladí plán tak, aby s ním všichni souzněli.',
+        'Strategické záměry jsou neustále živé a zápisy z koordinačních kruhů jsou okamžitě online přístupné komukoli.'
+      ]},
+      {q:'Jak se u vás pracuje se zpětnou vazbou od zaměstnanců?', opts:[
+        'Zpětná vazba zdola se neočekává ani nevítá.',
+        'Existují formální kanály (průzkumy), výsledky se ale příliš neřeší.',
+        'Zpětná vazba se sbírá a využívá pro optimalizaci procesů.',
+        'Zpětná vazba je klíčová, vedení ji aktivně vyhledává.',
+        'Zpětná vazba probíhá kontinuálně a přímo mění způsob fungování.'
+      ]},
+      {q:'Jak transparentní je u vás systém odměňování?', opts:[
+        'Platy jsou přísně tajné, nikdo neví co bere kolega.',
+        'Platové tabulky existují, ale detaily jsou interní.',
+        'Systém odměňování je popsán, ale individuální platy jsou soukromé.',
+        'Principy odměňování jsou transparentní, detaily se sdílejí dobrovolně.',
+        'Všichni vědí co berou kolegové – platy jsou plně transparentní.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Základní komunikace: Začněte pravidelně sdílet základní výsledky firmy s celým týmem. Informace jsou podmínkou odpovědnosti.'},
+      {level:'orange', text:'Rozšíření přístupu k datům: Sdílejte KPIs napříč odděleními. Bez informací nemohou lidé rozhodovat dobře.'},
+      {level:'yellow', text:'Radikální transparentnost: Otevřete finanční data celé firmě. Lidé nemohou nést dospělou odpovědnost, pokud nevidí realitu.'},
+      {level:'green',  text:'Transparentnost odměňování: Zvažte otevření systému platů. Začněte alespoň sdílením principů a rozmezí.'},
+      {level:'teal',   text:'Kultivace transparentnosti: Dbejte na to, aby informace byly nejen dostupné, ale srozumitelné. Vzdělávejte lidi v ekonomice firmy.'}
+    ]
+  },
+  {
+    id:'lide',
+    title:'Lidé, HR a odměňování',
+    desc:'Jak organizace přistupuje k lidem v klíčových momentech jejich pracovního cyklu.',
+    color:'#d4ac0d',
+    questions:[
+      {q:'Jak probíhal nábor posledního nového kolegy do vašeho týmu? Kdo rozhodoval?', opts:[
+        'Vedení jednostranně rozhodlo o přijetí a tým byl pouze informován. Ostatní nebyli do procesu zapojeni.',
+        'HR vypsalo tabulkové místo, udělalo předvýběr a rozhodnutí udělal vedoucí odboru podle personálních směrnic.',
+        'Pohovory vedl manažer s HR partnerem. Testovaly se dovednosti a případovky. Rozhodl manažer na základě budgetu.',
+        'Kandidát se potkal s celým týmem, řešili jsme chemii a kulturní fit. O přijetí se hlasovalo a museli souhlasit všichni.',
+        'Nábor si řešil tým sám. Členové týmu vedli pohovory, prověřili soulad s účelem role a sami rozhodli.'
+      ]},
+      {q:'Jakým konkrétním mechanismem se určuje výše vašeho platu a bonusů?', opts:[
+        'Všechno je to o individuální dohodě s majitelem „mezi čtyřma očima". Žádný systém v tom není.',
+        'Máme platové třídy a mzdové tabulky podle odpracovaných let a vzdělání. Změnu schvaluje ředitelství.',
+        'Základ určuje manažer podle trhu, bonusy se počítají matematicky podle plnění mých osobních KPI.',
+        'Máme férová platová pásma. O bonusech se bavíme na základě 360° zpětné vazby od kolegů.',
+        'Sám navrhnu svůj plat, obhájím ho před panelem kolegů, zapracuji jejich feedback a sám si ho potvrdím.'
+      ]},
+      {q:'Výkon nebo chování člena týmu dlouhodobě neodpovídá očekávání. Jaký je postup?', opts:[
+        'Vedení situaci řeší veřejně a razantně. Při opakování následuje okamžité ukončení spolupráce.',
+        'Nadřízený mu udělí oficiální písemné upozornění (vytýkací dopis) a po lhůtě dostane standardní výpověď.',
+        'Manažer s ním sepíše plán na zlepšení výkonu (PIP) s jasnými termíny a čísly. Pokud KPIs nesplní, končí.',
+        'Manažer s ním situaci citlivě rozebírá na 1-on-1 schůzkách, hledá lidskou příčinu a tým ho psychicky podrží.',
+        'Tým mu dá přímou zpětnou vazbu. Pokud se to nezlepší, vyjasní se role, případně tým iniciuje jeho odchod.'
+      ]},
+      {q:'Jak organizace přistupuje k rozvoji a vzdělávání lidí?', opts:[
+        'Rozvoj není priorita – lidé jsou najati na konkrétní úkol.',
+        'Povinná školení daná zákonem nebo předpisem.',
+        'Vzdělávací plány vázané na výkon a kariérní postup.',
+        'Investujeme do rozvoje lidí jako celků, nejen jejich pracovních dovedností.',
+        'Lidé si sami řídí svůj rozvoj, firma jim dává čas a prostředky.'
+      ]},
+      {q:'Kdo rozhoduje o přijetí nového kolegy do týmu?', opts:[
+        'Výhradně majitel nebo ředitel.',
+        'HR oddělení a přímý nadřízený podle stanovených kritérií.',
+        'Hiring manažer na základě kompetencí a výsledků výběrového řízení.',
+        'Tým se zapojuje do výběru, kulturní fit je stejně důležitý jako kompetence.',
+        'Tým si sám vybírá nového kolegu – HR jen administrativně podporuje.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Základní férovost: Nastavte alespoň základní systém odměňování. Lidé potřebují předvídatelnost a spravedlnost jako minimum.'},
+      {level:'orange', text:'Rozvoj na základě kompetencí: Přejděte od hodnocení loajality k hodnocení skutečného výkonu. Investujte do vzdělávání.'},
+      {level:'yellow', text:'Zapojení týmu do HR: Začněte zapojovat tým do náboru a hodnocení. Kulturní fit je stejně důležitý jako technické dovednosti.'},
+      {level:'green',  text:'Peer hodnocení: Experimentujte s 360° zpětnou vazbou a postupně přenesením HR kompetencí na samotné týmy.'},
+      {level:'teal',   text:'Autonomní HR: Pravidelně revidujte, zda týmy skutečně zvládají HR odpovědnost. Poskytujte jim podporu a vzdělávání v těchto procesech.'}
+    ]
+  },
+  {
+    id:'kultura',
+    title:'Kultura a psychologická bezpečnost',
+    desc:'Zda lidé v práci hrají korporátní hry, nebo mohou být sami sebou.',
+    color:'#27AE60',
+    questions:[
+      {q:'Jak vypadá běžný průběh vašich týmových porad? Co se na nich řeší?', opts:[
+        'Svolává je vedení podle vlastní potřeby. Komunikace probíhá převážně jednosměrně shora dolů.',
+        'Mají pevný program podle protokolu. Prochází se stav úkolů z minula a píše se oficiální zápis.',
+        'Je to rychlé a efektivní. Řeší se čísla, statusy projektů a byznys cíle. Emoce jdou stranou.',
+        'Začínáme check-inem, kde každý sdílí jak se lidsky cítí. Hodně řešíme atmosféru a vztahy v týmu.',
+        'Máme oddělené porady operativní a governance. Začínáme chvílí ticha nebo společným naladěním.'
+      ]},
+      {q:'Uděláte v práci závažnou chybu, která stojí firmu peníze. Co se děje pak?', opts:[
+        'Chyba se tají. Pokud se odhalí, následuje silná negativní reakce vedení a nejistota ohledně dalšího působení.',
+        'Hledá se viník, který porušil proces. Sepíše se škodní protokol a dotyčný dostane finanční trest.',
+        'Analyzuje se systémové selhání. Pokud se to opakuje, sníží mi to výkonnostní hodnocení a bonusy.',
+        'Tým mě podpoří a ujistí mě, že chybovat je lidské. Šéf řeší, zda jsem psychicky v pohodě.',
+        'Chyba se transparentně nasdílí celé firmě. Neřeší se vina, ale učení – jak upravit roli aby se to neopakovalo.'
+      ]},
+      {q:'Jaké mechanismy jsou ve firmě určené pro řešení osobních konfliktů a napětí?', opts:[
+        'Žádné formální mechanismy neexistují. Konflikty se řeší ad hoc nebo intervencí vedení s důrazem na výkon.',
+        'Konflikty se ignorují. Pokud přesáhnou mez, podá se stížnost na HR pro porušení etického kodexu.',
+        'Konflikt je neproduktivní. Manažer si oba pozve, vyčistí vzduch a nařídí profesionální spolupráci.',
+        'Máme pravidelné retrospektivy. Při konfliktu sedneme s manažerem jako koučem a mluvíme o pocitech.',
+        'Máme jasný konflikt-management proces. Lidé řeší napětí napřímo, případně si přizvou kolegu jako mediátora.'
+      ]},
+      {q:'Do jaké míry mohou být lidé v práci sami sebou?', opts:[
+        'V práci se nosí profesionální maska – emoce sem nepatří.',
+        'Chováme se podle firemního dress code a etikety.',
+        'Osobnost je vítaná, pokud nenarušuje výkon.',
+        'Podporujeme autenticitu a psychologické bezpečí.',
+        'Lidé přinášejí celé sebe – emoce, hodnoty i osobní příběhy jsou vítány.'
+      ]},
+      {q:'Jak organizace slaví úspěchy a jak přiznává neúspěchy?', opts:[
+        'Úspěchy přisuzuje šéf sobě, za neúspěchy se trestá.',
+        'Formální pochvaly a výroční zprávy – vše podle protokolu.',
+        'Úspěchy se slaví veřejně, neúspěchy se analyzují.',
+        'Oslavujeme společně, neúspěchy sdílíme otevřeně bez studu.',
+        'Rituály reflexe a oslavy jsou pevnou součástí kultury týmu.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Základní bezpečnost: Přestaňte trestat za chyby a nesouhlas. Bez psychologické bezpečnosti se žádná změna neudeje.'},
+      {level:'orange', text:'Otevřená komunikace: Vytvořte formální prostory pro zpětnou vazbu a diskusi. Začněte pravidelné retrospektivy nebo town hally.'},
+      {level:'yellow', text:'Wellbeing a autenticita: Investujte do psychologické bezpečnosti. Trénujte manažery v nenásilné komunikaci a aktivním naslouchání.'},
+      {level:'green',  text:'Rituály celistvosti: Zaveďte pravidelné rituály – check-in na začátku schůzek, sdílení osobních příběhů, oslavu malých i velkých úspěchů.'},
+      {level:'teal',   text:'Kultivace kultury: Přijměte, že udržení tyrkysové kultury je neustálá práce. Pravidelně reflektujte, zda rituály stále slouží svému účelu.'}
+    ]
+  },
+  {
+    id:'strategie',
+    title:'Strategie a smysl',
+    desc:'Jakým způsobem firma plánuje budoucnost a co definuje její směr.',
+    color:'#8E44AD',
+    questions:[
+      {q:'Podle jakých klíčových metrik vedení vyhodnocuje, zda je firma úspěšná?', opts:[
+        'Hlavním měřítkem je finanční pozice vedení a pocit dominance na trhu. Jiná kritéria se nesledují.',
+        'Hodnotí se stoprocentní dodržení rozpočtů, soulad s legislativou, stabilita a počet bezchybných zakázek.',
+        'Sledují se tvrdá finanční data: EBITDA, obrat, meziroční růst, podíl na trhu a plnění KPIs.',
+        'Klíčová je spokojenost zaměstnanců, věrnost zákazníků, fluktuace a společenská odpovědnost.',
+        'Zkoumá se, jak reálně naplňujeme náš evoluční účel. Zisk se sleduje, ale je vnímán jen jako palivo, ne cíl.'
+      ]},
+      {q:'Jak vzniká strategický plán firmy a na jak dlouho dopředu? Co se stane při změně trhu?', opts:[
+        'Plán existuje pouze v hlavě vedení a není formálně zachycen. Změna přichází jako jednostranné rozhodnutí.',
+        'Plán se schvaluje na 5 až 10 let. Změna trhu se řeší těžko – trvá rok než se přes komise přepíše koncepce.',
+        'Děláme roční plán s výhledem na 3 roky podle analýz. Při změně management redefinuje rozpočty a KPIs.',
+        'Strategie vzniká na rok dopředu na výjezdním workshopu lídrů. Při změně trhu se řeší dopady na lidi.',
+        'Nefixujeme dlouhodobé plány. Fungujeme na principu „Vnímej a reaguj" – konkrétní kroky měníme podle reality.'
+      ]},
+      {q:'Kdyby vaše firma zítra zanikla, co by vnějšímu světu nejvíce chybělo?', opts:[
+        'Zákazníkům by chyběl dravý dodavatel, který umí věci zařídit silou. Každý den bojujeme o nadvládu na trhu.',
+        'Společnosti by chyběla instituce, která garantuje stabilitu, řád a stoprocentní dodržování norem.',
+        'Trhu by chyběly naše inovativní, rychlé a efektivní produkty, kterými porážíme konkurenci.',
+        'Komunitě by chyběl náš lidský, etický přístup a podpora lokálních a ekologických projektů.',
+        'Světu by chyběl jedinečný smysl, pro který byla firma stvořena. Pokud projekt neslouží účelu, neděláme ho.'
+      ]},
+      {q:'Jak organizace reaguje na neočekávané změny v okolí?', opts:[
+        'Chaoticky – každá krize je šok a šéf improvizuje.',
+        'Podle krizového plánu a schváleného postupu.',
+        'Analyticky – sbíráme data a optimalizujeme reakci.',
+        'Společně hledáme cestu s ohledem na všechny stakeholdery.',
+        'Flexibilně a rychle – tým nejblíže situaci reaguje sám a okamžitě.'
+      ]},
+      {q:'Jak se u vás přistupuje k inovacím?', opts:[
+        'Inovace přicházejí od šéfa nebo jsou zakázány.',
+        'Inovace procházejí schválením – musí odpovídat standardům.',
+        'Inovace jsou vítány pokud přinášejí měřitelný přínos.',
+        'Podporujeme experimentování a přijímáme nápady odkudkoli.',
+        'Každý člen týmu má mandát inovovat a testovat bez povolení.'
+      ]}
+    ],
+    recs:[
+      {level:'red',    text:'Základní plánování: Začněte psát jednoduchou strategii na 12 měsíců. Definujte 3 klíčové priority a sdílejte je s celou firmou.'},
+      {level:'orange', text:'Definování hodnot a smyslu: Přestaňte mluvit jen o číslech. Otevřete diskusi o tom, proč firma existuje a jakou hodnotu přináší světu.'},
+      {level:'yellow', text:'Participativní strategie: Zapojte tým do tvorby strategie. Lidé lépe plní cíle, které pomáhali definovat.'},
+      {level:'green',  text:'Evoluční účel: Hledejte hlubší smysl existence firmy. Přejděte od prediktivního plánování k principu Vnímej a Reaguj.'},
+      {level:'teal',   text:'Udržení evolučního kurzu: Pravidelně přehodnocujte, zda vaše rozhodnutí jsou v souladu s evolučním účelem. Odolávejte tlaku na krátkodobé výsledky.'}
+    ]
+  }
+];
+
+var answers = {}; // areaId -> [0-4, 0-4, ...]
+var currentArea = 0;
+
+AREAS.forEach(function(a){ answers[a.id] = [null,null,null,null,null]; });
+
+function getLevelById(id){ return LEVELS.find(function(l){return l.id===id;}); }
+
+function renderArea(idx) {
+  var area = AREAS[idx];
+  var pct = Math.round((idx / AREAS.length) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+
+  var html = '<div class="area-header">';
+  html += '<div class="area-badge" style="background:'+area.color+'20;color:'+area.color+'">Oblast '+(idx+1)+' z '+AREAS.length+'</div>';
+  html += '<div class="area-title">'+area.title+'</div>';
+  html += '<div class="area-desc">'+area.desc+'</div>';
+  html += '</div>';
+
+  area.questions.forEach(function(q, qi){
+    var sel = answers[area.id][qi];
+    html += '<div class="question-card">';
+    html += '<div class="question-num">Otázka '+(qi+1)+' z 5</div>';
+    html += '<div class="question-text">'+q.q+'</div>';
+    html += '<div class="options">';
+    q.opts.forEach(function(opt, oi){
+      var level = LEVELS[oi];
+      var selCls = sel===oi ? 'selected-'+level.id : '';
+      html += '<div class="option '+selCls+'" onclick="selectAnswer(\''+area.id+'\','+qi+','+oi+')">'+
+        '<div class="option-dot" style="background:'+level.color+'"></div>'+
+        '<div class="option-text">'+opt+'</div>'+
+      '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  var allAnswered = answers[area.id].every(function(a){return a!==null;});
+  var isLast = idx === AREAS.length - 1;
+
+  html += '<div class="nav">';
+  if(idx > 0) html += '<button class="btn-nav btn-prev" onclick="goArea('+(idx-1)+')">← Zpět</button>';
+  else html += '<div></div>';
+  html += '<button class="btn-nav btn-next" '+(allAnswered?'':'disabled')+' onclick="'+(isLast?'showResults()':'goArea('+(idx+1)+')')+'">'+
+    (isLast ? 'Zobrazit výsledky →' : 'Další oblast →')+
+  '</button>';
+  html += '</div>';
+
+  document.getElementById('quiz').innerHTML = html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectAnswer(areaId, qi, oi) {
+  var scrollY = window.scrollY;
+  answers[areaId][qi] = oi;
+  renderArea(currentArea);
+  window.scrollTo(0, scrollY);
+}
+
+function goArea(idx) {
+  currentArea = idx;
+  renderArea(idx);
+}
+
+function calcAreaScore(areaId) {
+  var ans = answers[areaId];
+  var total = ans.reduce(function(s,a){ return s + (a!==null ? LEVELS[a].score : 0); }, 0);
+  return total / (5 * 5); // 0-1
+}
+
+function getLevelFromScore(score) {
+  if(score >= 0.85) return LEVELS[4]; // teal
+  if(score >= 0.65) return LEVELS[3]; // green
+  if(score >= 0.45) return LEVELS[2]; // yellow
+  if(score >= 0.25) return LEVELS[1]; // orange
+  return LEVELS[0]; // red
+}
+
+function showResults() {
+  document.getElementById('progress').style.width = '100%';
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  var areaScores = AREAS.map(function(a){ return calcAreaScore(a.id); });
+  var avgScore = areaScores.reduce(function(s,x){return s+x;},0) / areaScores.length;
+  var overallLevel = getLevelFromScore(avgScore);
+  var overallPct = Math.round(avgScore * 100);
+
+  var html = '<div class="result-hero">';
+  html += '<h2>Výsledky vaší organizace</h2>';
+  html += '<p>Celkové skóre ze všech 6 oblastí – každá oblast může být na jiné úrovni.</p>';
+
+  // Overall block
+  html += '<div class="overall-level" style="background:'+overallLevel.bg+';border-color:'+overallLevel.color+'40">';
+  html += '<div class="overall-pct" style="color:'+overallLevel.color+'">'+overallPct+'%</div>';
+  html += '<div class="overall-name" style="color:'+overallLevel.color+'">'+overallLevel.name+'</div>';
+  html += getOverallDesc(overallLevel.id);
+  html += '<div class="overall-bar-bg"><div class="overall-bar-fill" id="overall-bar" style="width:0%;background:'+overallLevel.color+'"></div></div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-top:4px"><span>🔴 Červená</span><span>🟠 Jantarová</span><span>🟡 Oranžová</span><span>🟢 Zelená</span><span>🩵 Tyrkysová</span></div>';
+  html += '</div>';
+
+  // Level legend
+  html += '<div class="level-legend">';
+  LEVELS.forEach(function(l){
+    html += '<div class="ll-item" style="background:'+l.bg+'"><div class="ll-dot" style="background:'+l.color+'"></div><span style="color:'+l.color+'">'+l.name+'</span></div>';
+  });
+  html += '</div>';
+  html += '</div>';
+
+  // Area results sorted by score (weakest first)
+  var areaResults = AREAS.map(function(a, i){ return {area:a, score:areaScores[i]}; });
+  areaResults.sort(function(a,b){ return a.score-b.score; });
+  // Area overview table
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;margin-bottom:12px">Přehled úrovní podle oblastí</div>';
+  html += '<table style="width:100%;border-collapse:collapse">';
+  html += '<thead><tr>';
+  html += '<th style="text-align:left;padding:7px 10px;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border)">Oblast</th>';
+  html += '<th style="text-align:center;padding:7px 6px;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border)">Úroveň</th>';
+  html += '<th style="padding:7px 6px;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border)">Skóre</th>';
+  html += '</tr></thead><tbody>';
+  AREAS.forEach(function(a, i){
+    var sc = areaScores[i];
+    var lv = getLevelFromScore(sc);
+    var pct = Math.round(sc*100);
+    var rowBg = i%2===0?'#fafaf7':'white';
+    html += '<tr style="background:'+rowBg+'">';
+    html += '<td style="padding:8px 10px;font-size:.84rem;font-weight:600;border-bottom:1px solid #f0f0ec">'+a.title+'</td>';
+    html += '<td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f0f0ec"><span style="background:'+lv.bg+';color:'+lv.color+';font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap">'+lv.name+'</span></td>';
+    html += '<td style="padding:8px 6px;border-bottom:1px solid #f0f0ec">';
+    html += '<div style="display:flex;align-items:center;gap:6px">';
+    html += '<div style="flex:1;height:6px;border-radius:3px;background:#f0f0ec;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+lv.color+'"></div></div>';
+    html += '<span style="font-size:.78rem;font-weight:700;color:'+lv.color+';min-width:32px">'+pct+'%</span>';
+    html += '</div></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // Critical zone - weakest areas (score < 0.45 = below orange/yellow)
+  var criticalAreas = areaResults.filter(function(ar){ return ar.score < 0.45; });
+  if(criticalAreas.length > 0){
+    html += '<div style="background:#fff0f1;border-radius:14px;padding:18px 20px;margin-bottom:20px;border:2px solid #E8192C30">';
+    html += '<div style="font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;color:var(--red);margin-bottom:6px">🚨 Kritická zóna – oblasti vyžadující nejrychlejší transformaci</div>';
+    html += '<div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6">Tyto oblasti jsou na úrovni, která může blokovat rozvoj celé organizace. Firma je jen tak silná, jak silný je její nejslabší článek.</div>';
+    criticalAreas.forEach(function(ar){
+      var lv = getLevelFromScore(ar.score);
+      var rec = ar.area.recs.find(function(r){return r.level===lv.id;});
+      html += '<div style="background:white;border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid #E8192C20">';
+      html += '<div style="font-weight:700;font-size:.86rem;color:var(--red);margin-bottom:4px">'+ar.area.title+'</div>';
+      if(rec) html += '<div style="font-size:.8rem;color:var(--text);line-height:1.6">→ '+rec.text+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+
+  html += '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:700;margin-bottom:14px">Výsledky podle oblastí (od nejslabší po nejsilnější)</div>';
+
+  areaResults.forEach(function(ar, i){
+    var level = getLevelFromScore(ar.score);
+    var pct = Math.round(ar.score * 100);
+    var rec = ar.area.recs.find(function(r){return r.level===level.id;});
+
+    html += '<div class="area-result">';
+    html += '<div class="ar-header">';
+    html += '<div class="ar-title" style="color:'+ar.area.color+'">'+ar.area.title+'</div>';
+    html += '<span class="ar-level-badge" style="background:'+level.bg+';color:'+level.color+'">'+level.name+' · '+pct+'%</span>';
+    html += '</div>';
+    html += '<div class="ar-bar-bg"><div class="ar-bar-fill" data-w="'+pct+'" style="width:0%;background:'+level.color+'"></div></div>';
+    if(rec){
+      html += '<div class="ar-recommendation" style="border-left-color:'+level.color+'">';
+      html += '<strong>🎯 Doporučený krok pro posun:</strong>';
+      html += rec.text;
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  html += '<div style="text-align:center;margin-top:20px" class="no-print">';
+  html += '<button onclick="window.print()" style="background:var(--text);color:white;border:none;padding:12px 28px;border-radius:50px;font-family:\'DM Sans\',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;margin-right:12px">🖨 Vytisknout výsledky</button>';
+  html += '<button onclick="location.reload()" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border);padding:12px 28px;border-radius:50px;font-family:\'DM Sans\',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer">↺ Začít znovu</button>';
+  html += '</div>';
+
+  document.getElementById('results').innerHTML = html;
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    document.getElementById('overall-bar').style.width = overallPct+'%';
+    document.querySelectorAll('.ar-bar-fill').forEach(function(b){
+      b.style.width = b.dataset.w+'%';
+    });
+  });});
+}
+
+function getOverallDesc(id) {
+  var descs = {
+    red:    '<div class="overall-desc">Organizace funguje primárně na základě moci a kontroly. Existuje velký potenciál pro posun – první kroky jsou zásadní.</div>',
+    orange: '<div class="overall-desc">Organizace má základní struktury a procesy. Je čas zaměřit se na lidi a výsledky, nejen na dodržování pravidel.</div>',
+    yellow: '<div class="overall-desc">Organizace funguje efektivně a orientuje se na výsledky. Nyní je čas otevřít se hodnotám, kultuře a zapojení lidí.</div>',
+    green:  '<div class="overall-desc">Organizace klade důraz na lidi a hodnoty. Dalším krokem je posílení autonomie a distribuce odpovědnosti.</div>',
+    teal:   '<div class="overall-desc">Organizace dosahuje vysoké úrovně sebeřízení a smysluplnosti. Klíčem je udržení a kultivace této kultury.</div>'
+  };
+  return descs[id] || '';
+}
+
+// Start
+renderArea(0);
+</script>
+</body>
+</html>
