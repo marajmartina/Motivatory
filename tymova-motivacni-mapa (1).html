@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Týmová motivační mapa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#E8192C; --green:#2EAA6E; --blue:#1B8ECC;
+  --red-l:#fff0f1; --green-l:#f0faf5; --blue-l:#f0f7fc;
+  --bg:#FAFAF7; --text:#1a1a1a; --muted:#888; --border:#e8e8e2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+header{text-align:center;padding:40px 24px 28px;background:white;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:-80px;left:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(232,25,44,.07) 0%,transparent 70%);pointer-events:none}
+header::after{content:'';position:absolute;bottom:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(27,142,204,.07) 0%,transparent 70%);pointer-events:none}
+header h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:900;margin-bottom:6px;position:relative;z-index:1}
+header p{color:var(--muted);font-size:.88rem;position:relative;z-index:1}
+
+main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+
+.section{background:white;border-radius:18px;padding:26px;margin-bottom:22px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* TEAM NAME */
+.team-row{display:flex;gap:12px;margin-bottom:20px;align-items:center}
+.team-row input{padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:border-color .2s;width:300px}
+.team-row input:focus{border-color:var(--blue)}
+
+/* MEMBER CARD */
+.member-card{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;position:relative}
+.member-card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.member-name-input{flex:1;max-width:220px;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;outline:none;transition:border-color .2s}
+.member-name-input:focus{border-color:var(--blue)}
+.btn-remove{padding:7px 14px;border:none;background:var(--red-l);color:var(--red);border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .2s}
+.btn-remove:hover{background:var(--red);color:white}
+
+/* SCORES GRID */
+.scores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.score-group{background:white;border-radius:10px;padding:12px;border:1px solid var(--border)}
+.score-group-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.score-group.blue .score-group-title{color:var(--blue)}
+.score-group.red  .score-group-title{color:var(--red)}
+.score-group.green .score-group-title{color:var(--green)}
+.score-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.score-row:last-child{margin-bottom:0}
+.score-label{font-size:.78rem;font-weight:500;min-width:72px}
+.score-btns{display:flex;gap:3px}
+.score-btn{width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;background:white;font-size:.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--muted);font-family:'DM Sans',sans-serif}
+.score-btn:hover{border-color:#aaa;color:var(--text);transform:scale(1.1)}
+.score-btn.on-blue{background:var(--blue);border-color:var(--blue);color:white}
+.score-btn.on-red {background:var(--red); border-color:var(--red); color:white}
+.score-btn.on-green{background:var(--green);border-color:var(--green);color:white}
+
+/* BUTTONS */
+.btn-add{background:var(--bg);border:1.5px dashed var(--border);color:var(--muted);padding:10px 20px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;width:100%;transition:all .2s;margin-top:4px}
+.btn-add:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.btn-analyze{background:linear-gradient(135deg,var(--text),#333);color:white;border:none;padding:15px 40px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;display:block;margin:0 auto;transition:all .2s}
+.btn-analyze:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+
+/* RESULTS */
+#results{display:none}
+
+/* MATRIX TABLE */
+.matrix-wrap{overflow-x:auto}
+.matrix-table{border-collapse:collapse;width:100%;min-width:700px}
+.matrix-table th{font-size:.72rem;font-weight:700;padding:8px 6px;text-align:center;border-bottom:2px solid}
+.matrix-table th.name-col{text-align:left;padding:8px 12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid var(--border)}
+.matrix-table td{padding:8px 6px;text-align:center;border-bottom:1px solid #f0f0ec}
+.matrix-table td.name-cell{text-align:left;padding:10px 12px;font-weight:700;font-size:.88rem;white-space:nowrap;border-bottom:1px solid #f0f0ec}
+.matrix-table tr:last-child td{border-bottom:none}
+.matrix-table tr:nth-child(even) td{background:#fafaf7}
+.score-cell{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-weight:700;font-size:.85rem}
+
+/* INDEX CARD */
+.index-card{border-radius:14px;padding:22px;border:2px solid;text-align:center}
+.index-pct{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;line-height:1;margin-bottom:4px}
+.index-label{font-size:.9rem;font-weight:700;margin-bottom:6px}
+.index-desc{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:14px}
+.index-bar-bg{height:8px;border-radius:4px;background:rgba(0,0,0,.1);overflow:hidden;margin-bottom:6px}
+.index-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1,.64,1)}
+.zone-scale{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:14px}
+.zone-box{padding:6px 4px;border-radius:8px;font-size:.66rem;font-weight:700;text-align:center;line-height:1.4}
+
+/* FREQ */
+.freq-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.freq-group{border-radius:12px;padding:14px}
+.freq-group.blue{background:var(--blue-l)} .freq-group.red{background:var(--red-l)} .freq-group.green{background:var(--green-l)}
+.freq-group-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.freq-group.blue .freq-group-title{color:var(--blue)} .freq-group.red .freq-group-title{color:var(--red)} .freq-group.green .freq-group-title{color:var(--green)}
+.freq-item{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.freq-name{font-size:.8rem;font-weight:500;min-width:76px}
+.freq-bar-bg{flex:1;height:6px;border-radius:3px;background:rgba(0,0,0,.1);overflow:hidden}
+.freq-bar-fill{height:100%;border-radius:3px;transition:width .8s}
+.freq-val{font-size:.75rem;font-weight:700;min-width:20px;text-align:right}
+
+/* FRICTION */
+.conflict-list{list-style:none;padding:0}
+.conflict-item{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid #f0f0ec}
+.conflict-item:last-child{border-bottom:none}
+.conflict-icon{font-size:1rem;flex-shrink:0;margin-top:2px}
+.conflict-text{font-size:.83rem;line-height:1.6}
+.conflict-text .sub{color:var(--muted);font-size:.77rem;display:block;margin-top:2px}
+
+@media print{
+  body{background:white}
+  .section{box-shadow:none;border:1px solid #eee;page-break-inside:avoid}
+  #input-section,.btn-analyze,.btn-add,.btn-remove,.no-print{display:none!important}
+  #results{display:block!important}
+}
+@media(max-width:600px){
+  .scores-grid{grid-template-columns:1fr}
+  .freq-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Týmová motivační mapa</h1>
+  <p>Zadejte hodnoty 1–5 pro každého člena týmu a zobrazte skupinovou dynamiku.</p>
+</header>
+
+<main>
+  <div class="section" id="input-section">
+    <div class="section-title">👥 Zadání týmu</div>
+    <div class="team-row">
+      <input type="text" id="team-name" placeholder="Název týmu (volitelné)">
+    </div>
+    <div id="members-list"></div>
+    <button class="btn-add" onclick="addMember()">+ Přidat člena týmu</button>
+  </div>
+
+  <button class="btn-analyze no-print" onclick="analyze()">Analyzovat tým →</button>
+
+  <div id="results">
+
+    <div class="section">
+      <div class="section-title">📊 Motivační mapa týmu <span id="team-name-display" style="font-weight:300;color:var(--muted);font-size:.9rem"></span></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Hodnoty 1–5 podle výsledků osobního testu. Tučně = TOP 3 motivátory (nejvyšší skóre). ▼ = nejslabší motivátor.</p>
+      <div class="matrix-wrap"><table class="matrix-table" id="matrix-table"></table></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔄 Přístup týmu ke změně</div>
+      <div id="change-index"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏆 Zastoupení motivátorů</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Nejsilnější (TOP 3 každého)</div>
+          <div id="freq-top"></div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Nejslabší motivátory</div>
+          <div id="freq-weak"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚠️ Třecí plochy a synergie</div>
+      <div id="friction-list"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:12px" class="no-print">
+      <button onclick="window.print()" style="background:var(--text);color:white;border:none;padding:12px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer">🖨 Vytisknout report</button>
+      <button onclick="resetAll()" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border);padding:12px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;margin-left:12px">← Nový tým</button>
+    </div>
+  </div>
+</main>
+
+<script>
+var GROUPS = [
+  {key:'blue',  label:'RŮST',   color:'#1B8ECC', bg:'#f0f7fc', mots:[
+    {name:'Hledač', speed:7},
+    {name:'Duch',   speed:6},
+    {name:'Tvůrce', speed:5}
+  ]},
+  {key:'red',   label:'VÝKON',  color:'#E8192C', bg:'#fff0f1', mots:[
+    {name:'Odborník', speed:4},
+    {name:'Stavitel', speed:3},
+    {name:'Ředitel',  speed:3}
+  ]},
+  {key:'green', label:'VZTAHY', color:'#2EAA6E', bg:'#f0faf5', mots:[
+    {name:'Hvězda',  speed:3},
+    {name:'Přítel',  speed:2},
+    {name:'Obránce', speed:1}
+  ]}
+];
+
+var ALL_MOTS = [];
+GROUPS.forEach(function(g){ g.mots.forEach(function(m){ ALL_MOTS.push({name:m.name, speed:m.speed, color:g.color, bg:g.bg, key:g.key}); }); });
+
+var COLOR = {'blue':'#1B8ECC','red':'#E8192C','green':'#2EAA6E'};
+var BG    = {'blue':'#f0f7fc','red':'#fff0f1','green':'#f0faf5'};
+
+var COMPAT = {
+  'Hledač':  {'Hledač':1,'Duch':1,'Tvůrce':1,'Odborník':1,'Stavitel':-1,'Ředitel':1,'Hvězda':0.5,'Přítel':1,'Obránce':-1},
+  'Duch':    {'Hledač':1,'Duch':1,'Tvůrce':1,'Odborník':1,'Stavitel':1,'Ředitel':-1,'Hvězda':0.5,'Přítel':0.5,'Obránce':-1},
+  'Tvůrce':  {'Hledač':1,'Duch':1,'Tvůrce':1,'Odborník':0.5,'Stavitel':1,'Ředitel':0.5,'Hvězda':1,'Přítel':0,'Obránce':-1},
+  'Odborník':{'Hledač':1,'Duch':1,'Tvůrce':0.5,'Odborník':1,'Stavitel':1,'Ředitel':1,'Hvězda':1,'Přítel':0.5,'Obránce':1},
+  'Stavitel':{'Hledač':-1,'Duch':1,'Tvůrce':1,'Odborník':0.5,'Stavitel':1,'Ředitel':0.5,'Hvězda':1,'Přítel':0.5,'Obránce':1},
+  'Ředitel': {'Hledač':1,'Duch':-1,'Tvůrce':0.5,'Odborník':1,'Stavitel':0.5,'Ředitel':1,'Hvězda':1,'Přítel':-1,'Obránce':1},
+  'Hvězda':  {'Hledač':0.5,'Duch':0.5,'Tvůrce':1,'Odborník':1,'Stavitel':1,'Ředitel':1,'Hvězda':1,'Přítel':0.5,'Obránce':1},
+  'Přítel':  {'Hledač':1,'Duch':0.5,'Tvůrce':0,'Odborník':0.5,'Stavitel':0.5,'Ředitel':-1,'Hvězda':1,'Přítel':1,'Obránce':1},
+  'Obránce': {'Hledač':-1,'Duch':-1,'Tvůrce':-1,'Odborník':1,'Stavitel':1,'Ředitel':1,'Hvězda':1,'Přítel':1,'Obránce':1}
+};
+
+var memberCount = 0;
+
+function addMember() {
+  memberCount++;
+  var id = memberCount;
+  var card = document.createElement('div');
+  card.className = 'member-card';
+  card.id = 'mc-' + id;
+
+  var header = '<div class="member-card-header">' +
+    '<input class="member-name-input" type="text" placeholder="Jméno člena" id="name-'+id+'">' +
+    '<button class="btn-remove" onclick="removeMember('+id+')">× Odebrat</button>' +
+    '</div>';
+
+  var grid = '<div class="scores-grid">';
+  GROUPS.forEach(function(g) {
+    grid += '<div class="score-group '+g.key+'">';
+    grid += '<div class="score-group-title">'+g.label+'</div>';
+    g.mots.forEach(function(mot) {
+      var safeName = mot.name.replace(/[^a-zA-Z]/g,'');
+      grid += '<div class="score-row">';
+      grid += '<div class="score-label">'+mot.name+'</div>';
+      grid += '<div class="score-btns" id="sb-'+id+'-'+safeName+'">';
+      for(var v=1; v<=5; v++) {
+        grid += '<button class="score-btn" data-id="'+id+'" data-mot="'+mot.name+'" data-safe="'+safeName+'" data-val="'+v+'" data-color="'+g.key+'" onclick="setScore(this)">'+v+'</button>';
+      }
+      grid += '</div></div>';
+    });
+    grid += '</div>';
+  });
+  grid += '</div>';
+
+  card.innerHTML = header + grid;
+  document.getElementById('members-list').appendChild(card);
+}
+
+function removeMember(id) {
+  var el = document.getElementById('mc-'+id);
+  if(el) el.parentNode.removeChild(el);
+}
+
+function setScore(btn) {
+  var id    = btn.dataset.id;
+  var safe  = btn.dataset.safe;
+  var val   = parseInt(btn.dataset.val);
+  var color = btn.dataset.color;
+  var container = document.getElementById('sb-'+id+'-'+safe);
+  container.querySelectorAll('.score-btn').forEach(function(b) {
+    b.classList.remove('on-blue','on-red','on-green');
+    if(parseInt(b.dataset.val) <= val) b.classList.add('on-'+color);
+  });
+}
+
+function getScores(id) {
+  var scores = {};
+  ALL_MOTS.forEach(function(mot) {
+    var safe = mot.name.replace(/[^a-zA-Z]/g,'');
+    var container = document.getElementById('sb-'+id+'-'+safe);
+    var active = container ? container.querySelector('.score-btn.on-blue, .score-btn.on-red, .score-btn.on-green') : null;
+    // Find highest active button
+    var val = 0;
+    if(container) {
+      container.querySelectorAll('.score-btn').forEach(function(b){
+        if(b.classList.contains('on-blue')||b.classList.contains('on-red')||b.classList.contains('on-green')) {
+          val = Math.max(val, parseInt(b.dataset.val));
+        }
+      });
+    }
+    scores[mot.name] = val;
+  });
+  return scores;
+}
+
+function getMembers() {
+  var members = [];
+  document.querySelectorAll('.member-card').forEach(function(card) {
+    var id = card.id.replace('mc-','');
+    var name = document.getElementById('name-'+id).value.trim();
+    if(!name) return;
+    var scores = getScores(id);
+    // Determine top3 and all weak (lowest score, can be multiple)
+    var sorted = ALL_MOTS.map(function(m){ return {name:m.name,score:scores[m.name]}; })
+      .sort(function(a,b){ return b.score-a.score; });
+    var top3 = sorted.slice(0,3).map(function(x){return x.name;});
+    var minScore = sorted[sorted.length-1].score;
+    var weakAll = sorted.filter(function(x){ return x.score === minScore; }).map(function(x){return x.name;});
+    members.push({name:name, scores:scores, top3:top3, weak:weakAll[0], weakAll:weakAll});
+  });
+  return members;
+}
+
+function analyze() {
+  var members = getMembers();
+  if(members.length < 2) { alert('Zadejte prosím alespoň 2 členy týmu.'); return; }
+
+  var teamName = document.getElementById('team-name').value.trim();
+  document.getElementById('team-name-display').textContent = teamName ? '– '+teamName : '';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+
+  // ---- MATRIX ----
+  var tbl = document.getElementById('matrix-table');
+  var thead = '<thead><tr><th class="name-col">Jméno</th>';
+  GROUPS.forEach(function(g){
+    g.mots.forEach(function(mot){
+      thead += '<th style="color:'+g.color+';border-bottom-color:'+g.color+';font-size:.72rem;font-weight:700;padding:8px 4px;min-width:60px">'+mot.name+'</th>';
+    });
+  });
+  thead += '</tr></thead>';
+
+  // Compute totals per motivator and per group
+  var motTotals = {};
+  var groupTotals = {};
+  GROUPS.forEach(function(g){
+    groupTotals[g.key] = 0;
+    g.mots.forEach(function(mot){ motTotals[mot.name] = 0; });
+  });
+  members.forEach(function(m){
+    GROUPS.forEach(function(g){
+      g.mots.forEach(function(mot){
+        var v = m.scores[mot.name] || 0;
+        motTotals[mot.name] += v;
+        groupTotals[g.key] += v;
+      });
+    });
+  });
+
+  var tbody = '<tbody>';
+  members.forEach(function(m, ri){
+    var rowBg = ri%2===0?'#fafaf7':'white';
+    tbody += '<tr>';
+    tbody += '<td class="name-cell" style="background:'+rowBg+'">'+m.name+'</td>';
+    GROUPS.forEach(function(g){
+      g.mots.forEach(function(mot){
+        var v = m.scores[mot.name] || 0;
+        var isTop = m.top3.indexOf(mot.name) >= 0;
+        var isWeak = (m.weakAll || [m.weak]).indexOf(mot.name) >= 0;
+        var display = v > 0 ? v : '–';
+        var fw = isTop ? '900' : '400';
+        var cellBg = isTop ? g.bg : rowBg;
+        tbody += '<td style="background:'+cellBg+';text-align:center;padding:8px 4px;border-bottom:1px solid #f0f0ec">'+
+          '<span style="font-size:.88rem;font-weight:'+fw+';color:'+g.color+'">'+display+'</span>'+
+          (isTop  ? '<span style="font-size:.58rem;display:block;color:'+g.color+';font-weight:700;opacity:.8">TOP</span>' : '')+
+          (isWeak ? '<span style="font-size:.58rem;display:block;color:'+g.color+';font-weight:700">▼</span>' : '')+
+        '</td>';
+      });
+    });
+    tbody += '</tr>';
+  });
+
+  // Totals row
+  tbody += '<tr style="border-top:2px solid var(--border);background:white">';
+  tbody += '<td class="name-cell" style="font-weight:700;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Součet</td>';
+  GROUPS.forEach(function(g){
+    g.mots.forEach(function(mot){
+      var t = motTotals[mot.name];
+      tbody += '<td style="text-align:center;padding:8px 4px;background:'+g.bg+'">'+
+        '<span style="font-size:.88rem;font-weight:700;color:'+g.color+'">'+t+'</span>'+
+      '</td>';
+    });
+  });
+  tbody += '</tr>';
+
+  // Group totals row
+  tbody += '<tr style="background:white">';
+  tbody += '<td class="name-cell" style="font-weight:700;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Klastr</td>';
+  GROUPS.forEach(function(g){
+    var maxPerGroup = members.length * 5 * g.mots.length;
+    var pct = Math.round(groupTotals[g.key] / maxPerGroup * 100);
+    tbody += '<td colspan="'+g.mots.length+'" style="text-align:center;padding:10px 4px;background:'+g.bg+';border-left:2px solid '+g.color+'20">'+
+      '<span style="font-size:.95rem;font-weight:900;color:'+g.color+'">'+groupTotals[g.key]+'</span>'+
+      '<span style="font-size:.7rem;color:'+g.color+';display:block;font-weight:600">'+g.label+' · '+pct+'%</span>'+
+    '</td>';
+  });
+  tbody += '</tr>';
+
+  tbody += '</tbody>';
+  tbl.innerHTML = thead + tbody;
+
+  // ---- CHANGE INDEX ----
+  var totalScore = 0, totalWeight = 0;
+  members.forEach(function(m){
+    m.top3.forEach(function(motName, idx){
+      var motData = ALL_MOTS.find(function(x){return x.name===motName;});
+      if(!motData) return;
+      var weight = idx===0 ? 3 : idx===1 ? 2 : 1;
+      totalScore += motData.speed * weight;
+      totalWeight += weight;
+    });
+  });
+  var avgSpeed = totalScore / totalWeight; // 1-7
+  var changePct = Math.round((avgSpeed - 1) / 6 * 100);
+
+  function changeZone(p) {
+    if(p>=75) return {label:'Velmi otevřený změně',desc:'Tým vyhledává nové výzvy, pracuje rychle a orientuje se na výsledky.',color:'#2EAA6E',bg:'#f0faf5',border:'#2EAA6E30'};
+    if(p>=50) return {label:'Otevřený změně',desc:'Tým je nakloněn změnám, ale potřebuje jasný cíl a rámec.',color:'#1B8ECC',bg:'#f0f7fc',border:'#1B8ECC30'};
+    if(p>=25) return {label:'Konzervativní přístup',desc:'Tým preferuje stabilitu a jasné procesy. Změny přijímá pomalu.',color:'#F59E0B',bg:'#fff8e0',border:'#F59E0B30'};
+    return {label:'Velmi konzervativní',desc:'Tým se přirozeně brání změnám. Potřebuje výrazně více podpory a komunikace.',color:'#E8192C',bg:'#fff0f1',border:'#E8192C30'};
+  }
+  var cz = changeZone(changePct);
+
+  document.getElementById('change-index').innerHTML =
+    '<div class="index-card" style="background:'+cz.bg+';border-color:'+cz.border+'">'+
+      '<div class="index-pct" style="color:'+cz.color+'">'+changePct+'%</div>'+
+      '<div class="index-label" style="color:'+cz.color+'">'+cz.label+'</div>'+
+      '<div class="index-desc">'+cz.desc+'</div>'+
+      '<div class="index-bar-bg"><div class="index-bar-fill" style="width:'+changePct+'%;background:'+cz.color+'"></div></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-top:4px"><span>🐢 Obránce (1)</span><span>průměr TOP 3: '+Math.round(avgSpeed*10)/10+'/7</span><span>Hledač (7) ⚡</span></div>'+
+      '<div class="zone-scale">'+
+        '<div class="zone-box" style="background:#fff0f1;color:#E8192C">0–25%<br>Velmi konzervativní</div>'+
+        '<div class="zone-box" style="background:#fff8e0;color:#F59E0B">25–50%<br>Konzervativní</div>'+
+        '<div class="zone-box" style="background:#f0f7fc;color:#1B8ECC">50–75%<br>Otevřený změně</div>'+
+        '<div class="zone-box" style="background:#f0faf5;color:#2EAA6E">75–100%<br>Velmi otevřený</div>'+
+      '</div>'+
+    '</div>';
+
+  // Animate bar
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    var bar = document.querySelector('#change-index .index-bar-fill');
+    if(bar) bar.style.width = changePct+'%';
+  });});
+
+  // ---- FREQUENCY ----
+  var freq={}, weakFreq={};
+  ALL_MOTS.forEach(function(m){freq[m.name]=0;weakFreq[m.name]=0;});
+  members.forEach(function(m){
+    m.top3.forEach(function(mot){freq[mot]++;});
+    var wk = m.weakAll || [m.weak];
+    wk.forEach(function(w){ if(w) weakFreq[w]++; });
+  });
+
+  function buildFreq(data, divId) {
+    var html='';
+    GROUPS.forEach(function(g){
+      html+='<div class="freq-group '+g.key+'" style="margin-bottom:10px">';
+      html+='<div class="freq-group-title">'+g.label+'</div>';
+      g.mots.forEach(function(mot){
+        var cnt=data[mot.name]||0;
+        var pct=members.length>0?Math.round(cnt/members.length*100):0;
+        html+='<div class="freq-item">'+
+          '<div class="freq-name">'+mot.name+'</div>'+
+          '<div class="freq-bar-bg"><div class="freq-bar-fill" style="width:'+pct+'%;background:'+g.color+'"></div></div>'+
+          '<div class="freq-val" style="color:'+g.color+'">'+cnt+'×</div>'+
+        '</div>';
+      });
+      html+='</div>';
+    });
+    document.getElementById(divId).innerHTML=html;
+  }
+  buildFreq(freq,'freq-top');
+  buildFreq(weakFreq,'freq-weak');
+
+  // ---- FRICTION & SYNERGY ----
+
+  // Short descriptions for each motivator
+  var MOT_DESC = {
+    'Hledač':  'hledá smysl a dopad',
+    'Duch':    'potřebuje svobodu a autonomii',
+    'Tvůrce':  'vyhledává inovace a kreativitu',
+    'Odborník':'chce mistrovství a hloubku',
+    'Stavitel':'orientuje se na výsledky a odměnu',
+    'Ředitel': 'potřebuje moc a kontrolu',
+    'Hvězda':  'touží po uznání a respektu',
+    'Přítel':  'hledá vztahy a sounáležitost',
+    'Obránce': 'potřebuje stabilitu a řád'
+  };
+
+  var frictions1=[], frictions2=[], synergies=[];
+
+  // KATEGORIE 1: nejsilnější motivátor jednoho = nejslabší druhého
+  for(var i=0;i<members.length;i++){
+    for(var j=0;j<members.length;j++){
+      if(i===j||!members[j].weak) continue;
+      var jWeak = members[j].weakAll || [members[j].weak];
+      if(jWeak.indexOf(members[i].top3[0]) >= 0){
+        var mot = members[i].top3[0];
+        frictions1.push({
+          icon:'⚠️',
+          text:'<strong>'+members[i].name+'</strong> (nejsilnější: <strong>'+mot+'</strong> – '+MOT_DESC[mot]+') '+
+               '× <strong>'+members[j].name+'</strong> (nejslabší: <strong>'+mot+'</strong>)'
+        });
+      }
+    }
+  }
+
+  // KATEGORIE 2: odlišné motivátory v TOP 3 (compat = -1)
+  var seenPairs = {};
+  for(var i=0;i<members.length;i++){
+    for(var j=i+1;j<members.length;j++){
+      members[i].top3.forEach(function(a){
+        members[j].top3.forEach(function(b){
+          if(!a||!b||a===b) return;
+          var pairKey = [a,b].sort().join('|');
+          if(seenPairs[pairKey]) return;
+          var compat = COMPAT[a] ? COMPAT[a][b] : null;
+          if(compat === -1) {
+            seenPairs[pairKey] = true;
+            frictions2.push({
+              icon:'🔴',
+              text:'<strong>'+members[i].name+'</strong> ('+a+' – '+MOT_DESC[a]+') '+
+                   '× <strong>'+members[j].name+'</strong> ('+b+' – '+MOT_DESC[b]+')'
+            });
+          }
+        });
+      });
+    }
+  }
+
+  // SYNERGIE: sdílené motivátory nebo velmi kompatibilní top1
+  var seenSyn = {};
+  for(var i=0;i<members.length;i++){
+    for(var j=i+1;j<members.length;j++){
+      var shared=members[i].top3.filter(function(m){return members[j].top3.indexOf(m)>=0;});
+      var pairKey2 = members[i].name+'|'+members[j].name;
+      if(shared.length>=2 && !seenSyn[pairKey2]){
+        seenSyn[pairKey2]=true;
+        synergies.push({icon:'🤝',
+          text:'<strong>'+members[i].name+'</strong> a <strong>'+members[j].name+'</strong> sdílejí: '+
+               shared.map(function(m){return '<strong>'+m+'</strong>';}).join(', ')
+        });
+      }
+      // Compatible top1
+      var a2=members[i].top3[0], b2=members[j].top3[0];
+      if(a2&&b2&&a2!==b2&&!seenSyn[pairKey2]){
+        var c2 = COMPAT[a2]?COMPAT[a2][b2]:null;
+        if(c2===1){
+          seenSyn[pairKey2]=true;
+          synergies.push({icon:'✨',
+            text:'<strong>'+members[i].name+'</strong> ('+a2+') a <strong>'+members[j].name+'</strong> ('+b2+') – přirozeně kompatibilní motivátory'
+          });
+        }
+      }
+    }
+  }
+
+  var html='';
+
+  if(frictions1.length>0){
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-bottom:8px">1. Silný vs. slabý motivátor</div>';
+    html+='<ul class="conflict-list">';
+    frictions1.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
+    html+='</ul>';
+  }
+
+  if(frictions2.length>0){
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-top:18px;margin-bottom:8px">2. Odlišné první motivátory</div>';
+    html+='<ul class="conflict-list">';
+    frictions2.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
+    html+='</ul>';
+  }
+
+  if(synergies.length>0){
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2EAA6E;margin-top:18px;margin-bottom:8px">Synergie</div>';
+    html+='<ul class="conflict-list">';
+    synergies.forEach(function(s){html+='<li class="conflict-item"><span class="conflict-icon">'+s.icon+'</span><div class="conflict-text">'+s.text+'</div></li>';});
+    html+='</ul>';
+  }
+
+  if(!html) html='<p style="color:var(--muted);font-size:.85rem">Nezjištěny žádné výraznější třecí plochy ani synergie.</p>';
+  document.getElementById('friction-list').innerHTML=html;
+}
+
+function resetAll(){
+  document.getElementById('results').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Init with 3 members
+addMember(); addMember(); addMember();
+</script>
+</body>
+</html>
