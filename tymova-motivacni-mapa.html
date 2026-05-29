@@ -535,24 +535,8 @@ function analyze() {
 
   var frictions1=[], frictions2=[], synergies=[];
 
-  // KATEGORIE 1a: nejsilnější motivátor jednoho = nejslabší druhého (TOP vs. weakAll)
-  for(var i=0;i<members.length;i++){
-    for(var j=0;j<members.length;j++){
-      if(i===j||!members[j].weak) continue;
-      var jWeak = members[j].weakAll || [members[j].weak];
-      if(jWeak.indexOf(members[i].top3[0]) >= 0){
-        var mot = members[i].top3[0];
-        frictions1.push({
-          icon:'⚠️',
-          text:'<strong>'+members[i].name+'</strong> (nejsilnější: <strong>'+mot+'</strong> – '+MOT_DESC[mot]+') '+
-               '× <strong>'+members[j].name+'</strong> (nejslabší: <strong>'+mot+'</strong>)'
-        });
-      }
-    }
-  }
-
-  // KATEGORIE 1b: extrémní rozdíl skóre (5 vs 1) u stejného motivátoru
-  var seenExtreme = {};
+  // KATEGORIE 1: silný vs. slabý – unified (skóre 5 vs 1 u stejného motivátoru)
+  var seenF1 = {};
   ALL_MOTS.forEach(function(mot){
     var motName = mot.name;
     for(var i=0;i<members.length;i++){
@@ -566,17 +550,8 @@ function analyze() {
           var highScore  = Math.max(scoreA, scoreB);
           var lowScore   = Math.min(scoreA, scoreB);
           var pairKey = motName+'|'+highMember.name+'|'+lowMember.name;
-          if(seenExtreme[pairKey]) continue;
-          // Skip if already covered by TOP vs weak check
-          var alreadyCovered = false;
-          for(var k=0;k<frictions1.length;k++){
-            var ft = frictions1[k].text || '';
-            if(ft.indexOf(motName)>=0 && ft.indexOf(highMember.name)>=0 && ft.indexOf(lowMember.name)>=0){
-              alreadyCovered = true; break;
-            }
-          }
-          if(alreadyCovered) continue;
-          seenExtreme[pairKey] = true;
+          if(seenF1[pairKey]) continue;
+          seenF1[pairKey] = true;
           frictions1.push({
             icon:'⚠️',
             text:'<strong>'+highMember.name+'</strong> (nejsilnější: <strong>'+motName+'</strong> – skóre '+highScore+'/5) '+
