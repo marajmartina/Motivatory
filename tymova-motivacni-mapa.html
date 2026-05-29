@@ -535,7 +535,7 @@ function analyze() {
 
   var frictions1=[], frictions2=[], synergies=[];
 
-  // KATEGORIE 1: nejsilnější motivátor jednoho = nejslabší druhého
+  // KATEGORIE 1a: nejsilnější motivátor jednoho = nejslabší druhého (TOP vs. weakAll)
   for(var i=0;i<members.length;i++){
     for(var j=0;j<members.length;j++){
       if(i===j||!members[j].weak) continue;
@@ -550,6 +550,34 @@ function analyze() {
       }
     }
   }
+
+  // KATEGORIE 1b: extrémní rozdíl skóre (5 vs 1 nebo 5 vs 2) u stejného motivátoru
+  var seenExtreme = {};
+  ALL_MOTS.forEach(function(mot){
+    var motName = mot.name;
+    for(var i=0;i<members.length;i++){
+      for(var j=i+1;j<members.length;j++){
+        var scoreA = members[i].scores[motName] || 0;
+        var scoreB = members[j].scores[motName] || 0;
+        var diff = Math.abs(scoreA - scoreB);
+        if(diff >= 3) { // rozdíl 3+ bodů = extrémní (např. 5 vs 1, 5 vs 2, 4 vs 1)
+          var pairKey = motName+'|'+i+'|'+j;
+          if(seenExtreme[pairKey]) return;
+          seenExtreme[pairKey] = true;
+          var highMember = scoreA > scoreB ? members[i] : members[j];
+          var lowMember  = scoreA > scoreB ? members[j] : members[i];
+          var highScore  = Math.max(scoreA, scoreB);
+          var lowScore   = Math.min(scoreA, scoreB);
+          frictions1.push({
+            icon:'🔺',
+            text:'<strong>Extrémní rozdíl u motivátoru '+motName+'</strong>: '+
+                 '<strong>'+highMember.name+'</strong> ('+highScore+'/5) × <strong>'+lowMember.name+'</strong> ('+lowScore+'/5). '+
+                 '<span class="sub">'+MOT_DESC[motName]+' – co jeden silně vyžaduje, druhého může intenzivně dráždit.</span>'
+          });
+        }
+      }
+    }
+  });
 
   // KATEGORIE 2: odlišné motivátory v TOP 3 (compat = -1)
   var seenPairs = {};
