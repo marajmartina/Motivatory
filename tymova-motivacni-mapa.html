@@ -551,7 +551,7 @@ function analyze() {
     }
   }
 
-  // KATEGORIE 1b: extrémní rozdíl skóre (5 vs 1 nebo 5 vs 2) u stejného motivátoru
+  // KATEGORIE 1b: extrémní rozdíl skóre (5 vs 1) u stejného motivátoru
   var seenExtreme = {};
   ALL_MOTS.forEach(function(mot){
     var motName = mot.name;
@@ -560,19 +560,27 @@ function analyze() {
         var scoreA = members[i].scores[motName] || 0;
         var scoreB = members[j].scores[motName] || 0;
         var diff = Math.abs(scoreA - scoreB);
-        if(diff >= 3) { // rozdíl 3+ bodů = extrémní (např. 5 vs 1, 5 vs 2, 4 vs 1)
-          var pairKey = motName+'|'+i+'|'+j;
-          if(seenExtreme[pairKey]) return;
-          seenExtreme[pairKey] = true;
+        if(diff >= 4) {
           var highMember = scoreA > scoreB ? members[i] : members[j];
           var lowMember  = scoreA > scoreB ? members[j] : members[i];
           var highScore  = Math.max(scoreA, scoreB);
           var lowScore   = Math.min(scoreA, scoreB);
+          var pairKey = motName+'|'+highMember.name+'|'+lowMember.name;
+          if(seenExtreme[pairKey]) continue;
+          // Skip if already covered by TOP vs weak check
+          var alreadyCovered = false;
+          for(var k=0;k<frictions1.length;k++){
+            var ft = frictions1[k].text || '';
+            if(ft.indexOf(motName)>=0 && ft.indexOf(highMember.name)>=0 && ft.indexOf(lowMember.name)>=0){
+              alreadyCovered = true; break;
+            }
+          }
+          if(alreadyCovered) continue;
+          seenExtreme[pairKey] = true;
           frictions1.push({
-            icon:'🔺',
-            text:'<strong>Extrémní rozdíl u motivátoru '+motName+'</strong>: '+
-                 '<strong>'+highMember.name+'</strong> ('+highScore+'/5) × <strong>'+lowMember.name+'</strong> ('+lowScore+'/5). '+
-                 '<span class="sub">'+MOT_DESC[motName]+' – co jeden silně vyžaduje, druhého může intenzivně dráždit.</span>'
+            icon:'⚠️',
+            text:'<strong>'+highMember.name+'</strong> (nejsilnější: <strong>'+motName+'</strong> – skóre '+highScore+'/5) '+
+                 '× <strong>'+lowMember.name+'</strong> (nejslabší: <strong>'+motName+'</strong> – skóre '+lowScore+'/5)'
           });
         }
       }
@@ -629,24 +637,64 @@ function analyze() {
     }
   }
 
+  // BLOK 3: Hygienické motivátory (skóre 0 nebo 1)
+  var hygieneMap = {};
+  ALL_MOTS.forEach(function(mot){
+    var lowMembers = members.filter(function(m){ return (m.scores[mot.name]||0) <= 1; });
+    if(lowMembers.length > 0) hygieneMap[mot.name] = lowMembers.map(function(m){return m.name;});
+  });
+
   var html='';
 
   if(frictions1.length>0){
     html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-bottom:8px">1. Silný vs. slabý motivátor</div>';
+    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
+      'Pokud je stejný motivátor u jedné osoby extrémně silný a u druhé extrémně slabý, může tento rozdíl vytvářet třecí plochy a neshody. '+
+      'To, co jeden potřebuje jako palivo motivace, druhý považuje za nepodstatné. '+
+      'Tyto rozdíly se často připisují rozdílné osobnosti, ale často souvisí právě s rozdílným pohledem na vnitřní motivaci. '+
+      'Uvědomění si, že každého pohání něco jiného, může pomoci vědomě brzdit emoční napětí a přerámovat pohled na druhého a jeho motivace.'+
+    '</div>';
     html+='<ul class="conflict-list">';
     frictions1.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
     html+='</ul>';
   }
 
   if(frictions2.length>0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-top:18px;margin-bottom:8px">2. Odlišné první motivátory</div>';
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-top:20px;margin-bottom:8px">2. Odlišné první motivátory</div>';
+    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
+      'Tyto motivátory mohou způsobovat pnutí díky zaměření se na odlišné aspekty práce a vést každého jiným směrem. '+
+      'Je třeba hledat způsob, jak pomocí komunikace a vedení najít v dané práci či úkolech takové aspekty, které umožní oběma osobám naplňovat své nejsilnější motivátory.'+
+    '</div>';
     html+='<ul class="conflict-list">';
     frictions2.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
     html+='</ul>';
   }
 
+  // BLOK 3: Hygienické motivátory
+  var hygieneKeys = Object.keys(hygieneMap);
+  if(hygieneKeys.length > 0){
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-top:20px;margin-bottom:8px">3. Nejslabší motivátory týmu (hygienické)</div>';
+    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#f8f8f8;border-radius:10px;border-left:3px solid #ccc">'+
+      'U těchto motivátorů je vhodné prověřit, jak dalece jejich absence může mít vliv na výkonnost v týmu – zda výkonnost a spolupráci podporují, či zda značí nějaký klíčový nedostatek nebo nerovnováhu.'+
+    '</div>';
+    html+='<ul class="conflict-list">';
+    hygieneKeys.forEach(function(motName){
+      var names = hygieneMap[motName];
+      var motData = ALL_MOTS.find(function(m){return m.name===motName;});
+      var col = motData ? motData.color : '#888';
+      html+='<li class="conflict-item">'+
+        '<span class="conflict-icon">🔅</span>'+
+        '<div class="conflict-text">'+
+          '<strong>'+motName+'</strong> – '+MOT_DESC[motName]+
+          '<span class="sub">Velmi nízké skóre (0–1): '+names.join(', ')+'</span>'+
+        '</div>'+
+      '</li>';
+    });
+    html+='</ul>';
+  }
+
   if(synergies.length>0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2EAA6E;margin-top:18px;margin-bottom:8px">Synergie</div>';
+    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2EAA6E;margin-top:20px;margin-bottom:8px">Synergie</div>';
     html+='<ul class="conflict-list">';
     synergies.forEach(function(s){html+='<li class="conflict-item"><span class="conflict-icon">'+s.icon+'</span><div class="conflict-text">'+s.text+'</div></li>';});
     html+='</ul>';
