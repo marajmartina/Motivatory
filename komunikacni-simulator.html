@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulátor komunikace — Aktivní naslouchání</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --border-strong: #c8c5bb;
+    --text: #1a1916;
+    --text-muted: #6b6860;
+    --text-hint: #9b9890;
+    --accent: #1a5fa8;
+    --accent-light: #e8f0fb;
+    --accent-text: #E6F1FB;
+    --red-bg: #FAECE7;
+    --red-text: #993C1D;
+    --green-bg: #EAF3DE;
+    --green-text: #27500A;
+    --green-border: #C0DD97;
+    --purple-bg: #EEEDFE;
+    --purple-text: #3C3489;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 560px;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .badge-conflict { background: var(--red-bg); color: var(--red-text); }
+  .badge-boss     { background: var(--accent-light); color: var(--accent); }
+  .badge-feedback { background: var(--green-bg); color: var(--green-text); }
+  .badge-assert   { background: var(--purple-bg); color: var(--purple-text); }
+
+  .container { width: 100%; max-width: 560px; }
+
+  /* --- SCREEN: SELECT --- */
+  #screen-select { display: block; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 12px;
+  }
+
+  .scenario-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .scenario-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .scenario-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .scenario-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* --- API KEY INPUT --- */
+  .api-box {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin-bottom: 1.5rem;
+  }
+  .api-box label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .api-box input {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .api-box input:focus { border-color: var(--accent); }
+  .api-box .hint { font-size: 12px; color: var(--text-hint); margin-top: 6px; }
+
+  /* --- SCREEN: CHAT --- */
+  #screen-chat { display: none; }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .chat-header-left { display: flex; align-items: center; gap: 8px; }
+  .chat-title { font-size: 15px; font-weight: 500; }
+
+  .back-btn, .reset-btn {
+    font-size: 13px;
+    color: var(--text-muted);
+    border: 0.5px solid var(--border);
+    background: none;
+    border-radius: var(--radius-sm);
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .back-btn:hover, .reset-btn:hover { border-color: var(--border-strong); }
+
+  .scene-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .chat-area {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    min-height: 200px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .npc-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-hint);
+    margin-top: 4px;
+    margin-bottom: 2px;
+  }
+
+  .bubble {
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.65;
+    max-width: 86%;
+  }
+  .bubble-npc {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    color: var(--text);
+    margin-right: auto;
+  }
+  .bubble-user {
+    background: var(--accent);
+    color: var(--accent-text);
+    margin-left: auto;
+    text-align: right;
+  }
+  .bubble-error {
+    background: var(--red-bg);
+    border: 0.5px solid #F0997B;
+    color: var(--red-text);
+    font-size: 13px;
+    max-width: 100%;
+  }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .hint-toggle {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    font-family: var(--font);
+    padding: 0;
+  }
+  .hint-toggle:hover { color: var(--text); }
+
+  .hint-box {
+    display: none;
+    background: var(--green-bg);
+    border: 0.5px solid var(--green-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--green-text);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .input-row textarea {
+    flex: 1;
+    font-family: var(--font);
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    resize: none;
+    height: 54px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input-row textarea:focus { border-color: var(--accent); }
+  .send-btn {
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 20px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-weight: 500;
+    transition: opacity 0.15s;
+  }
+  .send-btn:disabled { opacity: 0.45; cursor: default; }
+
+  .feedback-section { margin-top: 4px; }
+  .feedback-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 8px;
+  }
+  .feedback-item {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding: 8px 0;
+    border-top: 0.5px solid var(--border);
+  }
+  .discuss-btn {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border: 0.5px solid var(--border);
+    background: none;
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .discuss-btn:hover { border-color: var(--border-strong); }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  .dot { display: inline-block; animation: blink 1s infinite; }
+  .dot:nth-child(2) { animation-delay: .3s; }
+  .dot:nth-child(3) { animation-delay: .6s; }
+
+  footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-hint);
+  }
+  footer a { color: var(--text-hint); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Simulátor komunikace</h1>
+    <p>Procvič si aktivní naslouchání v reálných pracovních situacích. AI hraje druhou stranu — reaguje podle toho, jak s ní mluvíš.</p>
+  </header>
+
+  <!-- API KEY -->
+  <div class="api-box">
+    <label for="api-key-input">Anthropic API klíč</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" />
+    <p class="hint">Klíč se neukládá, zůstává jen v prohlížeči. Získáš ho na <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+  </div>
+
+  <!-- SELECT SCREEN -->
+  <div id="screen-select">
+    <p class="section-label">Vyber situaci</p>
+
+    <button class="scenario-btn" onclick="selectScenario(0)">
+      <span class="badge badge-conflict">Konflikt</span>
+      <div class="scenario-title">Kolega, který mě ignoruje</div>
+      <div class="scenario-desc">Martin z logistiky na tebe přestal reagovat po posledním projektu. Dnes jste v kanceláři sami.</div>
+    </button>
+
+    <button class="scenario-btn" onclick="selectScenario(1)">
+      <span class="badge badge-boss">Šéf–podřízený</span>
+      <div class="scenario-title">Šéf mi mění zadání naposledy</div>
+      <div class="scenario-desc">Vedoucí ti ve středu přepsal cíle projektu, který máš odevzdat v pátek.</div>
+    </button>
+
+    <button class="scenario-btn" onclick="selectScenario(2)">
+      <span class="badge badge-feedback">Zpětná vazba</span>
+      <div class="scenario-title">Chci dát kolegovi zpětnou vazbu</div>
+      <div class="scenario-desc">Kolegyně Jana opakovaně chodí pozdě na týmové meetingy.</div>
+    </button>
+
+    <button class="scenario-btn" onclick="selectScenario(3)">
+      <span class="badge badge-assert">Asertivita</span>
+      <div class="scenario-title">Neustálé přidávání úkolů navíc</div>
+      <div class="scenario-desc">Vedoucí tě opět žádá o mimořádný úkol, i když máš plný kalendář.</div>
+    </button>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="screen-chat">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <span id="chat-badge" class="badge"></span>
+        <span id="chat-title" class="chat-title"></span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="reset-btn" onclick="restartChat()">↺ znovu</button>
+        <button class="back-btn" onclick="resetAll()">← zpět</button>
+      </div>
+    </div>
+
+    <div class="scene-card" id="scene-context"></div>
+
+    <div class="chat-area" id="chat-messages"></div>
+
+    <div class="controls-row">
+      <button class="hint-toggle" onclick="toggleHint()" id="hint-toggle-btn">💡 Nápověda</button>
+    </div>
+    <div class="hint-box" id="hint-box">
+      <strong>Tip — aktivní naslouchání:</strong> Zkus zrcadlit klíčové slovo z jejich věty ("<em>Takže říkáš, že…</em>"), nebo se zeptej na pocit za slovy ("<em>Jak to pro tebe bylo?</em>"). Vyhni se hned radám, obhajobě nebo hodnocení.
+    </div>
+
+    <div class="input-row">
+      <textarea id="user-input" placeholder="Napiš, co řekneš…" onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">Odeslat</button>
+    </div>
+
+    <div class="feedback-section" id="feedback-area" style="display:none;">
+      <p class="feedback-label">Reflexe</p>
+      <div id="feedback-content"></div>
+      <button class="discuss-btn" onclick="openDiscuss()">Probrat podrobněji ↗</button>
+    </div>
+  </div>
+
+  <footer>
+    Nástroj pro workshopy komunikace · <a href="https://marajmartina.cz" target="_blank">marajmartina.cz</a>
+  </footer>
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    id: 0, tag: 'Konflikt', badgeClass: 'badge-conflict',
+    title: 'Kolega, který mě ignoruje',
+    context: '📍 Kancelář, středa odpoledne. Martin sedí u svého stolu, kouká do monitoru. Od posledního projektu na tebe reaguje jednoslabičně.',
+    npcName: 'Martin',
+    opening: 'Jo.',
+    systemPrompt: `Jsi Martin, kolega z oddělení logistiky. Po posledním projektu ses urazil, protože máš pocit, že ti kolega vzal zásluhy za tvůj nápad před vedoucím. Necítíš se vyslyšen. Reaguješ chladně, krátkými větami. Pokud druhá strana projeví skutečný zájem a ptá se na tvé pocity nebo zrcadlí to, co říkáš, postupně se otevíráš. Pokud útočí nebo se omlouvají bez pochopení, uzavíráš se víc. Mluv česky, přirozeně, jako reálný člověk. Odpověz vždy maximálně 2–3 větami. Odpovídej POUZE jako Martin, žádné komentáře ani vysvětlivky.`
+  },
+  {
+    id: 1, tag: 'Šéf–podřízený', badgeClass: 'badge-boss',
+    title: 'Šéf mi mění zadání naposledy',
+    context: '📍 Kancelář vedoucího, čtvrtek dopoledne. Vedoucí Petr sedí za stolem, vypadá zaneprázdněně.',
+    npcName: 'Petr',
+    opening: 'Tak jo, co potřebuješ? Mám za deset minut call.',
+    systemPrompt: `Jsi Petr, vedoucí oddělení. Jsi zaneprázdněný, změnu zadání bereš jako nutnost — přišel pokyn shora. Nevidíš v tom velký problém. Pokud druhá strana přichází agresivně nebo stěžuje si bez návrhu, brání se. Pokud přichází s klidem, ptá se na důvody a naslouchá, jsi ochotný vysvětlovat a hledat kompromis. Mluv česky, věcně, mírně formálně. Odpověz vždy maximálně 2–3 větami. Odpovídej POUZE jako Petr, žádné komentáře.`
+  },
+  {
+    id: 2, tag: 'Zpětná vazba', badgeClass: 'badge-feedback',
+    title: 'Chci dát kolegovi zpětnou vazbu',
+    context: '📍 Kuchyňka, po meetingu. Jana si dělá kávu. Opakovaně chodí pozdě a tým to tiše nese.',
+    npcName: 'Jana',
+    opening: 'Aha, ahoj! Dáš si taky?',
+    systemPrompt: `Jsi Jana, členka týmu. Chodíš pozdě, ale sama to příliš nevnímáš — máš dojem, že meetingy stejně začínají pozdě nebo jsou zbytečně dlouhé. Pokud dostáváš zpětnou vazbu útočnou formou nebo jako hodnocení, hned se brání. Pokud je zpětná vazba podána s pochopením, konkrétním pozorováním a bez hodnocení, jsi schopná naslouchat a připustit problém. Mluv česky, uvolněně, lidsky. Odpověz maximálně 2–3 větami. Odpovídej POUZE jako Jana, žádné komentáře.`
+  },
+  {
+    id: 3, tag: 'Asertivita', badgeClass: 'badge-assert',
+    title: 'Neustálé přidávání úkolů navíc',
+    context: '📍 Chodba, pátek. Vedoucí Lenka tě zastavuje s dalším "rychlým úkolem". Máš plný týden a víš, že to rychlé nebude.',
+    npcName: 'Lenka',
+    opening: 'Hele, přesně tě hledám! Máš chvilku? Je to rychlovka.',
+    systemPrompt: `Jsi Lenka, vedoucí. Máš tendenci podceňovat zátěž týmu a přidávat úkoly spontánně. Pokud se ti odmítne bez vysvětlení nebo s nevolí, jsi nespokojená a tlačíš dál. Pokud druhá strana jasně a klidně popíše svou situaci, navrhne alternativu nebo si vyjasní priority, jsi schopná reagovat konstruktivně a ustoupit. Mluv česky, energicky, přátelsky. Odpověz maximálně 2–3 větami. Odpovídej POUZE jako Lenka, žádné komentáře.`
+  }
+];
+
+let currentScenario = null;
+let history = [];
+let hintVisible = false;
+let turnCount = 0;
+
+function getApiKey() {
+  return document.getElementById('api-key-input').value.trim();
+}
+
+function selectScenario(idx) {
+  const key = getApiKey();
+  if (!key) {
+    alert('Nejdřív zadej Anthropic API klíč.');
+    document.getElementById('api-key-input').focus();
+    return;
+  }
+  currentScenario = SCENARIOS[idx];
+  history = [];
+  turnCount = 0;
+  hintVisible = false;
+
+  document.getElementById('screen-select').style.display = 'none';
+  document.getElementById('screen-chat').style.display = 'block';
+  document.getElementById('chat-badge').className = 'badge ' + currentScenario.badgeClass;
+  document.getElementById('chat-badge').textContent = currentScenario.tag;
+  document.getElementById('chat-title').textContent = currentScenario.title;
+  document.getElementById('scene-context').textContent = currentScenario.context;
+  document.getElementById('feedback-area').style.display = 'none';
+  document.getElementById('feedback-content').innerHTML = '';
+  document.getElementById('hint-box').style.display = 'none';
+  document.getElementById('hint-toggle-btn').textContent = '💡 Nápověda';
+  document.getElementById('chat-messages').innerHTML = '';
+
+  history.push({ role: 'assistant', content: currentScenario.opening });
+  appendBubble(currentScenario.opening, 'npc', currentScenario.npcName);
+  document.getElementById('user-input').focus();
+}
+
+function appendBubble(text, type, label) {
+  const area = document.getElementById('chat-messages');
+  if (label && (type === 'npc')) {
+    const l = document.createElement('div');
+    l.className = 'npc-label';
+    l.textContent = label;
+    area.appendChild(l);
+  }
+  const b = document.createElement('div');
+  b.className = 'bubble bubble-' + type;
+  b.textContent = text;
+  area.appendChild(b);
+  area.scrollTop = area.scrollHeight;
+  return b;
+}
+
+function appendLoading() {
+  const area = document.getElementById('chat-messages');
+  const l = document.createElement('div');
+  l.className = 'npc-label';
+  l.id = 'loading-label';
+  l.textContent = currentScenario.npcName;
+  area.appendChild(l);
+  const b = document.createElement('div');
+  b.className = 'bubble bubble-npc';
+  b.id = 'loading-bubble';
+  b.innerHTML = '<span class="dot">●</span> <span class="dot">●</span> <span class="dot">●</span>';
+  area.appendChild(b);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeLoading() {
+  const lb = document.getElementById('loading-bubble');
+  const ll = document.getElementById('loading-label');
+  if (lb) lb.remove();
+  if (ll) ll.remove();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const key = getApiKey();
+  if (!key) { alert('Chybí API klíč.'); return; }
+
+  input.value = '';
+  appendBubble(text, 'user', null);
+  history.push({ role: 'user', content: text });
+  turnCount++;
+
+  document.getElementById('send-btn').disabled = true;
+  appendLoading();
+
+  const withReflexe = turnCount >= 4;
+  const systemPrompt = currentScenario.systemPrompt + (withReflexe
+    ? '\n\nPo své replice přidej na nový řádek "REFLEXE:" a napiš 1–2 věty: zda druhá strana použila prvky aktivního naslouchání — zrcadlení klíčových slov, otázky na pocity, absence hodnocení. Buď konkrétní a konstruktivní. Piš v češtině.'
+    : '');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-client': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        system: systemPrompt,
+        messages: history.map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error && err.error.message ? err.error.message : 'HTTP chyba ' + res.status);
+    }
+
+    const data = await res.json();
+    if (!data.content || !data.content.length) throw new Error('Prázdná odpověď.');
+
+    const full = data.content.map(i => i.type === 'text' ? i.text : '').join('').trim();
+    removeLoading();
+
+    let npcReply = full;
+    let reflexe = '';
+    if (full.includes('REFLEXE:')) {
+      const parts = full.split('REFLEXE:');
+      npcReply = parts[0].trim();
+      reflexe = parts[1].trim();
+    }
+
+    if (!npcReply) npcReply = '…';
+    appendBubble(npcReply, 'npc', currentScenario.npcName);
+    history.push({ role: 'assistant', content: npcReply });
+
+    if (reflexe) {
+      document.getElementById('feedback-area').style.display = 'block';
+      const item = document.createElement('div');
+      item.className = 'feedback-item';
+      item.textContent = reflexe;
+      document.getElementById('feedback-content').appendChild(item);
+    }
+
+  } catch (err) {
+    removeLoading();
+    history.pop();
+    turnCount--;
+    const area = document.getElementById('chat-messages');
+    const b = document.createElement('div');
+    b.className = 'bubble bubble-error';
+    b.textContent = 'Chyba: ' + (err.message || 'Nepodařilo se spojit s API.');
+    area.appendChild(b);
+    area.scrollTop = area.scrollHeight;
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('user-input').focus();
+}
+
+function toggleHint() {
+  hintVisible = !hintVisible;
+  document.getElementById('hint-box').style.display = hintVisible ? 'block' : 'none';
+  document.getElementById('hint-toggle-btn').textContent = hintVisible ? '💡 Skrýt nápovědu' : '💡 Nápověda';
+}
+
+function restartChat() {
+  history = [];
+  turnCount = 0;
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('feedback-area').style.display = 'none';
+  document.getElementById('feedback-content').innerHTML = '';
+  document.getElementById('hint-box').style.display = 'none';
+  hintVisible = false;
+  document.getElementById('hint-toggle-btn').textContent = '💡 Nápověda';
+  history.push({ role: 'assistant', content: currentScenario.opening });
+  appendBubble(currentScenario.opening, 'npc', currentScenario.npcName);
+  document.getElementById('user-input').focus();
+}
+
+function resetAll() {
+  document.getElementById('screen-chat').style.display = 'none';
+  document.getElementById('screen-select').style.display = 'block';
+  history = [];
+  turnCount = 0;
+}
+
+function openDiscuss() {
+  const transcript = history.map(m =>
+    (m.role === 'user' ? 'Já: ' : currentScenario.npcName + ': ') + m.content
+  ).join('\n');
+  const prompt = 'Přepis simulace:\n\n' + transcript + '\n\nCo jsem dělal/a dobře z hlediska aktivního naslouchání a co bych mohl/a příště udělat lépe?';
+  navigator.clipboard && navigator.clipboard.writeText(prompt);
+  alert('Text pro diskusi byl zkopírován do schránky. Vlož ho do Claude nebo jiného AI asistenta.');
+}
+</script>
+</body>
+</html>
