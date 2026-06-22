@@ -824,14 +824,16 @@ function rAF2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});
 // fixes this reliably on iPhone/Android, where calling print() synchronously
 // right after a style change is unreliable.
 function triggerPrint(pa){
+  // iOS Safari only honors window.print() when it's called SYNCHRONOUSLY
+  // inside the click handler, with no setTimeout/async gap — otherwise it
+  // silently does nothing (no dialog, no error). So we set the content
+  // visible and call print() immediately, in the same tick.
   pa.style.display='block';
   var hide=function(){ pa.style.display='none'; window.removeEventListener('afterprint',hide); };
   window.addEventListener('afterprint',hide);
-  setTimeout(function(){
-    window.print();
-    // Fallback in case 'afterprint' never fires (some mobile browsers skip it)
-    setTimeout(hide,1000);
-  },150);
+  window.print();
+  // Fallback in case 'afterprint' never fires (some mobile browsers skip it)
+  setTimeout(hide,1000);
 }
 
 function buildPrintHTML(title,content){
