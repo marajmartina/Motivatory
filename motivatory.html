@@ -818,6 +818,22 @@ function showTop3AndFull() {
 // ---- Print ----
 function rAF2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
 
+// iOS Safari needs the print-area to be visible (and the browser to finish
+// laying it out) BEFORE window.print() is called, otherwise the print
+// dialog opens on a blank/old page. A small delay after setting display:block
+// fixes this reliably on iPhone/Android, where calling print() synchronously
+// right after a style change is unreliable.
+function triggerPrint(pa){
+  pa.style.display='block';
+  var hide=function(){ pa.style.display='none'; window.removeEventListener('afterprint',hide); };
+  window.addEventListener('afterprint',hide);
+  setTimeout(function(){
+    window.print();
+    // Fallback in case 'afterprint' never fires (some mobile browsers skip it)
+    setTimeout(hide,1000);
+  },150);
+}
+
 function buildPrintHTML(title,content){
   return '<div><h2 style="font-family:Georgia,serif;font-size:1.4rem;font-weight:900;margin-bottom:16px">'+title+'</h2>'+content+'</div>';
 }
@@ -880,7 +896,7 @@ function printP1(){
     '<div class="print-section" style="padding-top:20px">'+
       '<h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:14px">Profily všech motivátorů</h3>'+profileRows+
     '</div>';
-  pa.style.display='block';window.print();pa.style.display='none';
+  triggerPrint(pa);
 }
 function printP2(){
   var d=calcP1();
@@ -973,7 +989,7 @@ function printP2(){
     '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">TOP 3 – nejsilnější motivátory</h3>'+top3HTML+'</div>'+
     '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Motivátory se zpomalovacím nebo podporujícím účinkem</h3>'+weakHTML+'</div>'+
     '<div style="padding-top:16px;border-top:2px solid #eee"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Jak s výsledky naložit dál?</h3>'+contactHTML+'</div>';
-  pa.style.display='block';window.print();pa.style.display='none';
+  triggerPrint(pa);
 }
 
 var PROFILES = {
