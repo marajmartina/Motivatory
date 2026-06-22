@@ -491,6 +491,41 @@
     font-size: 1rem;
   }
 
+  /* ---------- Contact form (pre-test) ---------- */
+  .contact-form {
+    margin: 24px 0 20px;
+    font-size: 0.95rem;
+  }
+  .form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--gray);
+    margin: 16px 0 6px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.98rem;
+    background: var(--light-gray);
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--ink);
+    background: #fff;
+  }
+  .form-privacy {
+    font-size: 0.8rem;
+    color: var(--gray);
+    text-align: center;
+    margin-top: 12px;
+  }
+
   @media (max-width: 420px) {
     .q-text { font-size: 1.15rem; }
   }
@@ -510,8 +545,8 @@
 
   <!-- ============ INTRO ============ -->
   <div id="screen-intro" class="intro">
-    <h1>Test vnitřních sabotérů</h1>
-    <div class="subtitle">Poznejte mentální vzorce, které vám brání ve výkonu, klidu a vztazích</div>
+    <h1>Objevte své autopiloty a jejich vliv na vás</h1>
+    <div class="subtitle">Tento test vám odhalí, kteří sabotéři (automatické reakce) nejvíce ovlivňují váš život a vztahy s ostatními.</div>
 
     <p>Sabotéři jsou automatické myšlenkové návyky, které vznikly jako obrana v dětství a dnes nás často brzdí — v práci, ve vedení lidí i ve vztahích. Vychází z konceptu Pozitivní inteligence (Shirzad Chamine).</p>
 
@@ -551,7 +586,21 @@
       <span style="font-size: 0.88rem; color: var(--gray);">Tento test dělám pro sebe — výsledek je tak přesný, jak upřímná je vaše odpověď.</span>
     </div>
 
-    <button class="btn" onclick="startTest()">Začít test</button>
+    <div class="contact-form">
+      <strong>Zadejte své kontaktní údaje</strong> a spusťte test.
+
+      <label class="form-label">JMÉNO A PŘÍJMENÍ</label>
+      <input type="text" id="contact-name" class="form-input" placeholder="Jana Nováková">
+
+      <label class="form-label">E-MAIL</label>
+      <input type="email" id="contact-email" class="form-input" placeholder="jana@example.com">
+
+      <label class="form-label">TELEFON</label>
+      <input type="tel" id="contact-phone" class="form-input" placeholder="+420 777 123 456">
+    </div>
+
+    <button class="btn" id="btn-start-test" onclick="startTest()">Spustit test sabotérů →</button>
+    <p class="form-privacy">🔒 Vaše údaje jsou v bezpečí. Slouží výhradně pro kontakt s vámi a nebudou sdíleny třetím stranám.</p>
   </div>
 
   <!-- ============ QUESTIONS ============ -->
@@ -636,7 +685,7 @@
 
     <p><strong>Nenechávejte pohled na své sabotéry ležet v šuplíku.</strong> Identifikace je první klíčový krok a hned za tím je skutečná práce a trvalá změna. Pojďme společně vytvořit vaši cestu ke svobodě.</p>
 
-    <a href="https://www.marajmartina.cz" target="_blank" class="btn cta-primary-btn">📅 Rezervovat konzultaci</a>
+    <a href="https://calendly.com/maraj-martina/individualni-setkani" target="_blank" class="btn cta-primary-btn">📅 Rezervovat konzultaci</a>
 
     <div class="cta-contacts">
       <div class="cta-contact-row"><span class="cta-contact-icon">🌐</span> www.marajmartina.cz</div>
@@ -861,7 +910,20 @@ let answers = new Array(FLAT_QUESTIONS.length).fill(null);
 /* =====================================================
    NAVIGATION
    ===================================================== */
+let contactData = { name: '', email: '', phone: '' };
+
 function startTest() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const phone = document.getElementById('contact-phone').value.trim();
+
+  if (!name || !email) {
+    alert('Prosím vyplňte jméno a e-mail před spuštěním testu.');
+    return;
+  }
+
+  contactData = { name, email, phone };
+
   document.getElementById('screen-intro').classList.add('hidden');
   document.getElementById('screen-quiz').classList.remove('hidden');
   renderQuestion();
