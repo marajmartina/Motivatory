@@ -548,7 +548,7 @@
     <h1>Objevte své autopiloty a jejich vliv na vás</h1>
     <div class="subtitle">Tento test vám odhalí, kteří sabotéři (automatické reakce) nejvíce ovlivňují váš život a vztahy s ostatními.</div>
 
-    <p>Sabotéři jsou automatické myšlenkové návyky, které vznikly jako obrana v dětství a dnes nás často brzdí — v práci, ve vedení lidí i ve vztahích. Vychází z konceptu Pozitivní inteligence (Shirzad Chamine).</p>
+    <p>Sabotéři jsou automatické myšlenkové návyky, které vznikly jako obrana v dětství a dnes nás často brzdí — v práci, ve vedení lidí i ve vztazích. Vychází z konceptu Pozitivní inteligence (Shirzad Chamine).</p>
 
     <div class="intro-box">
       <strong>Soudce — základní sabotér, kterého má každý</strong><br><br>
@@ -576,7 +576,7 @@
       <div class="legend-row"><span class="legend-dot" style="background:#ff1744;"></span> 70–100 % — Extrémní vliv: jeden z vašich hlavních sabotérů, pravděpodobně zásadně ovlivňuje vaše jednání s ostatními, vaše vztahy i práci</div>
       <div class="legend-row"><span class="legend-dot" style="background:#ff9100;"></span> 60–69 % — Výrazný vliv: sabotér se aktivuje poměrně často a může mít znatelný dopad na vaše jednání, vztahy, spolupráci a rozhodování</div>
       <div class="legend-row"><span class="legend-dot" style="background:#ffc400;"></span> 40–59 % — Nevýrazný vliv: sabotér se u vás může projevovat nevýrazným způsobem v některých specifických situacích</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#bdbdbd;"></span> 0–39 % — Nepodstatný vliv: sabotér ve vašem životě sehrává nepodstatný vliv a může na vás mít vliv pouze okrajově</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#bdbdbd;"></span> 0–39 % — Nepodstatný vliv: sabotér ve vašem životě sehrává minimální roli</div>
     </div>
 
     <p style="font-size: 0.88rem; color: var(--gray);">Odpovídejte podle toho, jak skutečně reagujete — ne podle toho, jak byste reagovat chtěli.</p>
@@ -636,7 +636,7 @@
       <div class="legend-row" style="margin-top: 10px;"><span class="legend-dot" style="background:#ff1744;"></span> 70–100 % — Extrémní vliv: jeden z vašich hlavních sabotérů, pravděpodobně zásadně ovlivňuje vaše jednání s ostatními, vaše vztahy i práci</div>
       <div class="legend-row"><span class="legend-dot" style="background:#ff9100;"></span> 60–69 % — Výrazný vliv: sabotér se aktivuje poměrně často a může mít znatelný dopad na vaše jednání, vztahy, spolupráci a rozhodování</div>
       <div class="legend-row"><span class="legend-dot" style="background:#ffc400;"></span> 40–59 % — Nevýrazný vliv: sabotér se u vás může projevovat nevýrazným způsobem v některých specifických situacích</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#bdbdbd;"></span> 0–39 % — Nepodstatný vliv: sabotér ve vašem životě sehrává nepodstatný vliv a může na vás mít vliv pouze okrajově</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#bdbdbd;"></span> 0–39 % — Nepodstatný vliv: sabotér ve vašem životě sehrává minimální roli</div>
     </div>
 
     <div class="section-label">Vašich 9 sabotérů</div>
@@ -1015,7 +1015,7 @@ function getBand(pct) {
   if (pct >= 70) return { color: '#ff1744', shortLabel: 'Extrémní vliv', label: 'Toto je jeden z vašich hlavních sabotérů. Pravděpodobně zásadně ovlivňuje vaše jednání s ostatními, vaše vztahy i práci.', cls: 'band-red' };
   if (pct >= 60) return { color: '#ff9100', shortLabel: 'Výrazný vliv', label: 'Tento sabotér se aktivuje poměrně často a může mít znatelný dopad na vaše jednání, vztahy, spolupráci a rozhodování.', cls: 'band-orange' };
   if (pct >= 40) return { color: '#ffc400', shortLabel: 'Nevýrazný vliv', label: 'Tento sabotér se u vás může projevovat nevýrazným způsobem v některých specifických situacích.', cls: 'band-yellow' };
-  return { color: '#bdbdbd', shortLabel: 'Nepodstatný vliv', label: 'Tento sabotér ve vašem životě sehrává nepodstatný vliv a může na vás mít vliv pouze okrajově.', cls: 'band-gray' };
+  return { color: '#bdbdbd', shortLabel: 'Nepodstatný vliv', label: 'Tento sabotér ve vašem životě sehrává minimální roli.', cls: 'band-gray' };
 }
 
 function showResults() {
