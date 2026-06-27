@@ -486,6 +486,11 @@
     background: var(--light-gray);
     border-radius: 10px;
     font-size: 0.92rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .cta-contact-row:active {
+    background: var(--border);
   }
   .cta-contact-icon {
     font-size: 1rem;
@@ -688,10 +693,10 @@
     <a href="https://calendly.com/maraj-martina/individualni-setkani" target="_blank" class="btn cta-primary-btn">📅 Rezervovat konzultaci</a>
 
     <div class="cta-contacts">
-      <div class="cta-contact-row"><span class="cta-contact-icon">🌐</span> www.marajmartina.cz</div>
-      <div class="cta-contact-row"><span class="cta-contact-icon">💼</span> LinkedIn – Martina Maraj</div>
-      <div class="cta-contact-row"><span class="cta-contact-icon">✉️</span> maraj.martina@gmail.com</div>
-      <div class="cta-contact-row"><span class="cta-contact-icon">📞</span> +420 777 887 665</div>
+      <a href="https://www.marajmartina.cz" target="_blank" class="cta-contact-row"><span class="cta-contact-icon">🌐</span> www.marajmartina.cz</a>
+      <a href="https://www.linkedin.com/in/martina-maraj-mba-3061652b2/" target="_blank" class="cta-contact-row"><span class="cta-contact-icon">💼</span> LinkedIn – Martina Maraj</a>
+      <a href="mailto:maraj.martina@gmail.com" class="cta-contact-row"><span class="cta-contact-icon">✉️</span> maraj.martina@gmail.com</a>
+      <a href="tel:+420777887665" class="cta-contact-row"><span class="cta-contact-icon">📞</span> +420 777 887 665</a>
     </div>
 
     <div class="nav-row">
@@ -776,7 +781,7 @@ const SABOTEURS = {
     name: "Hyper Ostražitý",
     color: "#039be5",
     questions: [
-      "Nestále promýšlím, co by se kde mohlo pokazit, i u věcí, které ostatní nepovažují za problém.",
+      "Neustále promýšlím, co by se kde mohlo pokazit, i u věcí, které ostatní nepovažují za problém.",
       "Mám tendenci podezírat ostatní z nejasných úmyslů, i když pro to nemám žádný důkaz.",
       "Když nejsou jasná pravidla nebo postupy, pociťuji výraznou nejistotu a mám tendenci domýšlet možné problémy.",
       "Neustále monitoruji vše kolem a přetrvává ve mně napětí z toho, co by se mohlo stát v budoucnu.",
@@ -849,8 +854,8 @@ const SABOTEURS = {
     color: "#ff1744",
     questions: [
       "Snadno se nechám rozptýlit novým nápadem nebo úkolem, i když na něj nemám prostor.",
-      "Hledám neustále nové podněty, informace, koníčky a aktivity, které by mě zaujaly.",
-      "Místo abych nepříjemný pocit nebo problém vyřešil/a, raději od něj uteču k něčemu, co mě víc zaujme.",
+      "Často mám rozjeto víc věcí najednou, ale dotáhnout je do konce mi dělá problém, protože mě mezitím zaujme něco nového.",
+      "Místo abych nepříjemný pocit nebo problém vyřešil/a, raději se zabývám něčím, co mě víc baví.",
       "Mám pocit, že bych měl/a stíhat a zažívat víc věcí, než na kolik mám reálně kapacitu.",
       "Je pro mě těžké nedělat nic nebo si jen odpočinout — mám potřebu volný čas vyplnit něčím novým."
     ],
