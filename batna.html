@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BATNA — Příprava na náročný rozhovor</title>
+<style>
+  :root{
+    --brand:#C62828;
+    --brand-light:#FDECEA;
+    --brand-dark:#8E1C1C;
+    --ink:#2B2B2B;
+    --grey:#6B6B6B;
+    --line:#E0E0E0;
+    --bg:#FAFAFA;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Calibri,"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{
+    border-bottom:3px solid var(--brand);
+    padding-bottom:14px;
+    margin-bottom:22px;
+  }
+  h1{
+    font-family:Georgia,'Times New Roman',serif;
+    color:var(--brand);
+    font-size:1.9rem;
+    margin:0 0 6px;
+    letter-spacing:.3px;
+  }
+  .subtitle{
+    font-style:italic;
+    color:var(--grey);
+    font-size:1rem;
+    margin:0 0 10px;
+  }
+  .intro{
+    font-size:.95rem;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .step{
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:5px solid var(--brand);
+    border-radius:6px;
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .step-head{
+    background:var(--brand-light);
+    padding:12px 18px 10px;
+  }
+  .step-title-line{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .step-num{
+    font-family:Georgia,serif;
+    color:var(--brand);
+    font-weight:bold;
+    font-size:.82rem;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .step-title{
+    font-weight:bold;
+    font-size:1.1rem;
+  }
+  .step-question{
+    font-style:italic;
+    color:var(--grey);
+    font-size:.92rem;
+    margin-top:4px;
+  }
+  .step-body{padding:12px 18px 16px;}
+  textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:10px 12px;
+    font-family:Calibri,Arial,sans-serif;
+    font-size:.95rem;
+    color:var(--ink);
+    resize:vertical;
+    min-height:70px;
+    background:#FDFDFD;
+  }
+  textarea:focus{
+    outline:none;
+    border-color:var(--brand);
+    background:#fff;
+  }
+
+  .quote{
+    background:var(--brand-light);
+    border:1px solid var(--brand);
+    border-radius:6px;
+    padding:14px 18px;
+    font-style:italic;
+    font-size:.9rem;
+    margin:20px 0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    margin:24px 0 8px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:Calibri,Arial,sans-serif;
+    font-size:.85rem;
+    padding:9px 16px;
+    border-radius:5px;
+    border:1px solid var(--brand);
+    background:#fff;
+    color:var(--brand);
+    cursor:pointer;
+    transition:.15s;
+  }
+  button:hover{background:var(--brand);color:#fff;}
+  button.primary{background:var(--brand);color:#fff;}
+  button.primary:hover{background:var(--brand-dark);}
+
+  footer{
+    text-align:center;
+    color:var(--grey);
+    font-size:.78rem;
+    margin-top:36px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+
+  @media print{
+    .toolbar{display:none;}
+    body{background:#fff;padding:0;}
+    .step{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Příprava na náročný rozhovor</h1>
+    <p class="subtitle">Metoda BATNA — pevná půda pod nohama dřív, než začnete mluvit</p>
+    <p class="intro">BATNA (Best Alternative to a Negotiated Agreement) — vaše nejlepší alternativa, pokud k dohodě nedojde. Vyplňte tento list před rozhovorem, ne během něj.</p>
+  </header>
+
+  <div id="steps"></div>
+
+  <div class="quote">
+    „Lidé nejčastěji ztrácí nadhled ve chvíli, kdy mají pocit, že existuje jen jedna cesta. Jakmile si předem vytvoříte dvě nebo tři přijatelné alternativy, nejste závislí na tom, aby ten druhý zareagoval přesně podle vašich představ.“
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="window.print()">🖨️ Vytisknout / uložit jako PDF</button>
+    <button onclick="clearAll()">🗑️ Vymazat vše</button>
+  </div>
+
+  <footer>Martina Maraj · marajmartina.cz</footer>
+</div>
+
+<script>
+const STORAGE_KEY = "batna-priprava-v1";
+
+const steps = [
+  {
+    id: "cil",
+    icon: "🎯",
+    title: "Cíl",
+    question: "Co je mým ideálním výsledkem tohoto rozhovoru?",
+    hint: "",
+    placeholder: "Napište svou odpověď…"
+  },
+  {
+    id: "mno",
+    icon: "🤝",
+    title: "MNO",
+    question: "Minimální akceptovatelný výsledek — jaký je nejnižší ústupek, který ještě přijmu, než rozhovor ukončím?",
+    hint: "",
+    placeholder: "Napište svou odpověď…"
+  },
+  {
+    id: "batna",
+    icon: "➡️",
+    title: "Moje BATNA",
+    question: "Co konkrétně udělám během 24 hodin, pokud nedosáhnu ani svého MNO a rozhovor skončí bez dohody?",
+    hint: "",
+    placeholder: "Napište svou odpověď…"
+  },
+  {
+    id: "jeho-batna",
+    icon: "🔎",
+    title: "Jeho BATNA",
+    question: "Jaké jsou důsledky a možnosti pro druhou stranu, pokud se nedohodneme?",
+    hint: "",
+    placeholder: "Napište svou odpověď…"
+  },
+  {
+    id: "hranice-chovani",
+    icon: "🚧",
+    title: "Co nechci udělat ani pod tlakem",
+    question: "Moje osobní hranice chování — bez ohledu na to, jak se druhá strana zachová.",
+    hint: "",
+    placeholder: "Napište svou odpověď…"
+  }
+];
+
+const container = document.getElementById("steps");
+steps.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.innerHTML = `
+    <div class="step-head">
+      <div class="step-title-line">
+        <span class="step-num">${s.icon} Krok ${i + 1}</span>
+        <span class="step-title">${s.title}</span>
+      </div>
+      <div class="step-question">${s.question}</div>
+    </div>
+    <div class="step-body">
+      <textarea id="field-${s.id}" placeholder="${s.placeholder}"></textarea>
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    steps.forEach(s => {
+      const el = document.getElementById(`field-${s.id}`);
+      if(el && data[s.id]) el.value = data[s.id];
+    });
+  }catch(e){ console.warn("Načtení dat selhalo:", e); }
+}
+
+function saveData(){
+  try{
+    const data = {};
+    steps.forEach(s => {
+      const el = document.getElementById(`field-${s.id}`);
+      data[s.id] = el ? el.value : "";
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){ console.warn("Uložení selhalo:", e); }
+}
+
+function clearAll(){
+  if(!confirm("Opravdu chcete vymazat všechny své odpovědi?")) return;
+  steps.forEach(s => {
+    const el = document.getElementById(`field-${s.id}`);
+    if(el) el.value = "";
+  });
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+}
+
+steps.forEach(s => {
+  const el = document.getElementById(`field-${s.id}`);
+  if(el) el.addEventListener("input", saveData);
+});
+
+loadData();
+</script>
+</body>
+</html>
