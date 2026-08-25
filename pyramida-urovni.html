@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pyramida úrovní – na co doopravdy narážíš</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FAFAF7; --text:#1a1a1a; --muted:#888; --border:#e8e8e2; --white:#fff;
+  --c0:#94A3B8; /* prostředí */
+  --c1:#1B8ECC; /* chování */
+  --c2:#2EAA6E; /* schopnosti */
+  --c3:#F59E0B; /* přesvědčení a hodnoty */
+  --c4:#E8192C; /* identita */
+  --c5:#7C3AED; /* smysl */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding:40px 20px 100px}
+h1,h2{font-family:'Playfair Display',serif}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:clamp(1.4rem,4vw,1.9rem);font-weight:700;margin-bottom:14px;line-height:1.3}
+.lead{color:var(--muted);font-size:.95rem;margin-bottom:24px}
+.screen{display:none;animation:fadeIn .35s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+textarea{width:100%;min-height:110px;border:2px solid var(--border);border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--text);resize:vertical;background:var(--white);transition:border-color .15s}
+textarea:focus{outline:none;border-color:#bbb}
+
+.btnrow{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.btn{border:none;border-radius:50px;padding:13px 28px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-main{background:var(--text);color:white}
+.btn-main:hover{background:#333;transform:translateY(-1px)}
+.btn-sec{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-sec:hover{background:#f0f0ec}
+
+.stack{margin-bottom:22px}
+.stack-item{border-radius:12px;padding:12px 16px;margin-bottom:6px;border-left:4px solid;background:var(--white)}
+.stack-lbl{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.stack-txt{font-size:.86rem;color:#333}
+
+.current-q-tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:white;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.current-q{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:10px;line-height:1.4}
+.q-note{background:#f8f6fb;border-left:3px solid var(--c5);border-radius:8px;padding:10px 14px;font-size:.8rem;color:#666;margin:10px 0 16px;line-height:1.5}
+.q-note:empty{display:none;margin:0;padding:0;border:none}
+
+.progress{display:flex;gap:5px;margin-bottom:24px}
+.progress-dot{flex:1;height:5px;border-radius:3px;background:var(--border)}
+.progress-dot.done{background:var(--text)}
+
+.final-pyramid{background:var(--white);border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.06);margin-bottom:22px}
+.final-item{border-radius:10px;padding:13px 16px;margin-bottom:8px}
+.final-lbl{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;opacity:.85}
+.final-desc{font-size:.78rem;opacity:.85;margin-bottom:8px;font-style:italic;line-height:1.4}
+.final-txt{font-size:.87rem;font-weight:500}
+
+.note{background:linear-gradient(135deg,#f8f8f5,white);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:.83rem;color:var(--muted);margin-bottom:20px}
+.note strong{color:var(--text)}
+
+@media print {
+  .btnrow, .no-print { display:none !important; }
+  body{background:white}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SCREEN 0: INTRO -->
+  <div class="screen active" id="s-intro">
+    <div class="eyebrow">Pyramida logických úrovní</div>
+    <h1>Podívejme se, na co to doopravdy narážíš</h1>
+    <p class="lead">Popiš krátce situaci nebo téma, které tě teď zaměstnává. Pak tě šest otázek provede krok za krokem nahoru &mdash; od povrchu k tomu, oč jde ve skutečnosti.</p>
+    <textarea id="situace" placeholder="Např. Odkládám rozhovor o zvýšení platu se svým šéfem a nevím, jak do toho jít..."></textarea>
+    <div class="btnrow">
+      <button class="btn btn-main" onclick="startClimb()">Pokračovat</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: CLIMB -->
+  <div class="screen" id="s-climb">
+    <div class="eyebrow">Krok za krokem nahoru</div>
+    <div class="progress" id="climb-progress"></div>
+    <div id="climb-stack" class="stack"></div>
+
+    <span class="current-q-tag" id="climb-tag"></span>
+    <div class="current-q" id="climb-question"></div>
+    <div class="q-note" id="climb-note"></div>
+    <textarea id="climb-answer" placeholder="Napiš svoji odpověď..."></textarea>
+    <div class="btnrow">
+      <button class="btn btn-sec" onclick="climbBack()">Zpět</button>
+      <button class="btn btn-main" id="btn-climb-next" onclick="climbNext()">Dál</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 1.5: TOP REACHED -->
+  <div class="screen" id="s-top">
+    <div class="eyebrow">Došel/a jsi na vrchol</div>
+    <h1>Tohle je teď tvůj obraz situace</h1>
+    <div class="final-pyramid" id="top-pyramid"></div>
+    <p class="lead">Teď se nadechni &mdash; a pojďme to, co jsi právě objevil/a, přenést zpátky dolů do konkrétního kroku, aby to nezůstalo jen myšlenkou.</p>
+    <div class="btnrow">
+      <button class="btn btn-main" onclick="startDescent()">Sestoupit zpátky dolů</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 1.6: DESCENT -->
+  <div class="screen" id="s-descent">
+    <div class="eyebrow">Cesta zpátky dolů &middot; od záměru ke konkrétnímu kroku</div>
+    <div class="progress" id="descent-progress"></div>
+    <div id="descent-stack" class="stack"></div>
+
+    <span class="current-q-tag" id="descent-tag"></span>
+    <div class="current-q" id="descent-question"></div>
+    <textarea id="descent-answer" placeholder="Napiš svoji odpověď..."></textarea>
+    <div class="btnrow">
+      <button class="btn btn-sec" onclick="descentBack()">Zpět</button>
+      <button class="btn btn-main" id="btn-descent-next" onclick="descentNext()">Dál</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: SUMMARY -->
+  <div class="screen" id="s-summary">
+    <div class="eyebrow">Shrnutí</div>
+    <h1>Celá tvoje cesta pyramidou</h1>
+    <div class="final-pyramid" id="summary-pyramid"></div>
+    <div class="note"><strong>Tip:</strong> Tohle je dobrý moment si to vytisknout nebo vyfotit &mdash; a vrátit se k tomu za pár dní, jestli to pořád platí.</div>
+    <div class="btnrow no-print">
+      <button class="btn btn-sec" onclick="window.print()">Vytisknout / uložit</button>
+      <button class="btn btn-main" onclick="restart()">Začít znovu s jinou situací</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- LEVELS: jedna otázka na úroveň, cesta nahoru ----
+var LEVELS = [
+  { key:'prostredi', label:'Prostředí', color:'var(--c0)',
+    desc:'Fakta, okolnosti a vlivy &mdash; kde, kdy a co všechno na to působí.',
+    upQ:'Co se přesně děje a v jakém kontextu?',
+    upHint:'Přesně se děje to, že...' },
+  { key:'chovani', label:'Chování', color:'var(--c1)',
+    desc:'To, co v dané chvíli reálně děláš (nebo neděláš).',
+    upQ:'Co konkrétně v té situaci dělám nebo nedělám?',
+    upHint:'Dělám... / Nedělám...' },
+  { key:'schopnosti', label:'Schopnosti a strategie', color:'var(--c2)',
+    desc:'Schopnosti, dovednosti nebo kompetence, které v tom hrají roli.',
+    upQ:'Co umím &mdash; a co bych potřeboval/a umět lépe &mdash; abych situaci zvládl/a jinak?',
+    upHint:'Umím... / Potřeboval/a bych umět lépe...' },
+  { key:'presvedceni', label:'Přesvědčení a hodnoty', color:'var(--c3)',
+    desc:'Čemu věříš a jaké hodnoty nebo principy jsou pro tebe důležité.',
+    upQ:'Čemu v této situaci věřím a co je pro mě důležité?',
+    upHint:'Věřím, že... / Důležité je pro mě...' },
+  { key:'identita', label:'Identita', color:'var(--c4)',
+    desc:'Kým jsi (nebo se cítíš být) v této situaci.',
+    upQ:'Kým jsem v této situaci? Co si o sobě skutečně myslím?',
+    upHint:'V této situaci jsem... / O sobě si myslím, že...' },
+  { key:'smysl', label:'Smysl / Poslání / Účel / Spiritualita', color:'var(--c5)',
+    desc:'Jaký větší smysl a dopad to má mimo tebe.',
+    upQ:'Proč je pro mě důležité tuto situaci změnit nebo zvládnout jinak?',
+    upHint:'Důležité je to proto, že...' }
+];
+
+// ---- DESCENT: cesta zpátky dolů, od záměru ke konkrétnímu chování ----
+var DESCENT = [
+  { key:'smysl_d', label:'Smysl / Poslání / Účel / Spiritualita', color:'var(--c5)',
+    desc:'Jaký smysl a dopad chceš, aby to mělo.',
+    downQ:'Jaký větší smysl chci dosáhnout?',
+    downHint:'Chci dosáhnout smyslu...' },
+  { key:'identita_d', label:'Identita', color:'var(--c4)',
+    desc:'Kým chceš v této situaci být.',
+    downQ:'Kým chci být?',
+    downHint:'Chci být...' },
+  { key:'presvedceni_d', label:'Přesvědčení a hodnoty', color:'var(--c3)',
+    desc:'Hodnoty, principy a nové přesvědčení, které si chceš vzít s sebou.',
+    downQ:'Jaké nové přesvědčení chci začít prožívat a podle jakých hodnot se chci řídit?',
+    downHint:'Chci prožívat přesvědčení, že... / Chci se řídit hodnotou...' },
+  { key:'schopnosti_d', label:'Schopnosti a strategie', color:'var(--c2)',
+    desc:'Schopnosti, dovednosti nebo kompetence, které k tomu budeš potřebovat.',
+    downQ:'Co potřebuji umět nebo použít, abych tak mohl/a jednat?',
+    downHint:'Potřebuji umět / použít...' },
+  { key:'chovani_d', label:'Chování', color:'var(--c1)',
+    desc:'Jak se to projeví na tvém budoucím chování.',
+    downQ:'Co konkrétně udělám jinak? Jaké kroky mohu začít dělat hned zítra? (co, kdy, kde, jak)',
+    downHint:'Zítra udělám...' }
+];
+
+var state = { situace:'', climbIdx:0, descentIdx:0, answers:{} };
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startClimb(){
+  state.situace = document.getElementById('situace').value.trim();
+  state.climbIdx = 0;
+  renderClimb();
+  showScreen('s-climb');
+}
+
+function renderClimb(){
+  var lvl = LEVELS[state.climbIdx];
+  document.getElementById('climb-tag').style.background = lvl.color;
+  document.getElementById('climb-tag').textContent = lvl.label;
+  document.getElementById('climb-question').innerHTML = lvl.upQ;
+  document.getElementById('climb-note').innerHTML = lvl.upNote || '';
+  document.getElementById('climb-answer').value = state.answers[lvl.key] || '';
+  document.getElementById('climb-answer').placeholder = lvl.upHint || 'Napiš svoji odpověď...';
+  document.getElementById('btn-climb-next').textContent = (state.climbIdx===LEVELS.length-1) ? 'Dokončit výstup' : 'Dál';
+
+  var pbar = document.getElementById('climb-progress');
+  pbar.innerHTML = '';
+  for(var i=0;i<LEVELS.length;i++){
+    var d = document.createElement('div');
+    d.className = 'progress-dot' + (i<=state.climbIdx ? ' done' : '');
+    pbar.appendChild(d);
+  }
+
+  var stack = document.getElementById('climb-stack');
+  stack.innerHTML = '';
+  if(state.situace && state.climbIdx===0){
+    var box = document.createElement('div');
+    box.className='stack-item';
+    box.style.borderColor = '#ccc';
+    box.innerHTML = '<div class="stack-lbl" style="color:#999">Tvoje situace</div><div class="stack-txt">'+escapeHtml(state.situace)+'</div>';
+    stack.appendChild(box);
+  }
+  for(var j=0;j<state.climbIdx;j++){
+    var l = LEVELS[j];
+    if(!state.answers[l.key]) continue;
+    var it = document.createElement('div');
+    it.className='stack-item';
+    it.style.borderColor = l.color;
+    it.innerHTML = '<div class="stack-lbl" style="color:'+l.color+'">'+l.label+'</div><div class="stack-txt">'+escapeHtml(state.answers[l.key])+'</div>';
+    stack.appendChild(it);
+  }
+}
+
+function climbNext(){
+  var lvl = LEVELS[state.climbIdx];
+  state.answers[lvl.key] = document.getElementById('climb-answer').value.trim();
+  if(state.climbIdx === LEVELS.length-1){
+    renderTop();
+    showScreen('s-top');
+    return;
+  }
+  state.climbIdx++;
+  renderClimb();
+}
+
+function climbBack(){
+  var lvl = LEVELS[state.climbIdx];
+  state.answers[lvl.key] = document.getElementById('climb-answer').value.trim();
+  if(state.climbIdx === 0){
+    showScreen('s-intro');
+    return;
+  }
+  state.climbIdx--;
+  renderClimb();
+}
+
+function renderTop(){
+  var el = document.getElementById('top-pyramid');
+  el.innerHTML = '';
+  if(state.situace){
+    var box = document.createElement('div');
+    box.className='final-item';
+    box.style.background = '#f0f0ec';
+    box.innerHTML = '<div class="final-lbl" style="color:#888">Tvoje situace</div><div class="final-txt">'+escapeHtml(state.situace)+'</div>';
+    el.appendChild(box);
+  }
+  for(var i=LEVELS.length-1;i>=0;i--){
+    var l = LEVELS[i];
+    if(!state.answers[l.key]) continue;
+    var it = document.createElement('div');
+    it.className='final-item';
+    it.style.background = l.color;
+    it.style.color='#fff';
+    it.innerHTML = '<div class="final-lbl">'+l.label+'</div><div class="final-desc">'+(l.desc||'')+'</div><div class="final-txt">'+escapeHtml(state.answers[l.key])+'</div>';
+    el.appendChild(it);
+  }
+}
+
+function startDescent(){
+  state.descentIdx = 0;
+  renderDescent();
+  showScreen('s-descent');
+}
+
+function renderDescent(){
+  var lvl = DESCENT[state.descentIdx];
+  document.getElementById('descent-tag').style.background = lvl.color;
+  document.getElementById('descent-tag').textContent = lvl.label;
+  document.getElementById('descent-question').innerHTML = lvl.downQ;
+  document.getElementById('descent-answer').value = state.answers[lvl.key] || '';
+  document.getElementById('descent-answer').placeholder = lvl.downHint || 'Napiš svoji odpověď...';
+  document.getElementById('btn-descent-next').textContent = (state.descentIdx===DESCENT.length-1) ? 'Dokončit' : 'Dál';
+
+  var pbar = document.getElementById('descent-progress');
+  pbar.innerHTML = '';
+  for(var i=0;i<DESCENT.length;i++){
+    var d = document.createElement('div');
+    d.className = 'progress-dot' + (i<=state.descentIdx ? ' done' : '');
+    pbar.appendChild(d);
+  }
+
+  var stack = document.getElementById('descent-stack');
+  stack.innerHTML = '';
+  for(var j=LEVELS.length-1;j>=0;j--){
+    var l = LEVELS[j];
+    if(!state.answers[l.key]) continue;
+    var it = document.createElement('div');
+    it.className='stack-item';
+    it.style.borderColor = l.color;
+    it.innerHTML = '<div class="stack-lbl" style="color:'+l.color+'">'+l.label+'</div><div class="stack-txt">'+escapeHtml(state.answers[l.key])+'</div>';
+    stack.appendChild(it);
+  }
+  for(var k=0;k<state.descentIdx;k++){
+    var li = DESCENT[k];
+    if(!state.answers[li.key]) continue;
+    var it2 = document.createElement('div');
+    it2.className='stack-item';
+    it2.style.borderColor = li.color;
+    it2.innerHTML = '<div class="stack-lbl" style="color:'+li.color+'">'+li.label+' &middot; záměr</div><div class="stack-txt">'+escapeHtml(state.answers[li.key])+'</div>';
+    stack.appendChild(it2);
+  }
+}
+
+function descentNext(){
+  var lvl = DESCENT[state.descentIdx];
+  state.answers[lvl.key] = document.getElementById('descent-answer').value.trim();
+  if(state.descentIdx === DESCENT.length-1){
+    renderSummary();
+    showScreen('s-summary');
+    return;
+  }
+  state.descentIdx++;
+  renderDescent();
+}
+
+function descentBack(){
+  var lvl = DESCENT[state.descentIdx];
+  state.answers[lvl.key] = document.getElementById('descent-answer').value.trim();
+  if(state.descentIdx === 0){
+    renderTop();
+    showScreen('s-top');
+    return;
+  }
+  state.descentIdx--;
+  renderDescent();
+}
+
+function renderSummary(){
+  var el = document.getElementById('summary-pyramid');
+  el.innerHTML='';
+  if(state.situace){
+    var box = document.createElement('div');
+    box.className='final-item';
+    box.style.background = '#f0f0ec';
+    box.innerHTML = '<div class="final-lbl" style="color:#888">Tvoje situace</div><div class="final-txt">'+escapeHtml(state.situace)+'</div>';
+    el.appendChild(box);
+  }
+  for(var i=LEVELS.length-1;i>=0;i--){
+    var l = LEVELS[i];
+    if(!state.answers[l.key]) continue;
+    var it = document.createElement('div');
+    it.className='final-item';
+    it.style.background = l.color;
+    it.style.color='#fff';
+    it.innerHTML = '<div class="final-lbl">'+l.label+'</div><div class="final-desc">'+(l.desc||'')+'</div><div class="final-txt">'+escapeHtml(state.answers[l.key])+'</div>';
+    el.appendChild(it);
+  }
+  for(var k=0;k<DESCENT.length;k++){
+    var d = DESCENT[k];
+    if(!state.answers[d.key]) continue;
+    var it2 = document.createElement('div');
+    it2.className='final-item';
+    it2.style.background = d.color;
+    it2.style.color='#fff';
+    it2.style.opacity='.75';
+    it2.innerHTML = '<div class="final-lbl">'+d.label+' &middot; záměr do budoucna</div><div class="final-desc">'+(d.desc||'')+'</div><div class="final-txt">'+escapeHtml(state.answers[d.key])+'</div>';
+    el.appendChild(it2);
+  }
+}
+
+function escapeHtml(s){
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function restart(){
+  state = { situace:'', climbIdx:0, descentIdx:0, answers:{} };
+  document.getElementById('situace').value='';
+  showScreen('s-intro');
+}
+</script>
+</body>
+</html>
