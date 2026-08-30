@@ -87,6 +87,10 @@ h1{font-size:22px;font-weight:700;margin-bottom:.35rem;color:#111}
     <h1>Jaké je moje dnešní PQ skóre?</h1>
     <p class="sub">Ohodnoťte každý pocit — jak moc ho teď prožíváte?</p>
   </div>
+  <div style="margin-bottom:1.5rem">
+    <label style="display:block;font-size:13px;color:#666;margin-bottom:.4rem">Situace nebo kontext <span style="color:#aaa">(nepovinné)</span></label>
+    <input type="text" id="situace" placeholder="Např. pracovní stres, rodinná situace, zdraví…" style="width:100%;height:44px;border:1.5px solid #e0e0e0;border-radius:12px;padding:0 1rem;font-size:14px;color:#111;background:white;outline:none;font-family:inherit" onfocus="this.style.borderColor='#1D9E75'" onblur="this.style.borderColor='#e0e0e0'">
+  </div>
   <div class="prog-wrap">
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
     <div class="prog-label" id="prog-label">0 / 20</div>
@@ -132,14 +136,14 @@ h1{font-size:22px;font-weight:700;margin-bottom:.35rem;color:#111}
     </div>
     <div style="font-size:1.1rem;font-weight:700;margin-bottom:12px">Jak s těmito výsledky naložit dál?</div>
     <div class="contact-text">
-      Vaše skóre je skvělým zrcadlem vašeho aktuálního nastavení. Ukazuje, kde se nachází vaše pozitivní inteligence a co vám v danou chvíli přináší nebo ubírá energii. Skutečná magie přijde až s tím, co s touto informací uděláte v praxi.<br><br>
-      Jsem připravena vám pomoci tyto výsledky přetavit do konkrétních kroků.
+      Vaše skóre je zrcadlem prožívání vaší aktuální situace. Sledujte po několik dnů trend tohoto stavu. Pokud zjistíte, že se stále pohybujete na nízké úrovni PQ, existuje z tohoto stavu cesta ven.<br><br>
+      Jsem připravena vám pomoci v nalezení strategie, jak toto vaše prožívání změnit:
     </div>
     <ul class="contact-bullets">
-      <li><strong>Odbrzdění demotivátorů</strong>Rozklíčujeme konkrétní překážky, které vás aktuálně stojí nejvíce energie, a najdeme způsob, jak je eliminovat.</li>
-      <li><strong>Zvýšení výkonu bez vyhoření</strong>Nastavíme vaši osobní strategii tak, abyste dlouhodobě sytili své hlavní motivátory a pracovali v souladu se svou přirozeností.</li>
-      <li><strong>Konec týmových konfliktů</strong>Podíváme se na to, jak vaše motivace naráží na motivace vašich kolegů, a jak komunikovat tak, abyste místo napětí budovali spolupráci.</li>
-      <li><strong>Strategický plán pro lídry</strong>Sestavíme manuál na míru pro vaše lidi – abyste přesně věděli, jak je delegovat, motivovat a vést bez zbytečného tlaku.</li>
+      <li>Můžete identifikovat stará přesvědčení, která vás v situaci limitují a přepsat je novými užitečnými vzorci myšlení.</li>
+      <li>Můžete si vytvořit akční plán, jaké změny potřebujete provést na úrovni komunikace, vztahů nebo prostředí, kde tyto emoce prožíváte.</li>
+      <li>Můžete prozkoumat trendy a souvislosti, které vám ve vaší úrovni PQ brání nebo pomáhají, a nastavit si nová pravidla hry pro spokojenější prožívání života.</li>
+      <li>Pokud máte kolem sebe tým lidí, můžete se zaměřit na systematickou změnu firemní kultury a zvýšení spokojenosti nejen vás, ale i celého týmu.</li>
     </ul>
     <p style="font-size:.88rem;font-weight:600;margin-bottom:16px">Nenechávejte svůj výsledek ležet v šuplíku. Pojďme společně vytvořit jasný plán.</p>
     <a class="btn-calendly" href="https://calendly.com/maraj-martina/individualni-koucovani" target="_blank">📅 Rezervovat konzultaci</a>
@@ -250,34 +254,132 @@ function restart(){ans.fill(null);cur=0;show('screen-test');renderQ();}
 function saveResult(){
   if(!window._pq)return;
   const {neg,pos,score,lv}=window._pq;
+  const situace=document.getElementById('situace').value.trim();
   const now=new Date().toLocaleDateString('cs-CZ');
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'});
-  const green=[29,158,117];const dark=[26,26,26];const gray=[100,100,100];const light=[245,245,240];
-  doc.setFillColor(...green);doc.rect(0,0,210,22,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont('helvetica','bold');
-  doc.text('PQ Test – Jaké je moje dnešní PQ skóre?',105,14,{align:'center'});
-  doc.setFillColor(...light);doc.roundedRect(15,28,80,42,4,4,'F');
-  doc.setTextColor(...green);doc.setFontSize(36);doc.setFont('helvetica','bold');
-  doc.text(score+'',55,56,{align:'center'});
-  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(...gray);
-  doc.text('%  PQ Skóre',55,64,{align:'center'});
-  doc.setFillColor(...light);doc.roundedRect(100,28,95,42,4,4,'F');
-  doc.setTextColor(...dark);doc.setFontSize(14);doc.setFont('helvetica','bold');
-  const ll=doc.splitTextToSize(lv.label,82);doc.text(ll,147,46,{align:'center'});
-  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(...gray);doc.text(now,147,64,{align:'center'});
-  doc.setFillColor(254,242,242);doc.roundedRect(15,76,90,18,3,3,'F');
-  doc.setTextColor(192,57,43);doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Negativní součet',60,83,{align:'center'});
-  doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text(String(neg),60,92,{align:'center'});
-  doc.setFillColor(236,253,245);doc.roundedRect(110,76,85,18,3,3,'F');
-  doc.setTextColor(...green);doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Pozitivní součet',152,83,{align:'center'});
-  doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text(String(pos),152,92,{align:'center'});
-  doc.setDrawColor(...green);doc.setLineWidth(0.5);doc.line(15,100,195,100);
-  doc.setTextColor(...green);doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text(lv.label,15,110);
-  doc.setTextColor(...dark);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setLineHeightFactor(1.6);
-  const bl=doc.splitTextToSize(lv.body,180);doc.text(bl,15,120);
-  doc.setFillColor(...green);doc.rect(0,285,210,12,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Pozitivní bod zlomu: 75 %',105,293,{align:'center'});
+
+  // Colors
+  const green=[29,158,117];const darkGreen=[15,110,86];
+  const dark=[26,26,26];const gray=[120,120,120];const light=[245,245,240];
+  const white=[255,255,255];
+
+  // Header bar
+  doc.setFillColor(...green);
+  doc.rect(0,0,210,18,'F');
+  doc.setTextColor(...white);
+  doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text('PQ Test – Jaké je moje dnešní PQ skóre?',105,12,{align:'center'});
+
+  // Score circle area
+  var y=26;
+  doc.setFillColor(...light);
+  doc.roundedRect(15,y,55,40,4,4,'F');
+  doc.setTextColor(...green);doc.setFontSize(32);doc.setFont('helvetica','bold');
+  doc.text(String(score),42,y+22,{align:'center'});
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(...gray);
+  doc.text('%  PQ Skóre',42,y+30,{align:'center'});
+
+  // Level name box
+  doc.setFillColor(...light);
+  doc.roundedRect(75,y,120,40,4,4,'F');
+  doc.setTextColor(...dark);doc.setFontSize(13);doc.setFont('helvetica','bold');
+  var ll=doc.splitTextToSize(lv.label,110);
+  doc.text(ll,135,y+16,{align:'center'});
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(...gray);
+  doc.text(now,135,y+32,{align:'center'});
+
+  y=74;
+  // Situace field (if filled)
+  if(situace){
+    doc.setFillColor(230,245,240);
+    doc.roundedRect(15,y,180,12,3,3,'F');
+    doc.setTextColor(...darkGreen);doc.setFontSize(8);doc.setFont('helvetica','bold');
+    doc.text('Situace: ',20,y+8);
+    doc.setFont('helvetica','normal');doc.setTextColor(...dark);
+    var sitLines=doc.splitTextToSize(situace,155);
+    doc.text(sitLines[0],42,y+8);
+    y+=18;
+  }
+
+  // Stats row
+  doc.setFillColor(254,242,242);doc.roundedRect(15,y,87,16,3,3,'F');
+  doc.setTextColor(192,57,43);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Negativní součet',58,y+6,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text(String(neg),58,y+13,{align:'center'});
+
+  doc.setFillColor(236,253,245);doc.roundedRect(108,y,87,16,3,3,'F');
+  doc.setTextColor(...green);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Pozitivní součet',151,y+6,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text(String(pos),151,y+13,{align:'center'});
+  y+=24;
+
+  // LADDER - all 5 levels
+  doc.setTextColor(...dark);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Přehled úrovní PQ',15,y);y+=5;
+
+  var ladderLevels=[
+    {min:76,max:100,label:'Rostoucí úroveň PQ',range:'nad 75 %',color:[15,110,86],bg:[236,253,245]},
+    {min:75,max:75,label:'Bod zlomu',range:'přesně 75 %',color:[6,95,70],bg:[209,250,229]},
+    {min:50,max:74,label:'Slabá úroveň PQ',range:'50–74 %',color:[146,96,10],bg:[255,251,235]},
+    {min:30,max:49,label:'Nízká úroveň PQ',range:'30–49 %',color:[192,86,33],bg:[255,247,237]},
+    {min:0,max:29,label:'Kritická úroveň PQ',range:'pod 30 %',color:[192,57,43],bg:[254,242,242]},
+  ];
+
+  ladderLevels.forEach(function(l){
+    var isActive=lv.label===l.label;
+    if(isActive){
+      doc.setFillColor(...l.bg);
+      doc.roundedRect(15,y,180,10,2,2,'F');
+      doc.setDrawColor(...l.color);doc.setLineWidth(0.8);
+      doc.roundedRect(15,y,180,10,2,2,'S');
+      doc.setLineWidth(0.2);
+    } else {
+      doc.setFillColor(248,248,246);
+      doc.roundedRect(15,y,180,10,2,2,'F');
+      doc.setDrawColor(220,220,215);doc.setLineWidth(0.2);
+      doc.roundedRect(15,y,180,10,2,2,'S');
+    }
+    // dot
+    doc.setFillColor(...(isActive?l.color:[200,200,195]));
+    doc.circle(23,y+5,2,'F');
+    // label
+    doc.setTextColor(...(isActive?l.color:[150,150,145]));
+    doc.setFontSize(isActive?9:8);
+    doc.setFont('helvetica',isActive?'bold':'normal');
+    doc.text(l.label,28,y+6);
+    // range
+    doc.setTextColor(...(isActive?l.color:[170,170,165]));
+    doc.setFontSize(7);doc.setFont('helvetica','normal');
+    doc.text(l.range,170,y+6,{align:'right'});
+    // arrow for active
+    if(isActive){
+      doc.setTextColor(...l.color);doc.setFontSize(9);
+      doc.text('◄',188,y+6);
+    }
+    y+=12;
+  });
+  y+=4;
+
+  // Divider
+  doc.setDrawColor(...green);doc.setLineWidth(0.5);
+  doc.line(15,y,195,y);y+=6;
+
+  // Recommendation text
+  doc.setTextColor(...green);doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text(lv.label,15,y);y+=6;
+  doc.setTextColor(...dark);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setLineHeightFactor(1.55);
+  var bl=doc.splitTextToSize(lv.body,180);
+  doc.text(bl,15,y);
+
+  // Footer
+  doc.setFillColor(...green);doc.rect(0,284,210,13,'F');
+  doc.setTextColor(...white);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Pozitivní bod zlomu: 75 %  |  www.marajmartina.cz',105,292,{align:'center'});
+
   doc.save('PQ-skore-'+now.replace(/\./g,'-')+'.pdf');
 }
 document.addEventListener('DOMContentLoaded', function(){ renderQ(); });
