@@ -84,6 +84,7 @@ h1{font-size:22px;font-weight:700;margin-bottom:.35rem;color:#111}
 .share-box p{font-size:12px;color:#888;margin-bottom:.5rem}
 .share-ta{width:100%;font-size:12px;padding:.5rem;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa;resize:none;font-family:monospace;color:#333}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -315,10 +316,87 @@ function saveResult(){
   if(!window._pq)return;
   const {neg,pos,score,lv}=window._pq;
   const now=new Date().toLocaleDateString('cs-CZ');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([`PQ Test – ${now}\nNegativní: ${neg} | Pozitivní: ${pos} | Celkem: ${neg+pos}\nPQ Skóre: ${score}%\n${lv.label}\n\n${lv.body}`],{type:'text/plain'}));
-  a.download=`PQ-skore-${now.replace(/\./g,'-')}.txt`;
-  a.click();
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const green=[29,158,117];
+  const dark=[26,26,26];
+  const gray=[100,100,100];
+  const lightGray=[240,240,238];
+
+  // header bar
+  doc.setFillColor(...green);
+  doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('PQ Test – Jaké je moje dnešní PQ skóre?',105,14,{align:'center'});
+
+  // score circle area
+  doc.setFillColor(...lightGray);
+  doc.roundedRect(15,28,80,42,4,4,'F');
+  doc.setTextColor(...green);
+  doc.setFontSize(36);
+  doc.setFont('helvetica','bold');
+  doc.text(score+'%',55,56,{align:'center'});
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...gray);
+  doc.text('PQ Skóre',55,64,{align:'center'});
+
+  // level label
+  doc.setFillColor(...lightGray);
+  doc.roundedRect(100,28,95,42,4,4,'F');
+  doc.setTextColor(...dark);
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
+  const labelLines=doc.splitTextToSize(lv.label,82);
+  doc.text(labelLines,147,46,{align:'center'});
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...gray);
+  doc.text(now,147,64,{align:'center'});
+
+  // stats
+  doc.setFillColor(254,242,242);
+  doc.roundedRect(15,76,90,18,3,3,'F');
+  doc.setTextColor(192,57,43);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Negativní součet',60,83,{align:'center'});
+  doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text(String(neg),60,92,{align:'center'});
+
+  doc.setFillColor(236,253,245);
+  doc.roundedRect(110,76,85,18,3,3,'F');
+  doc.setTextColor(...green);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Pozitivní součet',152,83,{align:'center'});
+  doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text(String(pos),152,92,{align:'center'});
+
+  // divider
+  doc.setDrawColor(...green);
+  doc.setLineWidth(0.5);
+  doc.line(15,100,195,100);
+
+  // recommendation text
+  doc.setTextColor(...green);
+  doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text(lv.label,15,110);
+
+  doc.setTextColor(...dark);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');
+  doc.setLineHeightFactor(1.6);
+  const bodyLines=doc.splitTextToSize(lv.body,180);
+  doc.text(bodyLines,15,120);
+
+  // footer
+  doc.setFillColor(...green);
+  doc.rect(0,285,210,12,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Pozitivní bod zlomu: 75 %',105,293,{align:'center'});
+
+  doc.save(`PQ-skore-${now.replace(/\./g,'-')}.pdf`);
 }
 
 function toggleShare(){
