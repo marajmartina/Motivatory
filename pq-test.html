@@ -224,10 +224,15 @@ function getLevel(s){for(const l of LEVELS)if(s>=l.min&&s<=l.max)return l;return
 function show(id){['screen-test','screen-result','screen-nextsteps'].forEach(s=>document.getElementById(s).style.display=s===id?'block':'none');window.scrollTo(0,0);}
 function renderQ(){
   const q=QS[cur];const isNeg=q.type==="neg";const sel=ans[cur];
-  document.getElementById('q-wrap').innerHTML=`<div class="card"><div class="q-text">${q.text}</div>${q.sub?`<div class="q-sub">${q.sub}</div>`:'<div style="margin-bottom:2rem"></div>'}<div class="choices">${LABELS.map((l,i)=>`<div class="choice ${sel===i?(isNeg?'sel-neg':'sel-pos'):''}" onclick="pick(${i})"><span class="val">${i}</span>${l}</div>`).join('')}</div></div>`;
+  var sub=q.sub?('<div class="q-sub">'+q.sub+'</div>'):'<div style="margin-bottom:2rem"></div>';
+  var choices=LABELS.map(function(l,i){
+    var cls='choice'+(sel===i?(isNeg?' sel-neg':' sel-pos'):'');
+    return '<div class="'+cls+'" onclick="pick('+i+')">'+'<span class="val">'+i+'</span>'+l+'</div>';
+  }).join('');
+  document.getElementById('q-wrap').innerHTML='<div class="card"><div class="q-text">'+q.text+'</div>'+sub+'<div class="choices">'+choices+'</div></div>';
   const done=ans.filter(a=>a!==null).length;
   document.getElementById('prog-fill').style.width=(done/20*100)+'%';
-  document.getElementById('prog-label').textContent=`${done} / 20`;
+  document.getElementById('prog-label').textContent=done+' / 20';
   document.getElementById('btn-prev').disabled=cur===0;
   document.getElementById('btn-next').textContent=cur===19?'Zobrazit výsledek →':'Další →';
   document.getElementById('err-msg').textContent='';
@@ -254,7 +259,15 @@ function calcAndShow(){
   document.getElementById('res-text-body').textContent=lv.body;
   const circle=document.getElementById('res-circle');circle.style.borderColor=lv.color;circle.style.background=lv.bg;
   const ladderLevels=[...LEVELS].reverse();
-  document.getElementById('ladder').innerHTML=ladderLevels.map(l=>{const isActive=l.label===lv.label;return`<div class="ladder-item" style="${isActive?`background:${l.bg};border-color:${l.color};border-width:2px`:'background:white;border-color:#e8e8e2;opacity:.5'}"><div class="ladder-dot" style="background:${isActive?l.dotColor:'#ccc'}"></div><div style="flex:1"><div class="ladder-name" style="color:${isActive?l.color:'#888'}">${l.label}</div><div class="ladder-range" style="color:${isActive?l.color:'#aaa'}">${l.range}</div></div>${isActive?'<div class="ladder-arrow">←</div>':''}</div>`;}).join('');
+  document.getElementById('ladder').innerHTML=ladderLevels.map(function(l){
+    var isActive=l.label===lv.label;
+    var style=isActive?('background:'+l.bg+';border-color:'+l.color+';border-width:2px'):'background:white;border-color:#e8e8e2;opacity:.5';
+    var dot='background:'+(isActive?l.dotColor:'#ccc');
+    var nameColor=isActive?l.color:'#888';
+    var rangeColor=isActive?l.color:'#aaa';
+    var arrow=isActive?'<div class="ladder-arrow">←</div>':'';
+    return '<div class="ladder-item" style="'+style+'"><div class="ladder-dot" style="'+dot+'"></div><div style="flex:1"><div class="ladder-name" style="color:'+nameColor+'">'+l.label+'</div><div class="ladder-range" style="color:'+rangeColor+'">'+l.range+'</div></div>'+arrow+'</div>';
+  }).join('');
   show('screen-result');
 }
 function showResult(){show('screen-result');}
