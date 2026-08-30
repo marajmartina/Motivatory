@@ -293,7 +293,7 @@ function saveResult(){
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Pozitivní bod zlomu: 75 %',105,293,{align:'center'});
   doc.save('PQ-skore-'+now.replace(/\./g,'-')+'.pdf');
 }
-renderQ();
+document.addEventListener('DOMContentLoaded', function(){ renderQ(); });
 </script>
 </body>
 </html>
