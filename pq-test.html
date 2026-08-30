@@ -181,42 +181,16 @@ const QS=[
 ];
 const LABELS=["Vůbec","Trochu","Středně","Silně","Extrémně"];
 const LEVELS=[
-  {min:0,max:29,label:"Kritická úroveň PQ",range:"pod 30 %",color:"#C0392B",bg:"#FEF2F2",border:"#FECACA",dotColor:"#E24B4A",
-   body:"Vaše mysl je momentálně silně pod vlivem kritických a negativních myšlenek. Ty generují negativní emoce a spotřebovávají velkou část vaší energie.
-
-V této chvíli není potřeba všechno vyřešit. Zkuste se zastavit a vědomě změnit směr své pozornosti. Položte si například otázku: „Co mohu udělat, aby se tato situace posunula k lepšímu?"
-
-I malý posun od problému směrem k řešení může otevřít prostor pro pozitivnější emoci – například zvídavost, soucit nebo naději."},
-  {min:30,max:49,label:"Nízká úroveň PQ",range:"30–49 %",color:"#C05621",bg:"#FFF7ED",border:"#FED7AA",dotColor:"#F97316",
-   body:"Negativní myšlenky a emoce ve vašem prožívání stále výrazně převažují.
-
-Zkuste si všimnout, na co se vaše myšlenky zaměřují. Držíte se především problému, toho, co se stalo, kdo za to může nebo co je špatně? Nebo hledáte řešení, možnosti a další krok?
-
-Zkuste vědomě změnit směr své pozornosti: „Co s tím mohu udělat?" „Jaké mám možnosti?" „Čeho chci dosáhnout?"
-
-A začněte si znovu všímat i drobných věcí, které jsou kolem vás dobré, příjemné nebo zajímavé. Když jsme dlouhodobě zaměřeni na problémy, snadno je přestaneme registrovat."},
-  {min:50,max:74,label:"Slabá úroveň PQ",range:"50–74 %",color:"#92600A",bg:"#FFFBEB",border:"#FDE68A",dotColor:"#F59E0B",
-   body:"Jste blízko bodu zlomu, kdy mohou pozitivní myšlenky a emoce začít výrazněji převažovat.
-
-Podívejte se na situaci, která vás připravuje o klid, z jiné perspektivy. Pokud je vaše pozornost zaměřená především na problém, zkuste ji přesunout k řešení: „Co mohu ovlivnit?" „Jaké mám možnosti?" „Jaký je můj další krok?"
-
-Současně vědomě posilujte svou schopnost všímat si toho, co je kolem vás dobré. Nečekejte jen na velké důvody k radosti. Všímejte si drobných příjemných okamžiků, zajímavostí, krásy, laskavosti nebo věcí, které vám během dne přinášejí energii."},
-  {min:75,max:75,label:"Bod zlomu",range:"přesně 75 %",color:"#065F46",bg:"#ECFDF5",border:"#A7F3D0",dotColor:"#10B981",
-   body:"Dosáhli jste bodu zlomu. Pozitivní myšlenky a emoce ve vašem prožívání převažují.
-
-Teď je dobré tento stav vědomě posilovat. Všímejte si, co vám pomáhá zaměřovat pozornost na řešení, možnosti a cíle, a co vám dodává energii.
-
-A nezapomínejte na malé věci. Každý den si vědomě všimněte několika drobností, které jsou dobré, příjemné, krásné nebo zajímavé. Právě to, čemu věnujeme pozornost, máme tendenci vnímat stále více."},
-  {min:76,max:100,label:"Rostoucí úroveň PQ",range:"nad 75 %",color:"#0F6E56",bg:"#ECFDF5",border:"#6EE7B7",dotColor:"#1D9E75",
-   body:"Vaše pozitivní myšlenky a emoce nyní výrazně převažují. Máte více prostoru pro energii, kreativitu, rozhodování a spolupráci.
-
-Pokračujte v tom, co vám funguje. Když se objeví problém, zaměřujte svou pozornost na řešení, možnosti a cíle.
-
-A zároveň trénujte schopnost všímat si toho dobrého, co je už teď kolem vás. Drobné okamžiky radosti, krásy, zajímavosti, laskavosti nebo úspěchu snadno přehlédneme, pokud je naše pozornost automaticky zaměřená jinam.
-
-Zkuste si každý den položit jednoduchou otázku: „Co dobrého jsem dnes zaznamenal/a, čeho bych si jindy možná ani nevšiml/a?"
-
-To, čemu věnujeme pozornost, posilujeme."},
+  {min:0,max:29,label:'Kritická úroveň PQ',range:'pod 30 %',color:'#C0392B',bg:'#FEF2F2',border:'#FECACA',dotColor:'#E24B4A',
+   body:'Vaše mysl je momentálně silně pod vlivem kritických a negativních myšlenek. Ty generují negativní emoce a spotřebovávají velkou část vaší energie.\n\nV této chvíli není potřeba všechno vyřešit. Zkuste se zastavit a vědomě změnit směr své pozornosti. Položte si například otázku: Co mohu udělat, aby se tato situace posunula k lepšímu?\n\nI malý posun od problému směrem k řešení může otevřít prostor pro pozitivnější emoci – například zvídavost, soucit nebo naději.'},
+  {min:30,max:49,label:'Nízká úroveň PQ',range:'30–49 %',color:'#C05621',bg:'#FFF7ED',border:'#FED7AA',dotColor:'#F97316',
+   body:'Negativní myšlenky a emoce ve vašem prožívání stále výrazně převažují.\n\nZkuste si všimnout, na co se vaše myšlenky zaměřují. Držíte se především problému, toho, co se stalo, kdo za to může nebo co je špatně? Nebo hledáte řešení, možnosti a další krok?\n\nZkuste vědomě změnit směr své pozornosti: Co s tím mohu udělat? Jaké mám možnosti? Čeho chci dosáhnout?\n\nA začněte si znovu všímat i drobných věcí, které jsou kolem vás dobré, příjemné nebo zajímavé. Když jsme dlouhodobě zaměřeni na problémy, snadno je přestaneme registrovat.'},
+  {min:50,max:74,label:'Slabá úroveň PQ',range:'50–74 %',color:'#92600A',bg:'#FFFBEB',border:'#FDE68A',dotColor:'#F59E0B',
+   body:'Jste blízko bodu zlomu, kdy mohou pozitivní myšlenky a emoce začít výrazněji převažovat.\n\nPodívejte se na situaci, která vás připravuje o klid, z jiné perspektivy. Pokud je vaše pozornost zaměřená především na problém, zkuste ji přesunout k řešení: Co mohu ovlivnit? Jaké mám možnosti? Jaký je můj další krok?\n\nSoučasně vědomě posilujte svou schopnost všímat si toho, co je kolem vás dobré. Nečekejte jen na velké důvody k radosti. Všímejte si drobných příjemných okamžiků, zajímavostí, krásy, laskavosti nebo věcí, které vám během dne přinášejí energii.'},
+  {min:75,max:75,label:'Bod zlomu',range:'přesně 75 %',color:'#065F46',bg:'#ECFDF5',border:'#A7F3D0',dotColor:'#10B981',
+   body:'Dosáhli jste bodu zlomu. Pozitivní myšlenky a emoce ve vašem prožívání převažují.\n\nTeď je dobré tento stav vědomě posilovat. Všímejte si, co vám pomáhá zaměřovat pozornost na řešení, možnosti a cíle, a co vám dodává energii.\n\nA nezapomínejte na malé věci. Každý den si vědomě všimněte několika drobností, které jsou dobré, příjemné, krásné nebo zajímavé. Právě to, čemu věnujeme pozornost, máme tendenci vnímat stále více.'},
+  {min:76,max:100,label:'Rostoucí úroveň PQ',range:'nad 75 %',color:'#0F6E56',bg:'#ECFDF5',border:'#6EE7B7',dotColor:'#1D9E75',
+   body:'Vaše pozitivní myšlenky a emoce nyní výrazně převažují. Máte více prostoru pro energii, kreativitu, rozhodování a spolupráci.\n\nPokračujte v tom, co vám funguje. Když se objeví problém, zaměřujte svou pozornost na řešení, možnosti a cíle.\n\nA zároveň trénujte schopnost všímat si toho dobrého, co je už teď kolem vás. Drobné okamžiky radosti, krásy, zajímavosti, laskavosti nebo úspěchu snadno přehlédneme, pokud je naše pozornost automaticky zaměřená jinam.\n\nZkuste si každý den položit jednoduchou otázku: Co dobrého jsem dnes zaznamenal/a, čeho bych si jindy možná ani nevšiml/a?\n\nTo, čemu věnujeme pozornost, posilujeme.'},
 ];
 const ans=new Array(20).fill(null);
 let cur=0;
