@@ -381,6 +381,16 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
   <div class="rtitle">Motivátory seřazené podle důležitosti</div>
   <div id="p2results"></div>
 
+  <div class="reflect-box no-print" style="border-color:var(--blue);margin-top:16px">
+    <p style="margin-bottom:10px">👥 <strong>Jdete s výsledky na týmový workshop?</strong> Vygenerujte si krátký kód se svým skóre (síla i naplněnost všech motivátorů) a nadiktujte ho nebo napište spolu se svým jménem lektorovi – ušetří to ruční přepisování do týmové mapy.</p>
+    <button class="btn-sec" onclick="showTeamCode()" style="margin-bottom:0">🔑 Vygenerovat kód pro tým</button>
+    <div id="team-code-box" style="display:none;margin-top:14px;text-align:center">
+      <div id="team-code-text" style="font-family:monospace;font-size:1.6rem;font-weight:700;letter-spacing:.12em;padding:14px 10px;background:white;border:2px solid var(--blue);border-radius:12px;color:var(--text)"></div>
+      <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Nadiktujte nebo napište lektorovi své jméno a tento kód (písmena i čísla, bez mezer).</p>
+      <button id="btn-copy-code" onclick="copyTeamCode()" class="btn-sec" style="margin-top:8px">📋 Zkopírovat kód</button>
+    </div>
+  </div>
+
   <div class="pactions">
     <button class="btn-sec no-print" onclick="closeO3()">← Upravit hodnocení</button>
     <button class="btn-acc" onclick="printP2()">🖨 Vytisknout</button>
@@ -792,6 +802,47 @@ function showP2Results(){
 }
 
 function closeO3(){document.getElementById('o3').classList.remove('show');document.getElementById('o2').classList.add('show');}
+
+// ---- Krátký kód pro tým (síla + naplněnost, k nadiktování/přepsání do týmové mapy) ----
+// Pevné pořadí motivátorů - musí být shodné s FIXED_ORDER v týmové mapě
+var FIXED_ORDER = ['Ředitel','Stavitel','Odborník','Obránce','Přítel','Hvězda','Tvůrce','Hledač','Duch'];
+// Crockfordova base32 abeceda - bez znaků 0/O a 1/I, aby se nepletly při diktování/přepisu
+var CROCK32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+function toBase32Fixed(num, len){
+  var s = '';
+  for(var i=0;i<len;i++){ s = CROCK32[num % 32] + s; num = Math.floor(num/32); }
+  return s;
+}
+
+function buildTeamCode(){
+  var num = 0;
+  FIXED_ORDER.forEach(function(name){
+    var cat = p2Order.filter(function(c){ return c.name===name; })[0];
+    var imp = cat ? Math.max(0,Math.min(5, cat.count||0)) : 0;
+    var ful = cat ? Math.max(0,Math.min(5, catRatings[cat.groupId][cat.name]||0)) : 0;
+    num = num*6 + imp;
+    num = num*6 + ful;
+  });
+  var checksum = num % 32;
+  var code = toBase32Fixed(num, 10) + CROCK32[checksum];
+  return code.slice(0,4) + '-' + code.slice(4,8) + '-' + code.slice(8,11);
+}
+
+function showTeamCode(){
+  var el = document.getElementById('team-code-text');
+  el.textContent = buildTeamCode();
+  document.getElementById('team-code-box').style.display = 'block';
+}
+
+function copyTeamCode(){
+  var text = document.getElementById('team-code-text').textContent;
+  var btn = document.getElementById('btn-copy-code');
+  var done = function(){ var orig='📋 Zkopírovat kód'; btn.textContent='✓ Zkopírováno'; setTimeout(function(){btn.textContent=orig;},1800); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){});
+  }
+}
 
 function showTop3AndFull() {
   // Build TOP 3
