@@ -963,6 +963,17 @@ function printP2(){
   var bh={red:'#fff0f1',green:'#f0faf5',blue:'#f0f7fc'};
 
   // Section 1: Overall score
+  // Pokud si účastník vygeneroval kód pro tým, zahrneme ho i do tisku/PDF
+  var teamCodeHTML = '';
+  var codeBoxEl = document.getElementById('team-code-box');
+  if (codeBoxEl && codeBoxEl.style.display === 'block') {
+    var teamCodeVal = document.getElementById('team-code-text').textContent;
+    teamCodeHTML = '<div style="margin-top:16px;padding:16px;border:2px solid #1B8ECC;border-radius:12px;text-align:center;background:#f0f7fc;page-break-inside:avoid">' +
+      '<div style="font-size:.78rem;color:#666;margin-bottom:8px">👥 Kód pro týmový workshop – nadiktujte nebo napište lektorovi</div>' +
+      '<div style="font-family:monospace;font-size:1.5rem;font-weight:700;letter-spacing:.12em;color:#1a1a1a">' + teamCodeVal + '</div>' +
+    '</div>';
+  }
+
   var ovHTML='<div style="border-radius:14px;padding:20px;margin-bottom:16px;background:'+zBg[zi.cls]+';border:2px solid '+zColors[zi.cls]+'40;text-align:center;page-break-inside:avoid">'+
     '<div style="font-family:Georgia;font-size:2.5rem;font-weight:900;color:'+zColors[zi.cls]+'">'+ovPct+'%</div>'+
     '<div style="font-weight:700;color:'+zColors[zi.cls]+';margin-bottom:4px">'+zi.label+'</div>'+
@@ -1038,7 +1049,7 @@ function printP2(){
 
   var pa=document.getElementById('parea');
   pa.innerHTML=
-    '<div class="print-section"><h2 style="font-family:Georgia;font-size:1.3rem;font-weight:900;margin-bottom:14px">Vaše motivační skóre</h2>'+ovHTML+'<h3 style="font-size:.9rem;font-weight:700;margin-bottom:10px">Přehled všech motivátorů</h3>'+fullRows+'</div>'+
+    '<div class="print-section"><h2 style="font-family:Georgia;font-size:1.3rem;font-weight:900;margin-bottom:14px">Vaše motivační skóre</h2>'+ovHTML+teamCodeHTML+'<h3 style="font-size:.9rem;font-weight:700;margin-bottom:10px">Přehled všech motivátorů</h3>'+fullRows+'</div>'+
     '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">TOP 3 – nejsilnější motivátory</h3>'+top3HTML+'</div>'+
     '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Motivátory se zpomalovacím nebo podporujícím účinkem</h3>'+weakHTML+'</div>'+
     '<div style="padding-top:16px;border-top:2px solid #eee"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Jak s výsledky naložit dál?</h3>'+contactHTML+'</div>';
