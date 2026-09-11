@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moje motivátory</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
   --red:#E8192C; --green:#2EAA6E; --blue:#1B8ECC;
@@ -177,13 +178,9 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
   .rr-stars{gap:3px}
 }
 
-/* PRINT */
+/* PRINT (fallback pro Ctrl+P, pokud selže generování PDF) */
 @media print{
-  body > *:not(#parea){display:none!important}
-  #parea{display:block!important;position:static!important;padding:24px 32px;font-family:'DM Sans',sans-serif;background:white}
   .no-print{display:none!important}
-  .print-section{page-break-after:always}
-  .print-section:last-child{page-break-after:avoid}
 }
 
 /* WELCOME SCREEN */
@@ -305,6 +302,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 <!-- O1: Part 1 results -->
 <div class="overlay" id="o1" onclick="if(event.target===this)closeO1()">
 <div class="panel">
+  <div id="o1-print-area">
   <div class="ptitle">Vaše motivátory</div>
   <div class="psub">Část 1 – výběr motivátorů</div>
 
@@ -317,6 +315,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="rtitle">Pořadí motivátorů (od nejsilnějšího)</div>
   <div id="rl1"></div>
+  </div>
 
   <div style="margin-top:24px;margin-bottom:4px">
     <div class="rtitle" style="margin-bottom:14px">Profily všech motivátorů</div>
@@ -325,9 +324,10 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="pactions">
     <button class="btn-sec no-print" onclick="closeO1()">← Upravit výběr</button>
-    <button class="btn-sec" onclick="printP1()">🖨 Vytisknout</button>
+    <button class="btn-sec" id="btn-pdf-o1" onclick="downloadPersonalPDF('o1-print-area','moje-motivatory','btn-pdf-o1')">⬇ Stáhnout PDF</button>
     <button class="btn-go" onclick="startP2()">Část 2: Naplněnost →</button>
   </div>
+  <div id="pdf-hint-o1" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
 </div>
 </div>
 
@@ -358,6 +358,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 <!-- O3: Part 2 results -->
 <div class="overlay" id="o3" onclick="if(event.target===this)closeO3()">
 <div class="panel" style="max-width:660px">
+  <div id="o3-print-area">
   <div class="step-badge" style="margin-bottom:10px">Výsledky – Část 2</div>
   <div class="ptitle">Naplněnost motivátorů</div>
   <div class="psub">Vaše aktuální motivační skóre</div>
@@ -380,6 +381,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="rtitle">Motivátory seřazené podle důležitosti</div>
   <div id="p2results"></div>
+  </div>
 
   <div class="reflect-box no-print" style="border-color:var(--blue);margin-top:16px">
     <p style="margin-bottom:10px">👥 <strong>Jdete s výsledky na týmový workshop?</strong> Vygenerujte si krátký kód se svým skóre (síla i naplněnost všech motivátorů) a nadiktujte ho nebo napište spolu se svým jménem lektorovi – ušetří to ruční přepisování do týmové mapy.</p>
@@ -393,9 +395,10 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="pactions">
     <button class="btn-sec no-print" onclick="closeO3()">← Upravit hodnocení</button>
-    <button class="btn-acc" onclick="printP2()">🖨 Vytisknout</button>
+    <button class="btn-acc" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3',true)">⬇ Stáhnout PDF</button>
     <button class="btn-go" onclick="showTop3AndFull()">Moje profily →</button>
   </div>
+  <div id="pdf-hint-o3" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
 </div>
 </div>
 
@@ -469,13 +472,11 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="pactions" style="margin-top:20px">
     <button class="btn-sec no-print" onclick="switchOverlay('o7','o6')">← Zpět</button>
-    <button class="btn-acc" onclick="printP2()">🖨 Vytisknout výsledky</button>
+    <button class="btn-acc" onclick="switchOverlay('o7','o3'); setTimeout(function(){ downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3',true); }, 400);">⬇ Stáhnout výsledky (PDF)</button>
     <button class="btn-sec no-print" onclick="window.close()" style="background:#f0f0ec;border-color:#ccc;color:#666">✕ Ukončit</button>
   </div>
 </div>
 </div>
-
-<div class="print-area" id="parea" style="display:none"></div>
 
 <script>
 var DATA = [
@@ -866,194 +867,70 @@ function showTop3AndFull() {
   document.getElementById('o4').classList.add('show');
 }
 
-// ---- Print ----
-function rAF2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
+// ---- Stažení PDF (přesně to, co je vidět na obrazovce) ----
+function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode){
+  var el = document.getElementById(containerId);
+  if(!el) return;
+  var btn = btnId ? document.getElementById(btnId) : null;
+  var hintId = 'pdf-hint-' + containerId.replace('-print-area','');
+  var hint = document.getElementById(hintId);
+  if(hint) hint.style.display = 'none';
 
-// iOS Safari needs the print-area to be visible (and the browser to finish
-// laying it out) BEFORE window.print() is called, otherwise the print
-// dialog opens on a blank/old page. A small delay after setting display:block
-// fixes this reliably on iPhone/Android, where calling print() synchronously
-// right after a style change is unreliable.
-function triggerPrint(pa){
-  // iOS Safari only honors window.print() when it's called SYNCHRONOUSLY
-  // inside the click handler, with no setTimeout/async gap — otherwise it
-  // silently does nothing (no dialog, no error). So we set the content
-  // visible and call print() immediately, in the same tick.
-  pa.style.display='block';
-  var hide=function(){ pa.style.display='none'; window.removeEventListener('afterprint',hide); };
-  window.addEventListener('afterprint',hide);
-  window.print();
-  // Fallback in case 'afterprint' never fires (some mobile browsers skip it)
-  setTimeout(hide,1000);
-}
-
-function buildPrintHTML(title,content){
-  return '<div><h2 style="font-family:Georgia,serif;font-size:1.4rem;font-weight:900;margin-bottom:16px">'+title+'</h2>'+content+'</div>';
-}
-
-
-function buildProfilePrint(cat, rank, showRank, ch, bh, zColors) {
-  var p = PROFILES[cat.name];
-  if (!p) return '';
-  var rankHtml = showRank ? '<span style="color:'+ch[cat.color]+';font-weight:900;font-size:1.1rem;margin-right:8px">'+(rank+1)+'.</span>' : '';
-  var motItems = p.motivates.map(function(m){ return '<li style="font-size:.82rem;padding:2px 0 2px 14px;position:relative;color:#333"><span style="position:absolute;left:0;color:'+ch[cat.color]+'">·</span>'+m+'</li>'; }).join('');
-  var demItems = p.demotivates.map(function(m){ return '<li style="font-size:.82rem;padding:2px 0 2px 14px;position:relative;color:#333"><span style="position:absolute;left:0;color:#E8192C">·</span>'+m+'</li>'; }).join('');
-  return '<div style="border:1.5px solid '+ch[cat.color]+'30;border-radius:12px;padding:16px 18px;margin-bottom:12px;page-break-inside:avoid">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-      '<div>'+rankHtml+'<span style="font-family:Georgia;font-size:1.05rem;font-weight:900;color:'+ch[cat.color]+'">'+cat.name+'</span></div>'+
-      '<span style="background:'+ch[cat.color]+';color:white;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px">'+cat.group+'</span>'+
-    '</div>'+
-    '<div style="font-size:.82rem;color:#666;font-style:italic;margin-bottom:10px">'+p.tagline+'</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
-      '<div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:'+ch[cat.color]+';margin-bottom:4px">✅ Motivuje</div><ul style="list-style:none;padding:0;margin:0">'+motItems+'</ul></div>'+
-      '<div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#E8192C;margin-bottom:4px">⚠️ Demotivuje</div><ul style="list-style:none;padding:0;margin:0">'+demItems+'</ul></div>'+
-    '</div>'+
-  '</div>';
-}
-
-function printP1(){
-  var d=calcP1();var gt=d.gt;var tot=gt.vykon+gt.vztahy+gt.rust;
-  function fp(v){return tot===0?'0%':Math.round(v/tot*100)+'%';}
-  var ch={red:'#E8192C',green:'#2EAA6E',blue:'#1B8ECC'};
-  var bh={red:'#fff0f1',green:'#f0faf5',blue:'#f0f7fc'};
-  var areas=[{k:'vykon',lbl:'Výkon',c:'red',v:gt.vykon},{k:'vztahy',lbl:'Vztahy',c:'green',v:gt.vztahy},{k:'rust',lbl:'Růst',c:'blue',v:gt.rust}];
-  var sumRows=areas.map(function(a){
-    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
-      '<div style="width:10px;height:10px;border-radius:50%;background:'+ch[a.c]+';flex-shrink:0"></div>'+
-      '<div style="font-weight:600;font-size:.84rem;min-width:66px">'+a.lbl+'</div>'+
-      '<div style="flex:1;height:6px;border-radius:3px;background:#eee;overflow:hidden"><div style="width:'+Math.round(a.v/15*100)+'%;height:100%;background:'+ch[a.c]+'"></div></div>'+
-      '<div style="font-size:.79rem;font-weight:700;color:'+ch[a.c]+';min-width:68px;text-align:right">'+a.v+' | '+fp(a.v)+'</div>'+
-    '</div>';
-  }).join('');
-  var rankRows=d.cats.map(function(c,i){
-    var pct=Math.round(c.count/5*100);
-    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f0f0ec">'+
-      '<div style="font-family:Georgia;font-size:.95rem;font-weight:900;color:'+(i<3?'#1a1a1a':'#ccc')+';min-width:22px;text-align:center">'+(i+1)+'.</div>'+
-      '<div style="flex:1">'+
-        '<div style="display:flex;justify-content:space-between;font-weight:700;font-size:.84rem;margin-bottom:3px">'+
-          '<span>'+c.name+' <span style="font-weight:300;color:#888;font-size:.72rem">('+c.group+')</span></span>'+
-          '<span style="background:'+bh[c.color]+';color:'+ch[c.color]+';font-size:.71rem;font-weight:700;padding:1px 8px;border-radius:20px">'+c.count+'/5</span>'+
-        '</div>'+
-        '<div style="height:4px;border-radius:2px;background:#eee"><div style="width:'+pct+'%;height:100%;background:'+ch[c.color]+';border-radius:2px"></div></div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  var profileRows = d.cats.map(function(c,i){ return buildProfilePrint(c,i,true,ch,bh,{}); }).join('');
-  var pa=document.getElementById('parea');
-  pa.innerHTML=
-    '<div class="print-section">'+
-      '<h2 style="font-family:Georgia;font-size:1.4rem;font-weight:900;margin-bottom:16px">Moje motivátory – Výběr motivátorů</h2>'+
-      '<div style="background:#fafaf7;border-radius:12px;padding:14px 18px;margin-bottom:16px;border:1px solid #eee"><h3 style="font-size:.88rem;font-weight:700;margin-bottom:10px">Přehled oblastí</h3>'+sumRows+'</div>'+
-      '<h3 style="font-size:.88rem;font-weight:700;margin-bottom:10px">Pořadí motivátorů</h3>'+rankRows+
-    '</div>'+
-    '<div class="print-section" style="padding-top:20px">'+
-      '<h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:14px">Profily všech motivátorů</h3>'+profileRows+
-    '</div>';
-  triggerPrint(pa);
-}
-function printP2(){
-  var d=calcP1();
-  var grandTotal=0;var grandCnt=0;
-  p2Order.forEach(function(cat){grandTotal+=catRatings[cat.groupId][cat.name]||0;grandCnt++;});
-  var ovPct=grandCnt>0?Math.round(grandTotal/(grandCnt*5)*100):0;
-  var zi=zoneInfo(ovPct);
-  var zColors={action:'#E8192C',risk:'#F59E0B',growth:'#3B82F6',optimal:'#2EAA6E'};
-  var zBg={action:'#fef2f2',risk:'#fffbeb',growth:'#eff6ff',optimal:'#f0faf5'};
-  var ch={red:'#E8192C',green:'#2EAA6E',blue:'#1B8ECC'};
-  var bh={red:'#fff0f1',green:'#f0faf5',blue:'#f0f7fc'};
-
-  // Section 1: Overall score
-  // Pokud si účastník vygeneroval kód pro tým, zahrneme ho i do tisku/PDF
-  var teamCodeHTML = '';
-  var codeBoxEl = document.getElementById('team-code-box');
-  if (codeBoxEl && codeBoxEl.style.display === 'block') {
-    var teamCodeVal = document.getElementById('team-code-text').textContent;
-    teamCodeHTML = '<div style="margin-top:16px;padding:16px;border:2px solid #1B8ECC;border-radius:12px;text-align:center;background:#f0f7fc;page-break-inside:avoid">' +
-      '<div style="font-size:.78rem;color:#666;margin-bottom:8px">👥 Kód pro týmový workshop – nadiktujte nebo napište lektorovi</div>' +
-      '<div style="font-family:monospace;font-size:1.5rem;font-weight:700;letter-spacing:.12em;color:#1a1a1a">' + teamCodeVal + '</div>' +
-    '</div>';
+  var extra = null;
+  if(includeTeamCode){
+    var codeBoxEl = document.getElementById('team-code-box');
+    if(codeBoxEl && codeBoxEl.style.display === 'block'){
+      var codeVal = document.getElementById('team-code-text').textContent;
+      extra = document.createElement('div');
+      extra.style.cssText = 'margin-top:16px;padding:16px;border:2px solid #1B8ECC;border-radius:12px;text-align:center;background:#f0f7fc';
+      extra.innerHTML = '<div style="font-size:.78rem;color:#666;margin-bottom:8px">👥 Kód pro týmový workshop – nadiktujte nebo napište lektorovi</div>' +
+        '<div style="font-family:monospace;font-size:1.5rem;font-weight:700;letter-spacing:.12em;color:#1a1a1a">' + codeVal + '</div>';
+      el.appendChild(extra);
+    }
   }
 
-  var ovHTML='<div style="border-radius:14px;padding:20px;margin-bottom:16px;background:'+zBg[zi.cls]+';border:2px solid '+zColors[zi.cls]+'40;text-align:center;page-break-inside:avoid">'+
-    '<div style="font-family:Georgia;font-size:2.5rem;font-weight:900;color:'+zColors[zi.cls]+'">'+ovPct+'%</div>'+
-    '<div style="font-weight:700;color:'+zColors[zi.cls]+';margin-bottom:4px">'+zi.label+'</div>'+
-    '<div style="font-size:.82rem;color:#888">'+zi.desc+'</div>'+
-  '</div>';
+  var cleanup = function(){ if(extra && extra.parentNode) extra.parentNode.removeChild(extra); };
 
-  // Section 2: Full overview (all 9)
-  var fullRows=p2Order.map(function(cat,i){
-    var v=catRatings[cat.groupId][cat.name]||0;
-    var cpct=Math.round(v/5*100);
-    var az=zoneInfo(cpct);
-    var impPct=Math.round(cat.count/5*100);
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0ec;page-break-inside:avoid">'+
-      '<div style="font-family:Georgia;font-size:.95rem;font-weight:900;color:'+(i<3?'#1a1a1a':'#ccc')+';min-width:22px;text-align:center">'+(i+1)+'.</div>'+
-      '<div style="flex:1">'+
-        '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
-          '<div style="font-weight:700;font-size:.84rem">'+cat.name+' <span style="font-weight:300;color:#888;font-size:.71rem">('+cat.group+')</span></div>'+
-          '<div style="text-align:right">'+
-            '<span style="background:'+bh[cat.color]+';color:'+ch[cat.color]+';font-size:.71rem;font-weight:700;padding:1px 7px;border-radius:20px">'+v+'/5 · '+cpct+'%</span>'+
-            '<span style="margin-left:4px;font-size:.68rem;font-weight:700;color:'+zColors[az.cls]+'">'+az.label+'</span>'+
-          '</div>'+
-        '</div>'+
-        '<div style="display:flex;gap:6px;align-items:center;margin-bottom:2px">'+
-          '<span style="font-size:.64rem;color:#aaa;min-width:68px">Důležitost:</span>'+
-          '<div style="flex:1;height:3px;background:#eee;border-radius:2px"><div style="width:'+impPct+'%;height:100%;background:'+ch[cat.color]+'"></div></div>'+
-          '<span style="font-size:.64rem;color:'+ch[cat.color]+';font-weight:700;min-width:28px">'+cat.count+'/5</span>'+
-        '</div>'+
-        '<div style="display:flex;gap:6px;align-items:center">'+
-          '<span style="font-size:.64rem;color:#aaa;min-width:68px">Naplněnost:</span>'+
-          '<div style="flex:1;height:5px;background:#eee;border-radius:3px"><div style="width:'+cpct+'%;height:100%;background:'+zColors[az.cls]+'"></div></div>'+
-          '<span style="font-size:.64rem;color:'+ch[cat.color]+';font-weight:700;min-width:28px">'+cpct+'%</span>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
+  if(typeof html2pdf === 'undefined'){
+    cleanup();
+    try{ window.print(); }catch(e){}
+    if(hint) hint.style.display = 'block';
+    return;
+  }
 
-  // Section 3: TOP 3 profiles
-  var top3HTML = p2Order.slice(0,3).map(function(cat,i){ return buildProfilePrint(cat,i,true,ch,bh,zColors); }).join('');
+  var jmeno = (window._leadData && window._leadData.jmeno) ? window._leadData.jmeno.replace(/[^a-zA-Z0-9\-]+/g,'_') : '';
+  var fileName = filenamePrefix + (jmeno ? '-' + jmeno : '') + '.pdf';
 
-  // Section 4: Weakest profiles
-  var minCount=999;
-  p2Order.forEach(function(cat){ if(cat.count<minCount) minCount=cat.count; });
-  var weakest=p2Order.filter(function(cat){ return cat.count===minCount; });
-  var weakHTML = weakest.map(function(cat,i){ return buildProfilePrint(cat,i,false,ch,bh,zColors); }).join('');
+  if(btn){ btn.disabled = true; btn.textContent = 'Připravuji PDF…'; }
 
-  // Section 5: Contact
-  var contactHTML=
-    '<div style="page-break-inside:avoid">'+
-      '<div style="text-align:center;margin-bottom:20px">'+
-        '<div style="font-family:Georgia;font-size:1.3rem;font-weight:900;margin-bottom:4px">Martina Maraj, MBA</div>'+
-        '<div style="font-size:.85rem;color:#888">Lektorka a koučka motivačních map</div>'+
-      '</div>'+
-      '<p style="font-size:.85rem;line-height:1.75;color:#333;margin-bottom:16px">'+
-        'Čísla a přehledy, které držíte v ruce, jsou skvělým zrcadlem vašeho aktuálního nastavení. Ukazují, kde berete energii a co vás naopak vnitřně brzdí. Skutečná magie přijde až s tím, co s těmito informacemi uděláte v každodenní praxi.<br><br>'+
-        'Jsem připravena vám pomoci tyto výsledky přetavit do konkrétních kroků.'+
-      '</p>'+
-      '<table style="width:100%;border-collapse:collapse;margin-bottom:16px">'+
-        '<tr style="border-bottom:1px solid #eee"><td style="padding:8px 0 8px 10px;font-size:.83rem"><strong>Odbrzdění demotivátorů</strong><br><span style="color:#666">Rozklíčujeme konkrétní překážky, které vás aktuálně stojí nejvíce energie, a najdeme způsob, jak je eliminovat.</span></td></tr>'+
-        '<tr style="border-bottom:1px solid #eee"><td style="padding:8px 0 8px 10px;font-size:.83rem"><strong>Zvýšení výkonu bez vyhoření</strong><br><span style="color:#666">Nastavíme vaši osobní strategii tak, abyste dlouhodobě sytili své hlavní motivátory a pracovali v souladu se svou přirozeností.</span></td></tr>'+
-        '<tr style="border-bottom:1px solid #eee"><td style="padding:8px 0 8px 10px;font-size:.83rem"><strong>Konec týmových konfliktů</strong><br><span style="color:#666">Podíváme se na to, jak vaše motivace naráží na motivace vašich kolegů, a jak komunikovat tak, abyste místo napětí budovali spolupráci.</span></td></tr>'+
-        '<tr><td style="padding:8px 0 8px 10px;font-size:.83rem"><strong>Strategický plán pro lídry</strong><br><span style="color:#666">Sestavíme manuál na míru pro vaše lidi – abyste přesně věděli, jak je delegovat, motivovat a vést bez zbytečného tlaku.</span></td></tr>'+
-      '</table>'+
-      '<p style="font-size:.85rem;font-weight:700;margin-bottom:12px;color:#1a1a1a">Nenechávejte svůj motivační profil ležet v šuplíku. Pojďme společně vytvořit jasný plán.</p>'+
-      '<div style="background:#fff0f1;border-radius:10px;padding:14px 16px;text-align:center">'+
-        '<div style="font-weight:700;font-size:.9rem;margin-bottom:6px;color:#E8192C">📅 Rezervujte si konzultaci</div>'+
-        '<div style="font-size:.82rem;color:#333;line-height:1.7">'+
-          'maraj.martina@gmail.com &nbsp;·&nbsp; +420 777 887 665<br>'+
-          'www.marajmartina.cz<br>'+
-          'calendly.com/maraj-martina/individualni-koucovani'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+  // iOS/Safari + html2canvas: pokud je stránka scrollnutá, canvas se vykreslí
+  // mimo viditelnou oblast a vyjdou prázdné stránky - proto nejdřív nahodíme scroll nahoru.
+  window.scrollTo(0, 0);
 
-  var pa=document.getElementById('parea');
-  pa.innerHTML=
-    '<div class="print-section"><h2 style="font-family:Georgia;font-size:1.3rem;font-weight:900;margin-bottom:14px">Vaše motivační skóre</h2>'+ovHTML+teamCodeHTML+'<h3 style="font-size:.9rem;font-weight:700;margin-bottom:10px">Přehled všech motivátorů</h3>'+fullRows+'</div>'+
-    '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">TOP 3 – nejsilnější motivátory</h3>'+top3HTML+'</div>'+
-    '<div class="print-section" style="padding-top:16px"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Motivátory se zpomalovacím nebo podporujícím účinkem</h3>'+weakHTML+'</div>'+
-    '<div style="padding-top:16px;border-top:2px solid #eee"><h3 style="font-family:Georgia;font-size:1.1rem;font-weight:700;margin-bottom:12px">Jak s výsledky naložit dál?</h3>'+contactHTML+'</div>';
-  triggerPrint(pa);
+  setTimeout(function(){
+    var opt = {
+      margin: 8,
+      filename: fileName,
+      image: { type:'jpeg', quality:0.95 },
+      html2canvas: {
+        scale:2, useCORS:true, backgroundColor:'#ffffff',
+        scrollX:0, scrollY:0,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight
+      },
+      jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+      pagebreak: { mode:['avoid-all','css','legacy'] }
+    };
+
+    html2pdf().set(opt).from(el).save().then(function(){
+      if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+      cleanup();
+    }).catch(function(){
+      if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+      if(hint) hint.style.display = 'block';
+      cleanup();
+    });
+  }, 350);
 }
 
 var PROFILES = {
