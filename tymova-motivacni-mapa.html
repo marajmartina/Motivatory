@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Týmová motivační mapa</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
   --red:#E8192C; --green:#2EAA6E; --blue:#1B8ECC;
@@ -45,11 +46,11 @@ main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
 .score-group.blue .score-group-title{color:var(--blue)}
 .score-group.red  .score-group-title{color:var(--red)}
 .score-group.green .score-group-title{color:var(--green)}
-.score-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.score-row{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .score-row:last-child{margin-bottom:0}
-.score-label{font-size:.78rem;font-weight:500;min-width:72px}
-.score-btns{display:flex;gap:3px}
-.score-btn{width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;background:white;font-size:.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--muted);font-family:'DM Sans',sans-serif}
+.score-label{font-size:.78rem;font-weight:500}
+.score-btns{display:flex;gap:3px;flex-wrap:nowrap}
+.score-btn{flex:1;min-width:0;aspect-ratio:1;height:auto;border:1.5px solid var(--border);border-radius:6px;background:white;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--muted);font-family:'DM Sans',sans-serif}
 .score-btn:hover{border-color:#aaa;color:var(--text);transform:scale(1.1)}
 .score-btn.on-blue{background:var(--blue);border-color:var(--blue);color:white}
 .score-btn.on-red {background:var(--red); border-color:var(--red); color:white}
@@ -223,8 +224,9 @@ main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
     </div>
 
     <div style="text-align:center;margin-top:12px" class="no-print">
-      <button onclick="window.print()" style="background:var(--text);color:white;border:none;padding:12px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer">🖨 Vytisknout kompletní report</button>
+      <button id="btn-pdf" onclick="downloadPDF()" style="background:var(--text);color:white;border:none;padding:12px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer">⬇ Stáhnout PDF</button>
       <button onclick="resetAll()" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border);padding:12px 28px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;margin-left:12px">← Nový tým</button>
+      <div id="pdf-hint" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu — nebo použijte tlačítko tisku prohlížeče.</div>
     </div>
   </div>
 </main>
@@ -289,7 +291,7 @@ function addMember() {
       grid += '<div class="score-row">';
       grid += '<div class="score-label">'+mot.name+'</div>';
       grid += '<div class="score-btns" id="sb-'+id+'-'+safeName+'">';
-      for(var v=1; v<=5; v++) {
+      for(var v=0; v<=5; v++) {
         grid += '<button class="score-btn" data-id="'+id+'" data-mot="'+mot.name+'" data-safe="'+safeName+'" data-val="'+v+'" data-color="'+g.key+'" onclick="setScore(this)">'+v+'</button>';
       }
       grid += '</div></div>';
@@ -677,6 +679,41 @@ function analyze() {
 
   if(!html) html='<p style="color:var(--muted);font-size:.85rem">Nezjištěny žádné výraznější třecí plochy ani synergie.</p>';
   document.getElementById('friction-list').innerHTML=html;
+}
+
+function downloadPDF(){
+  var hint = document.getElementById('pdf-hint');
+  var btn  = document.getElementById('btn-pdf');
+  var el   = document.getElementById('results');
+  if(hint) hint.style.display = 'none';
+
+  if(typeof html2pdf === 'undefined'){
+    // Knihovna se nenačetla (např. blokovaná síť v aplikaci) - zkusíme aspoň nativní tisk
+    try { window.print(); } catch(e) {}
+    if(hint) hint.style.display = 'block';
+    return;
+  }
+
+  var teamName = document.getElementById('team-name').value.trim();
+  var fileName = 'tymova-motivacni-mapa' + (teamName ? '-' + teamName.replace(/[^a-zA-Z0-9\-]+/g,'_') : '') + '.pdf';
+
+  if(btn){ btn.disabled = true; btn.textContent = 'Připravuji PDF…'; }
+
+  var opt = {
+    margin: 8,
+    filename: fileName,
+    image: { type:'jpeg', quality:0.95 },
+    html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
+    jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+    pagebreak: { mode:['avoid-all','css','legacy'] }
+  };
+
+  html2pdf().set(opt).from(el).save().then(function(){
+    if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+  }).catch(function(){
+    if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+    if(hint) hint.style.display = 'block';
+  });
 }
 
 function resetAll(){
