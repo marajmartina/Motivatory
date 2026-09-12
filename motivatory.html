@@ -921,7 +921,7 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
         windowHeight: document.documentElement.scrollHeight
       },
       jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-      pagebreak: { mode:['avoid-all','css','legacy'] }
+      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend'] }
     };
 
     html2pdf().set(opt).from(el).save().then(function(){
