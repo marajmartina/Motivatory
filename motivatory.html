@@ -868,6 +868,8 @@ function showTop3AndFull() {
 }
 
 // ---- Stažení PDF (přesně to, co je vidět na obrazovce) ----
+function rAF2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
+
 function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode){
   var el = document.getElementById(containerId);
   if(!el) return;
