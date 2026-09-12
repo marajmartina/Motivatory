@@ -136,6 +136,21 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
 /* Overall block */
 .overall{border-radius:16px;padding:22px 24px;margin-bottom:22px;border:2px solid;text-align:center}
+
+/* Dočasně zhuštěný vzhled jen při generování PDF - na obrazovce se nepoužívá */
+.pdf-compact .step-badge{margin-bottom:4px}
+.pdf-compact .psub{margin-bottom:8px}
+.pdf-compact .sblock{padding:10px 16px;margin-bottom:10px}
+.pdf-compact .overall{padding:7px 18px;margin-bottom:8px}
+.pdf-compact .ov-pct{font-size:1.4rem;margin-bottom:2px}
+.pdf-compact .ov-zone{font-size:.78rem;margin-bottom:2px}
+.pdf-compact .ov-desc{font-size:.68rem;margin-bottom:5px}
+.pdf-compact .ov-bar-bg{height:7px}
+.pdf-compact .scale-ticks{font-size:.53rem;margin-top:2px}
+.pdf-compact .zone-legend{margin-bottom:6px}
+.pdf-compact .zpill{padding:2px 6px;font-size:.6rem}
+.pdf-compact .rtitle{margin-bottom:4px}
+.pdf-compact .fulfill-result-row{padding:6px 0!important}
 .ov-pct{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:900;line-height:1;margin-bottom:4px}
 .ov-zone{font-size:.95rem;font-weight:700;margin-bottom:5px}
 .ov-desc{font-size:.81rem;color:var(--muted);margin-bottom:14px}
@@ -891,7 +906,12 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
     }
   }
 
-  var cleanup = function(){ if(extra && extra.parentNode) extra.parentNode.removeChild(extra); };
+  var cleanup = function(){
+    if(extra && extra.parentNode) extra.parentNode.removeChild(extra);
+    el.classList.remove('pdf-compact');
+  };
+
+  el.classList.add('pdf-compact');
 
   if(typeof html2pdf === 'undefined'){
     cleanup();
