@@ -189,7 +189,7 @@ main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
     </div>
 
     <div class="section">
-      <div class="section-title">⚠️ Třecí plochy a synergie</div>
+      <div class="section-title">⚠️ Třecí plochy</div>
       <div id="friction-list"></div>
     </div>
 
@@ -520,164 +520,24 @@ function analyze() {
   buildFreq(freq,'freq-top');
   buildFreq(weakFreq,'freq-weak');
 
-  // ---- FRICTION & SYNERGY ----
-
-  // Short descriptions for each motivator
-  var MOT_DESC = {
-    'Hledač':  'hledá smysl a dopad',
-    'Duch':    'potřebuje svobodu a autonomii',
-    'Tvůrce':  'vyhledává inovace a kreativitu',
-    'Odborník':'chce mistrovství a hloubku',
-    'Stavitel':'orientuje se na výsledky a odměnu',
-    'Ředitel': 'potřebuje moc a kontrolu',
-    'Hvězda':  'touží po uznání a respektu',
-    'Přítel':  'hledá vztahy a sounáležitost',
-    'Obránce': 'potřebuje stabilitu a řád'
-  };
-
-  var frictions1=[], frictions2=[], synergies=[];
-
-  // KATEGORIE 1: silný vs. slabý – unified (skóre 5 vs 1 u stejného motivátoru)
-  var seenF1 = {};
-  ALL_MOTS.forEach(function(mot){
-    var motName = mot.name;
-    for(var i=0;i<members.length;i++){
-      for(var j=i+1;j<members.length;j++){
-        var scoreA = members[i].scores[motName] || 0;
-        var scoreB = members[j].scores[motName] || 0;
-        var diff = Math.abs(scoreA - scoreB);
-        if(diff >= 4) {
-          var highMember = scoreA > scoreB ? members[i] : members[j];
-          var lowMember  = scoreA > scoreB ? members[j] : members[i];
-          var highScore  = Math.max(scoreA, scoreB);
-          var lowScore   = Math.min(scoreA, scoreB);
-          var pairKey = motName+'|'+highMember.name+'|'+lowMember.name;
-          if(seenF1[pairKey]) continue;
-          seenF1[pairKey] = true;
-          frictions1.push({
-            icon:'⚠️',
-            text:'<strong>'+highMember.name+'</strong> (nejsilnější: <strong>'+motName+'</strong> – skóre '+highScore+'/5) '+
-                 '× <strong>'+lowMember.name+'</strong> (nejslabší: <strong>'+motName+'</strong> – skóre '+lowScore+'/5)'
-          });
-        }
-      }
-    }
-  });
-
-  // KATEGORIE 2: odlišné motivátory v TOP 3 (compat = -1)
-  var seenPairs = {};
-  for(var i=0;i<members.length;i++){
-    for(var j=i+1;j<members.length;j++){
-      members[i].top3.forEach(function(a){
-        members[j].top3.forEach(function(b){
-          if(!a||!b||a===b) return;
-          var pairKey = [a,b].sort().join('|');
-          if(seenPairs[pairKey]) return;
-          var compat = COMPAT[a] ? COMPAT[a][b] : null;
-          if(compat === -1) {
-            seenPairs[pairKey] = true;
-            frictions2.push({
-              icon:'🔴',
-              text:'<strong>'+members[i].name+'</strong> ('+a+' – '+MOT_DESC[a]+') '+
-                   '× <strong>'+members[j].name+'</strong> ('+b+' – '+MOT_DESC[b]+')'
-            });
-          }
-        });
-      });
-    }
-  }
-
-  // SYNERGIE: sdílené motivátory nebo velmi kompatibilní top1
-  var seenSyn = {};
-  for(var i=0;i<members.length;i++){
-    for(var j=i+1;j<members.length;j++){
-      var shared=members[i].top3.filter(function(m){return members[j].top3.indexOf(m)>=0;});
-      var pairKey2 = members[i].name+'|'+members[j].name;
-      if(shared.length>=2 && !seenSyn[pairKey2]){
-        seenSyn[pairKey2]=true;
-        synergies.push({icon:'🤝',
-          text:'<strong>'+members[i].name+'</strong> a <strong>'+members[j].name+'</strong> sdílejí: '+
-               shared.map(function(m){return '<strong>'+m+'</strong>';}).join(', ')
-        });
-      }
-      // Compatible top1
-      var a2=members[i].top3[0], b2=members[j].top3[0];
-      if(a2&&b2&&a2!==b2&&!seenSyn[pairKey2]){
-        var c2 = COMPAT[a2]?COMPAT[a2][b2]:null;
-        if(c2===1){
-          seenSyn[pairKey2]=true;
-          synergies.push({icon:'✨',
-            text:'<strong>'+members[i].name+'</strong> ('+a2+') a <strong>'+members[j].name+'</strong> ('+b2+') – přirozeně kompatibilní motivátory'
-          });
-        }
-      }
-    }
-  }
-
-  // BLOK 3: Hygienické motivátory (skóre 0 nebo 1)
-  var hygieneMap = {};
-  ALL_MOTS.forEach(function(mot){
-    var lowMembers = members.filter(function(m){ return (m.scores[mot.name]||0) <= 1; });
-    if(lowMembers.length > 0) hygieneMap[mot.name] = lowMembers.map(function(m){return m.name;});
-  });
-
+  // ---- TŘECÍ PLOCHY: jen vysvětlující texty, konkrétní dvojice tým identifikuje sám v mapě (nebo při analýze s lektorkou) ----
   var html='';
-
-  if(frictions1.length>0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-bottom:8px">1. Silný vs. slabý motivátor</div>';
-    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
-      'Pokud je stejný motivátor u jedné osoby extrémně silný a u druhé extrémně slabý, může tento rozdíl vytvářet třecí plochy a neshody. '+
-      'To, co jeden potřebuje jako palivo motivace, druhý považuje za nepodstatné. '+
-      'Tyto rozdíly se často připisují rozdílné osobnosti, ale často souvisí právě s rozdílným pohledem na vnitřní motivaci. '+
-      'Uvědomění si, že každého pohání něco jiného, může pomoci vědomě brzdit emoční napětí a přerámovat pohled na druhého a jeho motivace.'+
-    '</div>';
-    html+='<ul class="conflict-list">';
-    frictions1.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
-    html+='</ul>';
-  }
-
-  if(frictions2.length>0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-top:20px;margin-bottom:8px">2. Odlišné první motivátory</div>';
-    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
-      'Tyto motivátory mohou způsobovat pnutí díky zaměření se na odlišné aspekty práce a vést každého jiným směrem. '+
-      'Je třeba hledat způsob, jak pomocí komunikace a vedení najít v dané práci či úkolech takové aspekty, které umožní oběma osobám naplňovat své nejsilnější motivátory.'+
-    '</div>';
-    html+='<ul class="conflict-list">';
-    frictions2.forEach(function(f){html+='<li class="conflict-item"><span class="conflict-icon">'+f.icon+'</span><div class="conflict-text">'+f.text+'</div></li>';});
-    html+='</ul>';
-  }
-
-  // BLOK 3: Hygienické motivátory
-  var hygieneKeys = Object.keys(hygieneMap);
-  if(hygieneKeys.length > 0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-top:20px;margin-bottom:8px">3. Nejslabší motivátory týmu (hygienické)</div>';
-    html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#f8f8f8;border-radius:10px;border-left:3px solid #ccc">'+
-      'U těchto motivátorů je vhodné prověřit, jak dalece jejich absence může mít vliv na výkonnost v týmu – zda výkonnost a spolupráci podporují, či zda značí nějaký klíčový nedostatek nebo nerovnováhu.'+
-    '</div>';
-    html+='<ul class="conflict-list">';
-    hygieneKeys.forEach(function(motName){
-      var names = hygieneMap[motName];
-      var motData = ALL_MOTS.find(function(m){return m.name===motName;});
-      var col = motData ? motData.color : '#888';
-      html+='<li class="conflict-item">'+
-        '<span class="conflict-icon">🔅</span>'+
-        '<div class="conflict-text">'+
-          '<strong>'+motName+'</strong> – '+MOT_DESC[motName]+
-          '<span class="sub">Velmi nízké skóre (0–1): '+names.join(', ')+'</span>'+
-        '</div>'+
-      '</li>';
-    });
-    html+='</ul>';
-  }
-
-  if(synergies.length>0){
-    html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2EAA6E;margin-top:20px;margin-bottom:8px">Synergie</div>';
-    html+='<ul class="conflict-list">';
-    synergies.forEach(function(s){html+='<li class="conflict-item"><span class="conflict-icon">'+s.icon+'</span><div class="conflict-text">'+s.text+'</div></li>';});
-    html+='</ul>';
-  }
-
-  if(!html) html='<p style="color:var(--muted);font-size:.85rem">Nezjištěny žádné výraznější třecí plochy ani synergie.</p>';
+  html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-bottom:8px">1. Silný vs. slabý motivátor</div>';
+  html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
+    'Pokud je stejný motivátor u jedné osoby extrémně silný a u druhé extrémně slabý, může tento rozdíl vytvářet třecí plochy a neshody. '+
+    'To, co jeden potřebuje jako palivo motivace, druhý považuje za nepodstatné. '+
+    'Tyto rozdíly se často připisují rozdílné osobnosti, ale často souvisí právě s rozdílným pohledem na vnitřní motivaci. '+
+    'Uvědomění si, že každého pohání něco jiného, může pomoci vědomě brzdit emoční napětí a přerámovat pohled na druhého a jeho motivace.'+
+  '</div>';
+  html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E8192C;margin-top:20px;margin-bottom:8px">2. Odlišné první motivátory</div>';
+  html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#fff8f8;border-radius:10px;border-left:3px solid #E8192C30">'+
+    'Tyto motivátory mohou způsobovat pnutí díky zaměření se na odlišné aspekty práce a vést každého jiným směrem. '+
+    'Je třeba hledat způsob, jak pomocí komunikace a vedení najít v dané práci či úkolech takové aspekty, které umožní oběma osobám naplňovat své nejsilnější motivátory.'+
+  '</div>';
+  html+='<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-top:20px;margin-bottom:8px">3. Nejslabší motivátory týmu (hygienické)</div>';
+  html+='<div style="font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:#f8f8f8;border-radius:10px;border-left:3px solid #ccc">'+
+    'U těchto motivátorů je vhodné prověřit, jak dalece jejich absence může mít vliv na výkonnost v týmu – zda výkonnost a spolupráci podporují, či zda značí nějaký klíčový nedostatek nebo nerovnováhu.'+
+  '</div>';
   document.getElementById('friction-list').innerHTML=html;
 }
 
