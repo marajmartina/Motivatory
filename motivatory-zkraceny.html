@@ -215,6 +215,10 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 .form-input::placeholder{color:#bbb}
 .form-input.err{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(232,25,44,.1)!important}
 .btn-start{width:100%;background:linear-gradient(135deg,#E8192C,#c0001f);color:white;border:none;padding:16px 24px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;position:relative;z-index:1}
+.codebox{margin-top:22px;border:2px dashed var(--red);border-radius:16px;padding:16px 18px;text-align:center;background:#FFF8F8}
+.code-lbl{font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.code-val{font-family:"Courier New",monospace;font-size:1.7rem;font-weight:700;letter-spacing:2px;color:var(--text);margin:6px 0}
+.code-hint{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
 .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,25,44,.3)}
 .btn-start:active{transform:scale(.98)}
 .btn-start:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
@@ -267,27 +271,12 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
       <div class="welcome-dot" style="background:var(--green)"></div>
       <div class="welcome-dot" style="background:var(--blue)"></div>
     </div>
-    <div class="welcome-title">Zjistěte, co vás opravdu motivuje</div>
-    <div class="welcome-sub">
-      Tento test vám odhalí vaše klíčové motivátory a jejich pořadí – co vás v práci žene dopředu nejvíc a co naopak méně.<br><br>
-      <strong>Zadejte své kontaktní údaje</strong> a spusťte test.
+    <div class="welcome-title">Vítejte na stránce vašeho osobního dotazníku</div>
+    <div class="welcome-sub" style="font-size:1.05rem">
+      <strong style="font-size:1.2rem;color:var(--red)">Motivace a diverzita</strong><br><br>
+      Stránka se vám načetla správně. Počkejte prosím na pokyny lektorky, test spustíte tlačítkem níže.
     </div>
-
-    <div class="form-group">
-      <label class="form-label" for="f-name">Jméno a příjmení</label>
-      <input class="form-input" type="text" id="f-name" placeholder="Jana Nováková">
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="f-email">E-mail</label>
-      <input class="form-input" type="email" id="f-email" placeholder="jana@example.com">
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="f-phone">Telefon</label>
-      <input class="form-input" type="tel" id="f-phone" placeholder="+420 777 123 456">
-    </div>
-
-    <button class="btn-start" id="btn-start" onclick="submitLead()">Spustit test motivátorů →</button>
-    <div class="privacy-note">🔒 Vaše údaje jsou v bezpečí. Slouží výhradně pro kontakt s vámi a nebudou sdíleny třetím stranám.</div>
+    <button class="btn-start" id="btn-start" onclick="hideWelcome()">Spustit test →</button>
   </div>
 </div>
 
@@ -330,6 +319,12 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="rtitle">Pořadí motivátorů (od nejsilnějšího)</div>
   <div id="rl1"></div>
+  <div class="codebox">
+    <div class="code-lbl">Kód vašeho výsledku</div>
+    <div class="code-val" id="res-code">–</div>
+    <div class="code-hint">Uložte si ho (snímek obrazovky nebo PDF). Budete ho potřebovat pro navazující test.</div>
+    <button class="btn-sec no-print" id="btn-copy" onclick="copyCode()">Zkopírovat kód</button>
+  </div>
   </div>
 
   <div style="margin-top:24px;margin-bottom:4px">
@@ -534,7 +529,27 @@ function calcP1(){
   return{gt:gt,cats:cats};
 }
 
+
+// ---- KÓD VÝSLEDKU (pro navazující test) ----
+// Formát: ddd ddd ddd X  (body 0–5 v pevném pořadí + kontrolní písmeno)
+var CODE_ORDER = ['Ředitel','Odborník','Stavitel','Přítel','Hvězda','Obránce','Tvůrce','Hledač','Duch'];
+function resultCode(){
+  var d = calcP1(), m = {};
+  d.cats.forEach(function(c){ m[c.name] = c.count; });
+  var digits = CODE_ORDER.map(function(n){ return String(m[n]||0); }).join('');
+  var sum = 0; for (var i=0;i<digits.length;i++) sum += (i+1)*parseInt(digits[i],10);
+  var chk = 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23);
+  return digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6,9)+' '+chk;
+}
+function copyCode(){
+  var c = document.getElementById('res-code').textContent, btn = document.getElementById('btn-copy');
+  function done(){ btn.textContent = 'Zkopírováno ✓'; setTimeout(function(){ btn.textContent='Zkopírovat kód'; }, 1800); }
+  try { navigator.clipboard.writeText(c).then(done, function(){ prompt('Kód výsledku:', c); }); }
+  catch(e){ prompt('Kód výsledku:', c); }
+}
+
 function showO1(){
+  try{ document.getElementById('res-code').textContent = resultCode(); }catch(e){}
   var d=calcP1();
   var gt=d.gt; var tot=gt.vykon+gt.vztahy+gt.rust;
   function fp(v){return tot===0?'0%':Math.round(v/tot*100)+'%';}
@@ -1050,13 +1065,6 @@ function submitLead() {
   // Immediately hide welcome and start test
   hideWelcome();
 }
-
-['f-name','f-email','f-phone'].forEach(function(id){
-  var el = document.getElementById(id);
-  if (!el) return;
-  el.addEventListener('input', function(){ this.classList.remove('err'); });
-  el.addEventListener('keydown', function(e){ if(e.key==='Enter') submitLead(); });
-});
 
 buildP1();
 
