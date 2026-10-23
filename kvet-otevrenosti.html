@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempo týmu ve změně</title>
+<style>
+  :root{--brand:#C62828;--ink:#2B2B2B;--grey:#6B6B6B;--line:#E0E0E0;--bg:#FAFAFA}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
+  .app{display:flex;min-height:100vh}
+  aside{width:430px;flex:0 0 430px;background:#fff;border-right:1px solid var(--line);padding:20px 20px 30px;overflow-y:auto;max-height:100vh}
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;min-width:0}
+  h1{font-family:Georgia,serif;color:var(--brand);font-weight:normal;font-size:1.6rem;margin:0 0 4px}
+  .lead{font-size:.9rem;color:var(--grey);margin:0 0 16px;line-height:1.45}
+  label.f{display:block;font-size:.78rem;font-weight:bold;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px}
+  input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.95rem}
+  input:focus,select:focus{outline:none;border-color:var(--brand)}
+  .person{border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px;margin-bottom:10px;background:#fff}
+  .ph{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .ph input{flex:1;padding:6px 8px;font-size:.92rem}
+  .ph .res{font:bold 1.05rem Georgia,serif;min-width:84px;text-align:right}
+  .del{border:none;background:none;color:#aaa;font-size:1.2rem;cursor:pointer;padding:0 4px}
+  .del:hover{color:var(--brand)}
+  .mots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .mot{display:flex;flex-direction:column;gap:3px}
+  .mot select{padding:5px 4px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.82rem;background:#fff}
+  .mot input{width:100%;padding:4px 6px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.9rem;text-align:center}
+  .mot small{font-size:.68rem;color:var(--grey);text-align:center}
+  select.wk{width:100%;margin-top:6px;padding:5px 6px;border:1px dashed #BDBDBD;border-radius:6px;font:inherit;font-size:.82rem;background:#FAFAFA;color:#555}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  button.b{font:inherit;font-size:.88rem;padding:8px 14px;border-radius:6px;border:1px solid var(--brand);background:#fff;color:var(--brand);cursor:pointer}
+  button.b:hover{background:var(--brand);color:#fff}
+  button.b.primary{background:var(--brand);color:#fff}
+  button.b.on{background:#2B2B2B;border-color:#2B2B2B;color:#fff}
+  .pview{position:fixed;top:12px;left:14px;z-index:5;display:none;gap:6px}
+  body.present .pview{display:flex}
+  textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-family:"Courier New",monospace;font-size:.9rem;resize:vertical}
+  .codemsg{font-size:.8rem;line-height:1.4;color:var(--grey);margin-bottom:6px}
+  .codemsg .bad{color:#C62828}
+  .hint{font-size:.78rem;color:var(--grey);line-height:1.45;border-left:3px solid var(--brand);background:#FDF6F6;padding:8px 10px;border-radius:0 6px 6px 0}
+  .stage{width:100%;max-width:1400px;aspect-ratio:16/10;background:#fff;border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.06)}
+  .stage svg{width:100%;height:100%;display:block}
+  .bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+  body.present aside,body.present .bar{display:none}
+  body.present main{padding:0;background:#fff}
+  body.present .stage{max-width:none;width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .exit{display:none;position:fixed;top:12px;right:14px;z-index:5}
+  body.present .exit{display:block}
+  @media (max-width:900px){.app{flex-direction:column}aside{width:auto;flex:none;max-height:none;border-right:none;border-bottom:1px solid var(--line)}}
+  @media print{aside,.bar,.exit{display:none!important}main{padding:0}.stage{box-shadow:none;max-width:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Tempo týmu ve změně</h1>
+    <p class="lead">Zadejte tři nejsilnější motivátory každého člověka. Body „Přístup ke změnám a rychlost“ se doplní samy, případně je můžete přepsat podle kartiček.</p>
+
+    <label class="f" for="title">Nadpis</label>
+    <input type="text" id="title" value="Tempo týmu ve změně">
+    <label class="f" for="sub">Podnadpis (tým, datum)</label>
+    <input type="text" id="sub" value="">
+
+    <label class="f" for="codes">Rychlé zadání: kódy z testu</label>
+    <textarea id="codes" rows="4" placeholder="221 313 213 B&#10;505 000 555 K&#10;(každý kód na nový řádek)"></textarea>
+    <div class="btns" style="margin:8px 0 4px"><button class="b primary" id="loadCodes">Načíst kódy</button></div>
+    <div class="codemsg" id="codemsg"></div>
+
+    <label class="f">Lidé v týmu</label>
+    <div id="people"></div>
+    <div class="btns">
+      <button class="b" id="add">+ Přidat člověka</button>
+      <button class="b" id="clear">Vymazat vše</button>
+    </div>
+    <div class="hint">Výpočet: každý člověk = součet bodů ÷ 21 × 100. Tým = součet bodů všech ÷ (počet osob × 21) × 100. Maximum je 15 osob.</div>
+  </aside>
+
+  <main>
+    <div class="stage" id="stage"></div>
+    <div class="bar">
+      <button class="b" id="vKvet">Květ</button>
+      <button class="b" id="vTab">Co brzdí</button>
+      <button class="b" id="vBar">Barvy týmu</button>
+      <button class="b" id="vBar2">Pořadí motivátorů</button>
+      <button class="b primary" id="present">▶ Promítnout na celou obrazovku</button>
+      <button class="b" id="png">⬇ Stáhnout obrázek (PNG)</button>
+      <button class="b" onclick="window.print()">🖨 Tisk / PDF</button>
+    </div>
+  </main>
+</div>
+<button class="b exit" id="exit">✕ Zavřít</button>
+<div class="pview"><button class="b" id="pvKvet">Květ</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button></div>
+
+<script>
+var MOTS = [
+  {n:'Ředitel',p:4,k:'V'},{n:'Odborník',p:5,k:'V'},{n:'Stavitel',p:4,k:'V'},
+  {n:'Přítel',p:2,k:'Z'},{n:'Hvězda',p:3,k:'Z'},{n:'Obránce',p:1,k:'Z'},
+  {n:'Tvůrce',p:5,k:'R'},{n:'Hledač',p:5,k:'R'},{n:'Duch',p:7,k:'R'}
+];
+var CL = {V:{n:'Výkon',c:'#D32F2F',bg:'#FDECEC'}, Z:{n:'Vztahy',c:'#2E9E62',bg:'#EAF7F0'}, R:{n:'Růst',c:'#1B8ECC',bg:'#EAF4FC'}};
+var DEMOT = {
+  'Ředitel':['Práce bez rozhodovacích kompetencí a nejasná hierarchie','Situace, kdy ostatní nerespektují jeho autoritu'],
+  'Odborník':['Povrchní klouzání po tématech a práce mimo jeho odbornost','Špatně nastavené procesy, které snižují kvalitu výsledku'],
+  'Stavitel':['Nejasný systém odměňování a chybějící vazba mezi výkonem a penězi','Stagnující prostředí bez možnosti růstu'],
+  'Přítel':['Neosobní prostředí zaměřené výhradně na čísla','Dlouhodobá izolovaná práce a nezdravé konflikty v týmu'],
+  'Hvězda':['Anonymita a přehlížení zásluh','Práce na skrytých, dlouhodobých projektech, kde není vidět jednotlivec'],
+  'Obránce':['Náhlé a nečekané změny a riskování','Chaos v rolích a neustálý časový tlak či spěch'],
+  'Tvůrce':['Rutina a opakující se úkoly','Striktní procesy bez možnosti změny a udržování status quo'],
+  'Hledač':['Povrchní úkoly zaměřené jen na proces a zbytečná administrativa','Pocit, že na výsledku jeho práce nikomu nezáleží'],
+  'Duch':['Mikromanagement a neustálá kontrola','Zdlouhavé schvalování ve velkém týmu a pomalé rozhodování']
+};
+var CODE_ORDER = ['Ředitel','Odborník','Stavitel','Přítel','Hvězda','Obránce','Tvůrce','Hledač','Duch'];
+var TIE_ORDER = ['Ředitel','Stavitel','Odborník','Obránce','Přítel','Hvězda','Tvůrce','Hledač','Duch'];
+function decodeCode(raw){
+  var t = String(raw).toUpperCase().replace(/[^0-9A-Z]/g,'');
+  if (t.indexOf('MOT')===0) t = t.slice(3);
+  var m = t.match(/^([0-5]{9})([A-Z])?$/); if(!m) return null;
+  var d = m[1], sum = 0; for (var i=0;i<9;i++) sum += (i+1)*parseInt(d[i],10);
+  if (m[2] && 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23) !== m[2]) return null;
+  var sc = {}; CODE_ORDER.forEach(function(n,i){ sc[n] = parseInt(d[i],10); });
+  var rank = TIE_ORDER.slice().sort(function(a,b){ return sc[b]-sc[a] || TIE_ORDER.indexOf(a)-TIE_ORDER.indexOf(b); });
+  return {top: rank.slice(0,3), weak: rank[8]};
+}
+function mot(n){ for(var i=0;i<MOTS.length;i++) if(MOTS[i].n===n) return MOTS[i]; return null; }
+var ZONES = [
+  {max:34, num:1, name:'Opatrné tempo',  range:'0–34 %',   c:'#E53935', bg:'#FDECEC'},
+  {max:54, num:2, name:'Rozvážné tempo', range:'35–54 %',  c:'#F57C00', bg:'#FFF3E0'},
+  {max:79, num:3, name:'Plynulé tempo',  range:'55–79 %',  c:'#43A047', bg:'#EDF7EE'},
+  {max:100,num:4, name:'Rychlé tempo',   range:'80–100 %', c:'#8E24AA', bg:'#F5EAF8'}
+];
+function zone(p){ for(var i=0;i<ZONES.length;i++){ if(p<=ZONES[i].max) return ZONES[i]; } return ZONES[3]; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+var STORE = 'kvet-otevrenosti-v1';
+var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'kvet'};
+function blankPerson(i){ return {name:'Osoba '+(i+1), m:['','',''], p:['','',''], w:''}; }
+
+function load(){
+  try{ var raw = localStorage.getItem(STORE); if(raw){ var d = JSON.parse(raw); if(d && d.people) state = d; } }catch(e){}
+  if(!state.title || state.title==='Otevřenost týmu ke změně') state.title='Tempo týmu ve změně';
+  if(!state.view) state.view='kvet';
+  if(!state.people.length){ for(var i=0;i<5;i++) state.people.push(blankPerson(i)); }
+}
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+
+function personSum(p){
+  var s=0, ok=true;
+  for(var k=0;k<3;k++){ var v=parseInt(p.p[k],10); if(isNaN(v)) ok=false; else s+=v; }
+  return ok ? s : null;
+}
+
+function renderForm(){
+  var box = document.getElementById('people'); box.innerHTML='';
+  state.people.forEach(function(p, i){
+    var opts = '<option value="">– motivátor –</option>' + MOTS.map(function(m){ return '<option value="'+m.n+'">'+m.n+'</option>'; }).join('');
+    var d = document.createElement('div'); d.className='person';
+    var mh = '';
+    for(var k=0;k<3;k++){
+      mh += '<div class="mot"><select data-i="'+i+'" data-k="'+k+'" class="ms">'+opts+'</select>'+
+            '<input type="number" min="1" max="7" data-i="'+i+'" data-k="'+k+'" class="mp" value="'+esc(p.p[k])+'" placeholder="body">'+
+            '<small>'+(k+1)+'. motivátor</small></div>';
+    }
+    var wopts = '<option value="">– nejslabší (nepovinné) –</option>' + MOTS.map(function(m){ return '<option value="'+m.n+'">'+m.n+'</option>'; }).join('');
+    d.innerHTML = '<div class="ph"><input type="text" class="nm" data-i="'+i+'" value="'+esc(p.name)+'">'+
+      '<span class="res" id="res'+i+'"></span><button class="del" data-i="'+i+'" title="Odebrat">✕</button></div>'+
+      '<div class="mots">'+mh+'</div>'+
+      '<select class="wk" data-i="'+i+'">'+wopts+'</select>';
+    box.appendChild(d);
+    d.querySelectorAll('select.ms').forEach(function(s){ s.value = p.m[+s.dataset.k] || ''; });
+    d.querySelector('select.wk').value = p.w || '';
+  });
+  updateResults();
+}
+
+function updateResults(){
+  state.people.forEach(function(p,i){
+    var el = document.getElementById('res'+i); if(!el) return;
+    var s = personSum(p);
+    if(s===null){ el.textContent='–'; el.style.color='#bbb'; }
+    else { var pc = Math.round(s/21*100); el.textContent = pc+' % · '+zone(pc).num; el.style.color = zone(pc).c; }
+  });
+}
+
+function bindForm(){
+  var box = document.getElementById('people');
+  box.addEventListener('change', function(e){
+    var t = e.target;
+    if(t.classList.contains('ms')){
+      var i=+t.dataset.i, k=+t.dataset.k; state.people[i].m[k]=t.value;
+      var m = MOTS.find(function(x){ return x.n===t.value; });
+      if(m){ state.people[i].p[k]=String(m.p); var inp = box.querySelector('input.mp[data-i="'+i+'"][data-k="'+k+'"]'); if(inp) inp.value=m.p; }
+      changed();
+    }
+    if(t.classList.contains('wk')){ state.people[+t.dataset.i].w = t.value; changed(); }
+  });
+  box.addEventListener('input', function(e){
+    var t = e.target;
+    if(t.classList.contains('mp')){
+      var v = t.value; if(v!==''){ v = Math.max(1, Math.min(7, parseInt(v,10)||1)); }
+      state.people[+t.dataset.i].p[+t.dataset.k] = String(v); changed();
+    }
+    if(t.classList.contains('nm')){ state.people[+t.dataset.i].name = t.value; changed(); }
+  });
+  box.addEventListener('click', function(e){
+    var t = e.target;
+    if(t.classList.contains('del')){ state.people.splice(+t.dataset.i,1); renderForm(); changed(); }
+  });
+  document.getElementById('add').onclick = function(){
+    if(state.people.length>=15){ alert('Maximum je 15 osob.'); return; }
+    state.people.push(blankPerson(state.people.length)); renderForm(); changed();
+  };
+  document.getElementById('clear').onclick = function(){
+    if(!confirm('Opravdu vymazat všechny lidi a body?')) return;
+    state.people=[]; for(var i=0;i<5;i++) state.people.push(blankPerson(i)); renderForm(); changed();
+  };
+  document.getElementById('loadCodes').onclick = function(){
+    var lines = document.getElementById('codes').value.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean);
+    var ok = [], bad = [];
+    lines.forEach(function(l){ var r = decodeCode(l); if(r) ok.push(r); else bad.push(l); });
+    var msg = document.getElementById('codemsg');
+    if (!ok.length){ msg.innerHTML = '<span class="bad">Žádný platný kód. Zkontrolujte prosím opsání.</span>'; return; }
+    if (ok.length > 15){ ok = ok.slice(0,15); }
+    var hasData = state.people.some(function(p){ return personSum(p)!==null; });
+    if (hasData && !confirm('Nahradit současné lidi v týmu načtenými kódy?')) return;
+    state.people = ok.map(function(r,i){
+      return {name:'Osoba '+(i+1), m:r.top.slice(), p:r.top.map(function(n){ return String(mot(n).p); }), w:r.weak};
+    });
+    msg.innerHTML = 'Načteno: <b>'+ok.length+'</b> '+(ok.length===1?'člověk':(ok.length<5?'lidé':'lidí')) +
+      (bad.length ? '<br><span class="bad">Neplatné kódy ('+bad.length+'): '+bad.map(esc).join(', ')+'</span>' : '');
+    renderForm(); changed();
+  };
+  ['title','sub'].forEach(function(id){
+    var el = document.getElementById(id); el.value = state[id];
+    el.addEventListener('input', function(){ state[id]=el.value; changed(); });
+  });
+}
+
+function changed(){ updateResults(); save(); draw(); }
+
+function buildSVG(){
+  if(state.view==='tab') return buildBrakes();
+  if(state.view==='bar') return buildColors(false);
+  if(state.view==='bar2') return buildColors(true);
+  var W=1600, H=1000;
+  var done = state.people.filter(function(p){ return personSum(p)!==null; })
+    .slice().sort(function(a,b){ return personSum(a)-personSum(b); });
+  var n = done.length;
+  var cx=600, cy=545;
+  var R = n<=6 ? 285 : (n<=9 ? 300 : 315);
+  var rc = n<=6 ? 98 : (n<=9 ? 84 : 70);
+  var rcen = 150;
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
+  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+esc(state.title)+'</text>';
+  if(state.sub) out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub)+'</text>';
+
+  if(n===0){
+    out += '<text x="'+cx+'" y="'+cy+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory nebo body alespoň u jednoho člověka</text>';
+  } else {
+    var tot=0; done.forEach(function(p){ tot+=personSum(p); });
+    var tp = Math.round(tot/(n*21)*100), tz = zone(tp);
+    var lines='', circles='';
+    done.forEach(function(p,i){
+      var a = (-90 + i*360/n) * Math.PI/180;
+      var x = cx + R*Math.cos(a), y = cy + R*Math.sin(a);
+      var pc = Math.round(personSum(p)/21*100), z = zone(pc);
+      lines += '<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+z.c+'" stroke-width="5" stroke-linecap="round"/>';
+      var fs = Math.round(rc*0.56);
+      circles += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+rc+'" fill="#fff" stroke="'+z.c+'" stroke-width="6"/>'+
+        '<text x="'+x.toFixed(1)+'" y="'+(y-rc*0.3).toFixed(1)+'" text-anchor="middle" font-size="'+Math.round(rc*0.26)+'" fill="#555">'+esc(p.name)+'</text>'+
+        '<text x="'+x.toFixed(1)+'" y="'+(y+fs*0.55).toFixed(1)+'" text-anchor="middle" font-size="'+fs+'" font-weight="bold" font-family="Georgia,serif" fill="'+z.c+'">'+pc+' %</text>';
+    });
+    out += lines;
+    out += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rcen+'" fill="'+tz.bg+'" stroke="'+tz.c+'" stroke-width="8"/>'+
+      '<text x="'+cx+'" y="'+(cy-56)+'" text-anchor="middle" font-size="30" font-weight="bold" fill="#444">TÝM</text>'+
+      '<text x="'+cx+'" y="'+(cy+28)+'" text-anchor="middle" font-size="86" font-weight="bold" font-family="Georgia,serif" fill="'+tz.c+'">'+tp+' %</text>'+
+      '<text x="'+cx+'" y="'+(cy+78)+'" text-anchor="middle" font-size="24" font-weight="bold" fill="'+tz.c+'">'+tz.num+' · '+tz.name+'</text>';
+    out += circles;
+  }
+  // legend: semafor
+  var sx=1200, step=118, rl=40, sy=545-1.5*step, pad=58;
+  out += '<rect x="'+(sx-pad)+'" y="'+(sy-pad)+'" width="'+(pad*2)+'" height="'+(step*3+pad*2)+'" rx="'+pad+'" fill="#FAFAFA" stroke="#2B2B2B" stroke-width="5"/>'+
+         '<line x1="'+sx+'" y1="'+(sy+step*3+pad)+'" x2="'+sx+'" y2="'+(sy+step*3+pad+70)+'" stroke="#2B2B2B" stroke-width="6" stroke-linecap="round"/>'+
+         '<line x1="'+(sx-40)+'" y1="'+(sy+step*3+pad+72)+'" x2="'+(sx+40)+'" y2="'+(sy+step*3+pad+72)+'" stroke="#2B2B2B" stroke-width="6" stroke-linecap="round"/>';
+  var zc={}; ZONES.forEach(function(z){ zc[z.num]=0; });
+  state.people.forEach(function(p){ var su=personSum(p); if(su!==null) zc[zone(Math.round(su/21*100)).num]++; });
+  function lid(n){ return n===1?'1 člověk':(n>=2&&n<=4? n+' lidé' : n+' lidí'); }
+  ZONES.slice().reverse().forEach(function(z,i){
+    var y = sy + i*step;
+    out += '<circle cx="'+sx+'" cy="'+y+'" r="'+rl+'" fill="'+z.c+'"/>'+
+      '<text x="'+sx+'" y="'+(y+13)+'" text-anchor="middle" font-family="Georgia,serif" font-size="36" font-weight="bold" fill="#fff">'+z.num+'</text>'+
+      '<text x="'+(sx+pad+26)+'" y="'+(y-4)+'" font-size="30" font-weight="bold" fill="'+z.c+'">'+z.name+'</text>'+
+      '<text x="'+(sx+pad+26)+'" y="'+(y+30)+'" font-size="24" fill="#6B6B6B">'+z.range+' · <tspan font-weight="bold" fill="'+z.c+'">'+lid(zc[z.num])+'</tspan></text>';
+  });
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text>';
+  out += '</svg>';
+  return out;
+}
+
+function buildTable(){
+  var W=1600, H=1000;
+  var done = state.people.filter(function(p){ return personSum(p)!==null; });
+  var n = done.length;
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
+  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+esc(state.title)+'</text>';
+  if(state.sub) out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub)+'</text>';
+  if(n===0){
+    out += '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory nebo body alespoň u jednoho člověka</text></svg>';
+    return out;
+  }
+  var top=175, avail=H-top-70, rh=Math.min(56, Math.floor(avail/(n+2)));
+  var fs=Math.round(rh*0.5);
+  var X=[56,330,1000,1130,1290], Wt=W-112;
+  var hy=top+rh*0.65;
+  ['Jméno','Tři nejsilnější motivátory','Body','%','Tempo'].forEach(function(h,i){
+    out += '<text x="'+(X[i]+12)+'" y="'+hy.toFixed(0)+'" font-size="'+Math.round(fs*0.8)+'" font-weight="bold" fill="#6B6B6B" letter-spacing="1">'+h.toUpperCase()+'</text>';
+  });
+  var tot=0;
+  done.forEach(function(p,i){
+    var s=personSum(p); tot+=s;
+    var pc=Math.round(s/21*100), z=zone(pc), y=top+rh*(i+1);
+    out += '<rect x="56" y="'+y+'" width="'+Wt+'" height="'+(rh-6)+'" rx="10" fill="'+z.bg+'" stroke="'+z.c+'" stroke-width="2"/>';
+    var ty=(y+rh*0.62).toFixed(0);
+    var mots=p.m.filter(function(m){return m;}).join(', ') || '–';
+    out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+fs+'" fill="#2B2B2B">'+esc(p.name)+'</text>'+
+      '<text x="'+(X[1]+12)+'" y="'+ty+'" font-size="'+fs+'" fill="#444">'+esc(mots)+'</text>'+
+      '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="#2B2B2B">'+s+'</text>'+
+      '<text x="'+(X[3]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="'+z.c+'">'+pc+' %</text>'+
+      '<text x="'+(X[4]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="'+z.c+'">'+z.num+' · '+z.name+'</text>';
+  });
+  var tp=Math.round(tot/(n*21)*100), tz=zone(tp), y=top+rh*(n+1)+8;
+  out += '<rect x="56" y="'+y+'" width="'+Wt+'" height="'+(rh+4)+'" rx="12" fill="'+tz.bg+'" stroke="'+tz.c+'" stroke-width="4"/>';
+  var ty=(y+rh*0.68).toFixed(0), bf=Math.round(fs*1.1);
+  out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#2B2B2B">TÝM</text>'+
+    '<text x="'+(X[1]+12)+'" y="'+ty+'" font-size="'+fs+'" fill="#444">'+n+' '+(n===1?'osoba':(n<5?'osoby':'osob'))+' · '+tot+' ÷ ('+n+' × 21) × 100</text>'+
+    '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#2B2B2B">'+tot+'</text>'+
+    '<text x="'+(X[3]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="'+tz.c+'">'+tp+' %</text>'+
+    '<text x="'+(X[4]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="'+tz.c+'">'+tz.num+' · '+tz.name+'</text>';
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  return out;
+}
+
+function arc(cx,cy,r0,r1,a0,a1,col){
+  if(a1-a0>=Math.PI*2-1e-6){ return '<circle cx="'+cx+'" cy="'+cy+'" r="'+((r0+r1)/2)+'" fill="none" stroke="'+col+'" stroke-width="'+(r1-r0)+'"/>'; }
+  var la=(a1-a0)>Math.PI?1:0;
+  function P(r,a){ return (cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1); }
+  return '<path d="M'+P(r1,a0)+' A'+r1+' '+r1+' 0 '+la+' 1 '+P(r1,a1)+' L'+P(r0,a1)+' A'+r0+' '+r0+' 0 '+la+' 0 '+P(r0,a0)+' Z" fill="'+col+'" stroke="#fff" stroke-width="4"/>';
+}
+function buildColors(byCount){
+  var W=1600, H=1000;
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
+  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+(byCount?'Pořadí motivátorů v týmu':'Barvy týmu')+'</text>';
+  out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub || 'Tři nejsilnější motivátory všech lidí v týmu')+'</text>';
+  var ORD=MOTS.filter(function(m){return m.k==='R';}).concat(MOTS.filter(function(m){return m.k==='V';}),MOTS.filter(function(m){return m.k==='Z';}));
+  var cnt={}, k={V:0,Z:0,R:0}, tot=0, wk={}, wn=0;
+  MOTS.forEach(function(m){ cnt[m.n]=0; wk[m.n]=0; });
+  state.people.forEach(function(p){
+    p.m.forEach(function(n){ var m=mot(n); if(m){ cnt[n]++; k[m.k]++; tot++; } });
+    if(p.w && mot(p.w)){ wk[p.w]++; wn++; }
+  });
+  var rk={R:0,V:1,Z:2};
+  if(byCount) ORD = ORD.slice().sort(function(x,y){ return (cnt[y.n]-cnt[x.n]) || (rk[x.k]-rk[y.k]); });
+  var KORD = byCount ? ['R','V','Z'].sort(function(x,y){ return (k[y]-k[x]) || (rk[x]-rk[y]); }) : ['R','V','Z'];
+  if(tot===0){
+    out += '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Vyberte motivátory u lidí v týmu, barvy se spočítají samy</text></svg>';
+    return out;
+  }
+  // donut
+  var cx=330, cy=560, r1=230, r0=140, a=-Math.PI/2;
+  KORD.forEach(function(key){
+    if(!k[key]) return; var da=k[key]/tot*Math.PI*2;
+    out += arc(cx,cy,r0,r1,a,a+da,CL[key].c); a+=da;
+  });
+  out += '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" font-family="Georgia,serif" font-size="64" font-weight="bold" fill="#2B2B2B">'+tot+'</text>'+
+         '<text x="'+cx+'" y="'+(cy+34)+'" text-anchor="middle" font-size="24" fill="#6B6B6B">karet celkem</text>';
+  var ly=830;
+  KORD.forEach(function(key,i){
+    var x=90+i*170, pc=Math.round(k[key]/tot*100);
+    out += '<rect x="'+x+'" y="'+(ly-22)+'" width="24" height="24" rx="5" fill="'+CL[key].c+'"/>'+
+      '<text x="'+(x+34)+'" y="'+ly+'" font-size="26" font-weight="bold" fill="'+CL[key].c+'">'+CL[key].n+'</text>'+
+      '<text x="'+(x+34)+'" y="'+(ly+34)+'" font-size="24" fill="#444">'+k[key]+' × · '+pc+' %</text>';
+  });
+  // bars: strongest motivators
+  var bx=660, by=200, bw=wn?420:820, rh=70, max=1;
+  MOTS.forEach(function(m){ if(cnt[m.n]>max) max=cnt[m.n]; if(wk[m.n]>max) max=wk[m.n]; });
+  out += '<text x="'+bx+'" y="'+(by-14)+'" font-size="24" font-weight="bold" fill="#6B6B6B" letter-spacing="1">CO TÝM POHÁNÍ</text>';
+  ORD.forEach(function(m,i){
+    var y=by+i*rh+10, c=CL[m.k].c, w=Math.round(cnt[m.n]/max*(bw-150));
+    out += '<text x="'+bx+'" y="'+(y+34)+'" font-size="27" fill="#2B2B2B">'+m.n+'</text>'+
+      '<rect x="'+(bx+140)+'" y="'+(y+8)+'" width="'+(bw-150)+'" height="36" rx="8" fill="'+CL[m.k].bg+'"/>'+
+      (w>0?'<rect x="'+(bx+140)+'" y="'+(y+8)+'" width="'+w+'" height="36" rx="8" fill="'+c+'"/>':'')+
+      '<text x="'+(bx+150+Math.max(w,0))+'" y="'+(y+35)+'" font-size="26" font-weight="bold" fill="'+(w>40?'#fff':c)+'" '+(w>40?'text-anchor="end" dx="-22"':'dx="6"')+'>'+cnt[m.n]+'</text>';
+  });
+  if(wn){
+    var wx=1140;
+    out += '<text x="'+wx+'" y="'+(by-14)+'" font-size="24" font-weight="bold" fill="#6B6B6B" letter-spacing="1">CO TÝMU CHYBÍ</text>';
+    ORD.forEach(function(m,i){
+      var y=by+i*rh+10, c=CL[m.k].c, ww=Math.round(wk[m.n]/max*260);
+      out += '<rect x="'+wx+'" y="'+(y+8)+'" width="260" height="36" rx="8" fill="#F5F5F5"/>'+
+        (ww>0?'<rect x="'+wx+'" y="'+(y+8)+'" width="'+ww+'" height="36" rx="8" fill="none" stroke="'+c+'" stroke-width="3" stroke-dasharray="7 5"/>':'')+
+        '<text x="'+(wx+275)+'" y="'+(y+35)+'" font-size="26" font-weight="bold" fill="'+(wk[m.n]?c:'#BDBDBD')+'">'+wk[m.n]+'</text>';
+    });
+    out += '<text x="'+wx+'" y="'+(by+9*rh+40)+'" font-size="20" fill="#6B6B6B" font-style="italic">Nejslabší motivátor: zadáno u '+wn+' z '+state.people.length+' lidí</text>';
+  }
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  return out;
+}
+function buildBrakes(){
+  var W=1600, H=1000;
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
+  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">Co může brzdit výkon týmu</text>';
+  out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc((state.sub? state.sub+' · ' : '')+'Demotivátory podle tří nejsilnějších motivátorů lidí v týmu')+'</text>';
+  var w={}, c={}, people=0;
+  MOTS.forEach(function(m){ w[m.n]=0; c[m.n]=0; });
+  state.people.forEach(function(p){
+    var any=false;
+    p.m.forEach(function(n,i){ if(mot(n)){ w[n]+=3-i; c[n]++; any=true; } });
+    if(any) people++;
+  });
+  var list = MOTS.filter(function(m){ return c[m.n]>0; }).sort(function(a,b){ return w[b.n]-w[a.n] || c[b.n]-c[a.n]; });
+  if(!list.length){
+    out += '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Vyberte motivátory u lidí v týmu, brzdy se seřadí samy</text></svg>';
+    return out;
+  }
+  var top=170, avail=H-top-60, rh=Math.min(104, Math.floor(avail/list.length));
+  var maxw=w[list[0].n];
+  list.forEach(function(m,i){
+    var y=top+i*rh, col=CL[m.k].c, bg=CL[m.k].bg, h=rh-12;
+    var bw=Math.round(w[m.n]/maxw*120);
+    out += '<rect x="56" y="'+y+'" width="'+(W-112)+'" height="'+h+'" rx="12" fill="'+bg+'"/>'+
+      '<rect x="56" y="'+y+'" width="8" height="'+h+'" rx="4" fill="'+col+'"/>';
+    var cy=y+h/2;
+    out += '<text x="84" y="'+(cy-4).toFixed(0)+'" font-size="'+Math.min(32,Math.round(h*0.36))+'" font-weight="bold" fill="'+col+'">'+m.n+'</text>'+
+      '<text x="84" y="'+(cy+Math.min(28,h*0.32)).toFixed(0)+'" font-size="'+Math.min(22,Math.round(h*0.26))+'" fill="#555">u '+c[m.n]+' z '+people+' lidí</text>';
+    out += '<rect x="290" y="'+(cy-9).toFixed(0)+'" width="120" height="18" rx="9" fill="#fff"/>'+
+      '<rect x="290" y="'+(cy-9).toFixed(0)+'" width="'+bw+'" height="18" rx="9" fill="'+col+'"/>';
+    var fs=Math.min(26,Math.round(h*0.3));
+    out += '<text x="440" y="'+(cy-4).toFixed(0)+'" font-size="'+fs+'" fill="#2B2B2B">• '+esc(DEMOT[m.n][0])+'</text>'+
+      '<text x="440" y="'+(cy+fs*0.95).toFixed(0)+'" font-size="'+fs+'" fill="#2B2B2B">• '+esc(DEMOT[m.n][1])+'</text>';
+  });
+  out += '<text x="56" y="'+(H-30)+'" font-size="18" fill="#6B6B6B" font-style="italic">Pořadí podle toho, jak silně je motivátor v týmu zastoupen (1. místo = 3 body, 2. = 2, 3. = 1).</text>';
+  out += '<text x="'+(W-56)+'" y="'+(H-30)+'" text-anchor="end" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  return out;
+}
+function setView(v){
+  state.view=v; save(); draw();
+  ['vKvet','pvKvet'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='kvet'); });
+  ['vTab','pvTab'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='tab'); });
+  ['vBar','pvBar'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar'); });
+  ['vBar2','pvBar2'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar2'); });
+}
+function draw(){ document.getElementById('stage').innerHTML = buildSVG(); }
+document.getElementById('vKvet').onclick=function(){ setView('kvet'); };
+document.getElementById('vTab').onclick=function(){ setView('tab'); };
+document.getElementById('pvKvet').onclick=function(){ setView('kvet'); };
+document.getElementById('pvTab').onclick=function(){ setView('tab'); };
+document.getElementById('vBar').onclick=function(){ setView('bar'); };
+document.getElementById('pvBar').onclick=function(){ setView('bar'); };
+document.getElementById('vBar2').onclick=function(){ setView('bar2'); };
+document.getElementById('pvBar2').onclick=function(){ setView('bar2'); };
+
+document.getElementById('present').onclick = function(){
+  document.body.classList.add('present');
+  var el = document.documentElement; if(el.requestFullscreen){ el.requestFullscreen().catch(function(){}); }
+};
+function exitPresent(){ document.body.classList.remove('present'); if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); }
+document.getElementById('exit').onclick = exitPresent;
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') document.body.classList.remove('present'); });
+document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement) document.body.classList.remove('present'); });
+
+document.getElementById('png').onclick = function(){
+  var svg = buildSVG();
+  var img = new Image();
+  var url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  img.onload = function(){
+    var c = document.createElement('canvas'); c.width=1920; c.height=1200;
+    var ctx = c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.drawImage(img,0,0,c.width,c.height);
+    var a = document.createElement('a');
+    a.download = (state.sub || 'tempo-tymu').replace(/[^\w\-áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ ]+/g,'').trim().replace(/\s+/g,'-') + '.png';
+    a.href = c.toDataURL('image/png'); a.click();
+  };
+  img.src = url;
+};
+
+load(); bindForm(); renderForm(); setView(state.view);
+</script>
+</body>
+</html>
