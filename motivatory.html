@@ -339,10 +339,12 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="rtitle">Pořadí motivátorů (od nejsilnějšího)</div>
   <div id="rl1"></div>
+  <div class="rtitle" style="margin-top:24px;margin-bottom:14px">Vaše 3 nejsilnější motivátory</div>
+  <div id="top3-o1"></div>
   </div>
 
   <div style="margin-top:24px;margin-bottom:4px">
-    <div class="rtitle" style="margin-bottom:14px">Profily všech motivátorů</div>
+    <div class="rtitle" style="margin-bottom:14px">Profily ostatních motivátorů</div>
     <div id="all-profiles-o1"></div>
   </div>
 
@@ -359,15 +361,15 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 <div class="overlay" id="o2">
 <div class="panel" style="max-width:660px">
   <div class="step-badge" style="margin-bottom:10px">Část 2 ze 2</div>
-  <div class="ptitle">Jak naplněné jsou vaše motivátory?</div>
-  <div class="psub">Ohodnoťte každý motivátor na škále 1–5 podle toho, jak ho cítíte naplněný ve svém aktuálním pracovním prostředí.</div>
+  <div class="ptitle">Jak naplněné jsou vaše nejsilnější motivátory?</div>
+  <div class="psub">Ohodnoťte své tři nejsilnější motivátory na škále 1–5 podle toho, jak je cítíte naplněné ve svém aktuálním pracovním prostředí. Při shodě na třetím místě hodnotíte i motivátor se stejným počtem karet.</div>
 
   <div class="p2intro">
     <strong>1</strong> = necítím naplnění vůbec &nbsp;·&nbsp;
     <strong>2</strong> = spíše nenaplněno &nbsp;·&nbsp;
     <strong>3</strong> = částečně &nbsp;·&nbsp;
     <strong>4</strong> = spíše naplněno &nbsp;·&nbsp;
-    <strong>5</strong> = plně naplněno / <strong style="color:var(--red);background:#fff0f1;padding:1px 5px;border-radius:4px">je to pro mě nepodstatné</strong>
+    <strong>5</strong> = plně naplněno
   </div>
 
   <div id="p2list"></div>
@@ -385,7 +387,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
   <div id="o3-print-area">
   <div class="step-badge" style="margin-bottom:10px">Výsledky – Část 2</div>
   <div class="ptitle">Naplněnost motivátorů</div>
-  <div class="psub">Vaše aktuální motivační skóre</div>
+  <div class="psub">Jak jsou naplněné vaše nejsilnější motivátory</div>
 
   <!-- Overall -->
   <div class="overall" id="ov-block">
@@ -403,23 +405,14 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
     <div class="zpill zbg-optimal"><div class="zdot" style="background:var(--optimal)"></div><span class="zc-optimal">80–100 % · Optimální zóna</span></div>
   </div>
 
-  <div class="rtitle">Motivátory seřazené podle důležitosti</div>
+  <div class="rtitle">Vaše nejsilnější motivátory</div>
   <div id="p2results"></div>
   </div>
 
-  <div class="reflect-box no-print" style="border-color:var(--blue);margin-top:16px">
-    <p style="margin-bottom:10px">👥 <strong>Jdete s výsledky na týmový workshop?</strong> Vygenerujte si krátký kód se svým skóre (síla i naplněnost všech motivátorů) a nadiktujte ho nebo napište spolu se svým jménem lektorovi – ušetří to ruční přepisování do týmové mapy.</p>
-    <button class="btn-sec" onclick="showTeamCode()" style="margin-bottom:0">🔑 Vygenerovat kód pro tým</button>
-    <div id="team-code-box" style="display:none;margin-top:14px;text-align:center">
-      <div id="team-code-text" style="font-family:monospace;font-size:1.6rem;font-weight:700;letter-spacing:.12em;padding:14px 10px;background:white;border:2px solid var(--blue);border-radius:12px;color:var(--text)"></div>
-      <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Nadiktujte nebo napište lektorovi své jméno a tento kód (písmena i čísla, bez mezer).</p>
-      <button id="btn-copy-code" onclick="copyTeamCode()" class="btn-sec" style="margin-top:8px">📋 Zkopírovat kód</button>
-    </div>
-  </div>
 
   <div class="pactions">
     <button class="btn-sec no-print" onclick="closeO3()">← Upravit hodnocení</button>
-    <button class="btn-acc" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3',true)">⬇ Stáhnout PDF</button>
+    <button class="btn-acc" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3')">⬇ Stáhnout PDF</button>
     <button class="btn-go" onclick="showTop3AndFull()">Moje profily →</button>
   </div>
   <div id="pdf-hint-o3" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
@@ -449,10 +442,10 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 <div class="panel" style="max-width:680px">
   <div class="step-badge" style="margin-bottom:10px">Nejslabší motivátory</div>
   <div class="ptitle">Motivátory, které mohou mít zpomalovací nebo podporující účinek</div>
-  <div class="psub">Vaše nejslabší motivátory – ty, které jste v části 1 označili nejméně. Tyto motivátory mohou v různých situacích vaše silné stránky brzdit nebo naopak podporovat.</div>
+  <div class="psub">Vaše nejslabší motivátory – ty, které jste v části 1 označili nejméně. Nejsou pro vás tak důležité, ale v různých situacích mohou vaše silné stránky brzdit nebo naopak podporovat.</div>
   <div id="weak-profiles"></div>
   <div class="reflect-box" style="border-color:var(--red);margin-top:4px">
-    <p>💭 <strong>K zamyšlení:</strong> Jak tyto nízce naplněné motivátory ovlivňují vaši energii a výkon? Co by se změnilo, kdybyste je posílili?</p>
+    <p>💭 <strong>K zamyšlení:</strong> Kde se váš nejslabší motivátor projevuje v práci a ve vztazích? U koho vám jeho jazyk chybí a co by vám pomohlo jeho potřebu lépe pochopit?</p>
   </div>
   <div class="pactions" style="margin-top:20px">
     <button class="btn-sec no-print" onclick="switchOverlay('o6','o4')">← Zpět</button>
@@ -496,7 +489,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 
   <div class="pactions" style="margin-top:20px">
     <button class="btn-sec no-print" onclick="switchOverlay('o7','o6')">← Zpět</button>
-    <button class="btn-acc" onclick="switchOverlay('o7','o3'); setTimeout(function(){ downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3',true); }, 400);">⬇ Stáhnout výsledky (PDF)</button>
+    <button class="btn-acc" id="btn-pdf-full" onclick="downloadFullPDF()">⬇ Stáhnout výsledky (PDF)</button>
     <button class="btn-sec no-print" onclick="window.close()" style="background:#f0f0ec;border-color:#ccc;color:#666">✕ Ukončit</button>
   </div>
 </div>
@@ -680,13 +673,21 @@ function showO1(){
     document.querySelectorAll('#rl1 .rbarfill').forEach(function(b){b.style.width=b.dataset.w+'%';});
     // Build all 9 profiles sorted by importance
     var allProf = d.cats; // sorted by count desc
-    var profHtml = allProf.map(function(cat,i){ return buildProfileCard(cat,i,true,false); }).join('');
+    document.getElementById('top3-o1').innerHTML = allProf.slice(0,3).map(function(cat,i){ return buildProfileCard(cat,i,true,false); }).join('');
+    var profHtml = allProf.slice(3).map(function(cat,i){ return buildProfileCard(cat,i+3,true,false); }).join('');
     document.getElementById('all-profiles-o1').innerHTML = profHtml;
   });
 }
 function closeO1(){document.getElementById('o1').classList.remove('show');}
 
 // ---- Part 2 ----
+// Nejsilnější motivátory pro naplněnost: první tři, při shodě na 3. místě i ty se stejným počtem karet
+function getTopN(){
+  if(!p2Order.length) return [];
+  var cut = p2Order[Math.min(2,p2Order.length-1)].count;
+  return p2Order.filter(function(c,i){ return i<3 || (c.count===cut && cut>0); });
+}
+
 function startP2(){
   // build ordered list of categories from P1 ranking
   var d=calcP1();
@@ -694,8 +695,8 @@ function startP2(){
 
   var list=document.getElementById('p2list');list.innerHTML='';
 
-  // Render ALL motivators in importance order (no area clusters)
-  p2Order.forEach(function(cat, i){
+  // Hodnotí se jen nejsilnější motivátory
+  getTopN().forEach(function(cat, i){
     var row=document.createElement('div');row.className='rating-row';
     var stars='<div class="rr-stars">';
     for(var s=1;s<=5;s++){
@@ -712,20 +713,7 @@ function startP2(){
     list.appendChild(row);
   });
 
-  // Area subtotals at the bottom
-  var totalsDiv=document.createElement('div');
-  totalsDiv.style.cssText='margin-top:20px;padding-top:16px;border-top:2px solid var(--border)';
-  totalsDiv.innerHTML='<div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Průběžný součet za oblasti</div>';
-  DATA.forEach(function(g){
-    var sub=document.createElement('div');
-    sub.className='area-subtotal '+g.color;
-    sub.id='ast-'+g.groupId;
-    sub.innerHTML='<div style="font-size:.8rem;font-weight:600;min-width:60px">'+g.group+'</div>'+
-      '<div class="ast-bar-bg"><div class="ast-bar-fill" id="ast-fill-'+g.groupId+'" style="width:0%"></div></div>'+
-      '<div class="ast-nums" id="ast-nums-'+g.groupId+'">0 / 15 · 0%</div>';
-    totalsDiv.appendChild(sub);
-  });
-  list.appendChild(totalsDiv);
+
 
   document.getElementById('o1').classList.remove('show');
   document.getElementById('o2').classList.add('show');
@@ -743,6 +731,7 @@ function setStar(btn,gid,cat,val,color){
 }
 
 function updateAreaSubtotal(gid){
+  if(!document.getElementById('ast-fill-'+gid)) return;
   var total=0;
   Object.keys(catRatings[gid]).forEach(function(c){total+=catRatings[gid][c];});
   var pct=Math.round(total/15*100);
@@ -757,7 +746,7 @@ function showP2Results(){
   // p2Order contains cats sorted by count desc = importance order
   var grandTotal=0;
   var grandCount=0;
-  p2Order.forEach(function(cat){
+  getTopN().forEach(function(cat){
     var v=catRatings[cat.groupId][cat.name]||0;
     grandTotal+=v;
     grandCount++;
@@ -783,7 +772,7 @@ function showP2Results(){
     // Results sorted by IMPORTANCE (p2Order = ranked from Part 1)
     var res=document.getElementById('p2results');res.innerHTML='';
 
-    p2Order.forEach(function(cat,i){
+    getTopN().forEach(function(cat,i){
       var v=catRatings[cat.groupId][cat.name]||0;
       var pct=Math.round(v/5*100);
       var zi2=zoneInfo(pct);
@@ -828,50 +817,9 @@ function showP2Results(){
 
 function closeO3(){document.getElementById('o3').classList.remove('show');document.getElementById('o2').classList.add('show');}
 
-// ---- Krátký kód pro tým (síla + naplněnost, k nadiktování/přepsání do týmové mapy) ----
-// Pevné pořadí motivátorů - musí být shodné s FIXED_ORDER v týmové mapě
-var FIXED_ORDER = ['Ředitel','Stavitel','Odborník','Obránce','Přítel','Hvězda','Tvůrce','Hledač','Duch'];
-// Crockfordova base32 abeceda - bez znaků 0/O a 1/I, aby se nepletly při diktování/přepisu
-var CROCK32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-
-function toBase32Fixed(num, len){
-  var s = '';
-  for(var i=0;i<len;i++){ s = CROCK32[num % 32] + s; num = Math.floor(num/32); }
-  return s;
-}
-
-function buildTeamCode(){
-  var num = 0;
-  FIXED_ORDER.forEach(function(name){
-    var cat = p2Order.filter(function(c){ return c.name===name; })[0];
-    var imp = cat ? Math.max(0,Math.min(5, cat.count||0)) : 0;
-    var ful = cat ? Math.max(0,Math.min(5, catRatings[cat.groupId][cat.name]||0)) : 0;
-    num = num*6 + imp;
-    num = num*6 + ful;
-  });
-  var checksum = num % 32;
-  var code = toBase32Fixed(num, 10) + CROCK32[checksum];
-  return code.slice(0,4) + '-' + code.slice(4,8) + '-' + code.slice(8,11);
-}
-
-function showTeamCode(){
-  var el = document.getElementById('team-code-text');
-  el.textContent = buildTeamCode();
-  document.getElementById('team-code-box').style.display = 'block';
-}
-
-function copyTeamCode(){
-  var text = document.getElementById('team-code-text').textContent;
-  var btn = document.getElementById('btn-copy-code');
-  var done = function(){ var orig='📋 Zkopírovat kód'; btn.textContent='✓ Zkopírováno'; setTimeout(function(){btn.textContent=orig;},1800); };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done).catch(function(){});
-  }
-}
-
 function showTop3AndFull() {
-  // Build TOP 3
-  var top3 = p2Order.slice(0,3);
+  // Build TOP 3 (při shodě i více)
+  var top3 = getTopN();
   var t3html = top3.map(function(cat,i){ return buildProfileCard(cat,i,true,true); }).join('');
   document.getElementById('top3-profiles').innerHTML = t3html;
 
@@ -932,6 +880,7 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
   var jmeno = (window._leadData && window._leadData.jmeno) ? window._leadData.jmeno.replace(/[^a-zA-Z0-9\-]+/g,'_') : '';
   var fileName = filenamePrefix + (jmeno ? '-' + jmeno : '') + '.pdf';
 
+  var origTxt = btn ? btn.textContent : '';
   if(btn){ btn.disabled = true; btn.textContent = 'Připravuji PDF…'; }
 
   // iOS/Safari + html2canvas: pokud je stránka scrollnutá, canvas se vykreslí
@@ -950,18 +899,58 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
         windowHeight: document.documentElement.scrollHeight
       },
       jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend'] }
+      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend','.profile-card','.contact-hero','.contact-bullets li','.contact-link'] }
     };
 
     html2pdf().set(opt).from(el).save().then(function(){
-      if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+      if(btn){ btn.disabled = false; btn.textContent = origTxt; }
       cleanup();
     }).catch(function(){
-      if(btn){ btn.disabled = false; btn.textContent = '⬇ Stáhnout PDF'; }
+      if(btn){ btn.disabled = false; btn.textContent = origTxt; }
       if(hint) hint.style.display = 'block';
       cleanup();
     });
   }, 350);
+}
+
+// ---- Souhrnné PDF celého testu (TOP 3, nejslabší, naplněnost, kontakt) ----
+function downloadFullPDF(){
+  var wrap = document.getElementById('final-print-wrap');
+  if(!wrap){
+    wrap = document.createElement('div');
+    wrap.id = 'final-print-wrap';
+    wrap.style.cssText = 'position:absolute;left:-10000px;top:0;width:640px';
+    document.body.appendChild(wrap);
+  }
+  var top3 = getTopN();
+  var minCount = 999;
+  p2Order.forEach(function(cat){ if(cat.count < minCount) minCount = cat.count; });
+  var weakest = p2Order.filter(function(cat){ return cat.count === minCount; });
+  weakest.sort(function(a,b){ return (catRatings[a.groupId][a.name]||0) - (catRatings[b.groupId][b.name]||0); });
+  var jm = (window._leadData && window._leadData.jmeno) ? window._leadData.jmeno : '';
+  var brk = '<div class="html2pdf__page-break"></div>';
+  var o3 = document.getElementById('o3-print-area').innerHTML.replace(/ id="[^"]*"/g,'');
+  var o1c = document.getElementById('o1-print-area').cloneNode(true);
+  var t3 = o1c.querySelector('#top3-o1');
+  if(t3){ var t3t = t3.previousElementSibling; if(t3t) t3t.parentNode.removeChild(t3t); t3.parentNode.removeChild(t3); }
+  var o1t = o1c.querySelector('.ptitle'); if(o1t) o1t.parentNode.removeChild(o1t);
+  var o1s = o1c.querySelector('.psub'); if(o1s) o1s.parentNode.removeChild(o1s);
+  var o1html = o1c.innerHTML.replace(/ id="[^"]*"/g,'');
+  var contact = document.querySelector('#o7 .panel').cloneNode(true);
+  var acts = contact.querySelector('.pactions'); if(acts) acts.parentNode.removeChild(acts);
+  wrap.innerHTML = '<div id="final-print-area" style="background:#fff;padding:4px">' +
+    '<div class="ptitle">Moje motivátory</div>' +
+    '<div class="psub">' + (jm ? jm + ' · ' : '') + new Date().toLocaleDateString('cs-CZ') + '</div>' +
+    o1html + brk +
+    '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">' + (top3.length>3 ? 'Moje nejsilnější motivátory' : 'Moje 3 nejsilnější motivátory') + '</div>' +
+    top3.map(function(cat,i){ return buildProfileCard(cat,i,true,true); }).join('') +
+    brk +
+    '<div class="rtitle" style="margin-bottom:14px">' + (weakest.length>1 ? 'Moje nejslabší motivátory' : 'Můj nejslabší motivátor') + '</div>' +
+    weakest.map(function(cat,i){ return buildProfileCard(cat,i,false,false); }).join('') +
+    brk + o3 +
+    brk + contact.innerHTML +
+    '</div>';
+  downloadPersonalPDF('final-print-area','vysledky-motivatory','btn-pdf-full');
 }
 
 var PROFILES = {
@@ -1101,19 +1090,18 @@ function sendResultsToMake() {
 
   // Overall score
   var grandTotal=0; var grandCnt=0;
-  p2Order.forEach(function(cat){ grandTotal+=catRatings[cat.groupId][cat.name]||0; grandCnt++; });
+  getTopN().forEach(function(cat){ grandTotal+=catRatings[cat.groupId][cat.name]||0; grandCnt++; });
   var ovPct = grandCnt>0 ? Math.round(grandTotal/(grandCnt*5)*100) : 0;
   var zi = zoneInfo(ovPct);
 
   // TOP 3
-  var top3 = p2Order.slice(0,3).map(function(cat){
+  var top3 = getTopN().map(function(cat){
     return cat.name + ' (' + cat.group + ') – naplněnost: ' + (catRatings[cat.groupId][cat.name]||0) + '/5';
   }).join(', ');
 
   // All 9 results
   var vsechny = p2Order.map(function(cat, i){
-    var v = catRatings[cat.groupId][cat.name]||0;
-    return (i+1)+'. '+cat.name+' – důležitost: '+cat.count+'/5, naplněnost: '+v+'/5 ('+Math.round(v/5*100)+'%)';
+    return (i+1)+'. '+cat.name+' – důležitost: '+cat.count+'/5';
   }).join(' | ');
 
   // Weakest
@@ -1123,8 +1111,7 @@ function sendResultsToMake() {
     .map(function(cat){ return cat.name+' ('+cat.group+')'; }).join(', ');
 
   // Area scores
-  var oblasti = {vykon:0,vztahy:0,rust:0};
-  p2Order.forEach(function(cat){ oblasti[cat.groupId]+=(catRatings[cat.groupId][cat.name]||0); });
+  var oblasti = calcP1().gt; // počet vybraných karet v oblastech (část 1)
 
   var payload = {
     // Kontakt
@@ -1144,9 +1131,9 @@ function sendResultsToMake() {
     vsechny_vysledky: vsechny,
 
     // Oblast skóre
-    vykon_body:   oblasti.vykon + '/15 (' + Math.round(oblasti.vykon/15*100) + '%)',
-    vztahy_body:  oblasti.vztahy + '/15 (' + Math.round(oblasti.vztahy/15*100) + '%)',
-    rust_body:    oblasti.rust + '/15 (' + Math.round(oblasti.rust/15*100) + '%)'
+    vykon_karty:  oblasti.vykon + '/15',
+    vztahy_karty: oblasti.vztahy + '/15',
+    rust_karty:   oblasti.rust + '/15'
   };
 
   try {
