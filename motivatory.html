@@ -218,6 +218,12 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,25,44,.3)}
 .btn-start:active{transform:scale(.98)}
 .btn-start:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.82rem;line-height:1.45;color:var(--text);margin:10px 0 0;cursor:pointer;text-align:left;position:relative;z-index:1}
+.consent input{margin-top:3px;width:18px;height:18px;flex:0 0 18px;accent-color:var(--red)}
+.consent.err span{color:var(--red)}
+.consent small{display:block;font-size:.74rem;line-height:1.4;color:#6B6B6B;margin-top:4px}
+.consent span b{font-weight:600}
+.form-msg{color:var(--red);font-size:.82rem;min-height:1.2em;margin:10px 0 4px;text-align:left;position:relative;z-index:1}
 .privacy-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;position:relative;z-index:1;line-height:1.5}
 
 
@@ -285,9 +291,12 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
       <label class="form-label" for="f-phone">Telefon</label>
       <input class="form-input" type="tel" id="f-phone" placeholder="+420 777 123 456">
     </div>
+    <label class="consent" id="c-gdpr-wrap"><input type="checkbox" id="c-gdpr"> <span>Souhlasím se zpracováním svých údajů (jméno, e-mail, telefon) a&nbsp;odpovědí za účelem vyplnění a&nbsp;vyhodnocení testu. Správcem údajů je Martina Maraj, IČO: 63392160.</span></label>
+    <label class="consent"><input type="checkbox" id="c-offer"> <span><b>Souhlasím se zasíláním novinek a&nbsp;obchodních sdělení.</b><small>Zaškrtnutím tohoto políčka udělujete souhlas s&nbsp;tím, aby Martina Maraj, IČO: 63392160 zpracovávala Vámi zadaný e-mail (případně jméno a&nbsp;telefonní číslo) za účelem zasílání informací o&nbsp;novinkách, službách a&nbsp;produktech. Tento souhlas můžete kdykoli odvolat kliknutím na odkaz pro odhlášení v&nbsp;každém e-mailu nebo zasláním zprávy na maraj.martina@gmail.com.</small></span></label>
+    <div class="form-msg" id="form-msg"></div>
 
     <button class="btn-start" id="btn-start" onclick="submitLead()">Spustit test motivátorů →</button>
-    <div class="privacy-note">🔒 Vaše údaje jsou v bezpečí. Slouží výhradně pro kontakt s vámi a nebudou sdíleny třetím stranám.</div>
+    <div class="privacy-note">🔒 Vaše údaje používám jen pro vyhodnocení testu a, pokud si to přejete, pro zasílání novinek. Nikomu je neprodávám ani je nepoužívám jinak.</div>
   </div>
 </div>
 
@@ -1122,6 +1131,8 @@ function sendResultsToMake() {
     jmeno:   window._leadData.jmeno,
     email:   window._leadData.email,
     telefon: window._leadData.telefon,
+    souhlas_nabidky: window._leadData.souhlas_nabidky,
+    typ:     'Výsledky testu',
     datum:   new Date().toLocaleDateString('cs-CZ'),
     cas:     new Date().toLocaleTimeString('cs-CZ'),
 
@@ -1161,19 +1172,36 @@ function submitLead() {
   var name  = document.getElementById('f-name').value.trim();
   var email = document.getElementById('f-email').value.trim();
   var phone = document.getElementById('f-phone').value.trim();
-  var ok = true;
-  ['f-name','f-email','f-phone'].forEach(function(id){
-    var el = document.getElementById(id);
-    if (!el.value.trim()) { el.classList.add('err'); ok = false; }
-    else el.classList.remove('err');
-  });
-  if (!ok) return;
+  var msgs = [];
+  function mark(id, bad, msg){ var el=document.getElementById(id); if(bad){ el.classList.add('err'); msgs.push(msg); } else el.classList.remove('err'); }
+  var words = name.split(/\s+/).filter(function(w){ return /^[A-Za-zÀ-ž'\-]{2,}$/.test(w); });
+  mark('f-name', words.length < 2, 'Vyplňte prosím jméno i příjmení.');
+  mark('f-email', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email), 'Zadejte prosím platný e-mail.');
+  var digits = phone.replace(/\D/g,'');
+  mark('f-phone', digits.length < 9 || digits.length > 15, 'Zadejte prosím telefon (alespoň 9 číslic).');
+  var gdpr = document.getElementById('c-gdpr').checked;
+  var offer = document.getElementById('c-offer').checked;
+  var gw = document.getElementById('c-gdpr-wrap');
+  if(!gdpr){ gw.classList.add('err'); msgs.push('Pro spuštění testu je potřeba souhlas se zpracováním údajů.'); } else gw.classList.remove('err');
+  document.getElementById('form-msg').textContent = msgs.join(' ');
+  if (msgs.length) return;
   var btn = document.getElementById('btn-start');
   btn.disabled = true;
   btn.textContent = 'Spouštím test...';
 
   // Store contact for later use when sending full results
-  window._leadData = {jmeno: name, email: email, telefon: phone};
+  window._leadData = {jmeno: name, email: email, telefon: phone, souhlas_nabidky: offer ? 'ano' : 'ne'};
+
+  // Kontakt se uloží hned při spuštění testu, i kdyby ho člověk nedokončil
+  try {
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({typ:'Zahájení testu (kontakt)', verze_testu:'kompletní', jmeno:name, email:email, telefon:phone,
+        souhlas_zpracovani:'ano', souhlas_nabidky: offer ? 'ano' : 'ne',
+        datum:new Date().toLocaleDateString('cs-CZ'), cas:new Date().toLocaleTimeString('cs-CZ')})
+    }).catch(function(e){ console.log('Formspree:', e); });
+  } catch(e) {}
 
   // Immediately hide welcome and start test
   hideWelcome();
@@ -1182,7 +1210,7 @@ function submitLead() {
 ['f-name','f-email','f-phone'].forEach(function(id){
   var el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('input', function(){ this.classList.remove('err'); });
+  el.addEventListener('input', function(){ this.classList.remove('err'); document.getElementById('form-msg').textContent=''; });
   el.addEventListener('keydown', function(e){ if(e.key==='Enter') submitLead(); });
 });
 
