@@ -83,6 +83,7 @@
       <button class="b" id="vTab">Co brzdí</button>
       <button class="b" id="vBar">Barvy týmu</button>
       <button class="b" id="vBar2">Pořadí motivátorů</button>
+      <button class="b" id="vMap">Mapa týmu</button>
       <button class="b primary" id="present">▶ Promítnout na celou obrazovku</button>
       <button class="b" id="png">⬇ Stáhnout obrázek (PNG)</button>
       <button class="b" onclick="window.print()">🖨 Tisk / PDF</button>
@@ -90,7 +91,7 @@
   </main>
 </div>
 <button class="b exit" id="exit">✕ Zavřít</button>
-<div class="pview"><button class="b" id="pvKvet">Květ</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button></div>
+<div class="pview"><button class="b" id="pvKvet">Květ</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvMap">Mapa týmu</button></div>
 
 <script>
 var MOTS = [
@@ -242,6 +243,7 @@ function buildSVG(){
   if(state.view==='tab') return buildBrakes();
   if(state.view==='bar') return buildColors(false);
   if(state.view==='bar2') return buildColors(true);
+  if(state.view==='map') return buildMap();
   var W=1600, H=1000;
   var done = state.people.filter(function(p){ return personSum(p)!==null; })
     .slice().sort(function(a,b){ return personSum(a)-personSum(b); });
@@ -446,12 +448,67 @@ function buildBrakes(){
   out += '<text x="'+(W-56)+'" y="'+(H-30)+'" text-anchor="end" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
   return out;
 }
+
+var SEL = [];
+function buildMap(){
+  var W=1600, H=1000;
+  var rows=[]; state.people.forEach(function(p,i){ var m=(p.m||[]).filter(function(x){return x;}); if(m.length) rows.push({num:i+1, m:m}); });
+  SEL = SEL.filter(function(x){ return rows.some(function(r){return r.num===x;}); });
+  var out='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
+  out+='<rect width="'+W+'" height="'+H+'" fill="#fff"/>';
+  out+='<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#00897B">Mapa týmu</text>';
+  out+='<text x="58" y="128" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub || 'Tři nejsilnější motivátory každého člověka')+'</text>';
+  if(!rows.length){ out+='<text x="800" y="520" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory alespoň u jednoho člověka</text></svg>'; return out; }
+  var x0=200, cw=(W-x0-60)/9, yH=170, hh=96, top=yH+hh+10;
+  var avail=H-top-110, rh=Math.min(70, avail/rows.length);
+  // cluster headers
+  ['V','Z','R'].forEach(function(k,ci){
+    var c=CL[k], x=x0+ci*3*cw;
+    out+='<rect x="'+(x+4)+'" y="'+yH+'" width="'+(3*cw-8)+'" height="40" rx="10" fill="'+c.bg+'" stroke="'+c.c+'" stroke-width="3"/>'+
+      '<text x="'+(x+1.5*cw)+'" y="'+(yH+29)+'" text-anchor="middle" font-size="26" font-weight="bold" fill="'+c.c+'">'+c.n+'</text>';
+  });
+  MOTS.forEach(function(m,j){
+    var c=CL[m.k], x=x0+j*cw+cw/2;
+    out+='<text x="'+x+'" y="'+(yH+80)+'" text-anchor="middle" font-size="23" font-weight="bold" fill="'+c.c+'">'+m.n+'</text>';
+  });
+  var A=null,B=null; if(SEL.length===2){ rows.forEach(function(r){ if(r.num===SEL[0])A=r; if(r.num===SEL[1])B=r; }); }
+  rows.forEach(function(r,i){
+    var y=top+i*rh, on = SEL.length===0 || SEL.indexOf(r.num)>=0, op = on?1:0.18;
+    var isSel = SEL.indexOf(r.num)>=0;
+    out+='<g data-row="'+r.num+'" style="cursor:pointer" opacity="'+op+'">';
+    out+='<rect x="40" y="'+(y+3)+'" width="'+(W-80)+'" height="'+(rh-6)+'" rx="10" fill="'+(isSel?'#F3F7F8':'#fff')+'" stroke="'+(isSel?'#00897B':'#ECEFF1')+'" stroke-width="'+(isSel?3:1.5)+'"/>';
+    out+='<circle cx="120" cy="'+(y+rh/2)+'" r="'+Math.min(26,rh*0.38)+'" fill="#fff" stroke="#00897B" stroke-width="3"/>'+
+      '<text x="120" y="'+(y+rh/2+Math.min(10,rh*0.15))+'" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="'+Math.round(Math.min(28,rh*0.42))+'" fill="#00897B">'+r.num+'</text>';
+    MOTS.forEach(function(m,j){
+      var x=x0+j*cw, c=CL[m.k], has=r.m.indexOf(m.n)>=0;
+      if(has){
+        var shared = A&&B && isSel && A.m.indexOf(m.n)>=0 && B.m.indexOf(m.n)>=0;
+        out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="'+c.c+'" stroke="'+(shared?'#00897B':c.c)+'" stroke-width="'+(shared?6:0)+'"/>';
+        if(shared) out+='<text x="'+(x+cw/2)+'" y="'+(y+rh/2+8)+'" text-anchor="middle" font-size="'+Math.round(Math.min(22,rh*0.34))+'" font-weight="bold" fill="#fff">společné</text>';
+      } else {
+        out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="#fff" stroke="#E0E0E0" stroke-width="1.5"/>';
+      }
+    });
+    out+='</g>';
+  });
+  out+='<text x="'+(W-56)+'" y="'+(H-22)+'" text-anchor="end" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  return out;
+}
+document.getElementById('stage').addEventListener('click', function(e){
+  if(state.view!=='map') return;
+  var g=e.target.closest ? e.target.closest('[data-row]') : null;
+  if(!g){ if(SEL.length){ SEL=[]; draw(); } return; }
+  var n=parseInt(g.getAttribute('data-row'),10), k=SEL.indexOf(n);
+  if(k>=0) SEL.splice(k,1); else { SEL.push(n); if(SEL.length>2) SEL.shift(); }
+  draw();
+});
 function setView(v){
   state.view=v; save(); draw();
   ['vKvet','pvKvet'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='kvet'); });
   ['vTab','pvTab'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='tab'); });
   ['vBar','pvBar'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar'); });
   ['vBar2','pvBar2'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar2'); });
+  ['vMap','pvMap'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='map'); });
 }
 function draw(){ document.getElementById('stage').innerHTML = buildSVG(); }
 document.getElementById('vKvet').onclick=function(){ setView('kvet'); };
@@ -462,6 +519,8 @@ document.getElementById('vBar').onclick=function(){ setView('bar'); };
 document.getElementById('pvBar').onclick=function(){ setView('bar'); };
 document.getElementById('vBar2').onclick=function(){ setView('bar2'); };
 document.getElementById('pvBar2').onclick=function(){ setView('bar2'); };
+document.getElementById('vMap').onclick=function(){ setView('map'); };
+document.getElementById('pvMap').onclick=function(){ setView('map'); };
 
 document.getElementById('present').onclick = function(){
   document.body.classList.add('present');
