@@ -49,6 +49,11 @@
   body.present .exit{display:block}
   @media (max-width:900px){.app{flex-direction:column}aside{width:auto;flex:none;max-height:none;border-right:none;border-bottom:1px solid var(--line)}}
   @media print{aside,.bar,.exit{display:none!important}main{padding:0}.stage{box-shadow:none;max-width:none}}
+  #report{display:none}
+  @media print{body.printing > *:not(#report){display:none!important}body.printing #report{display:block}
+    #report .rp{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;page-break-after:always;break-after:page}
+    #report .rp:last-child{page-break-after:auto;break-after:auto}#report svg{width:100%;height:auto;max-height:100vh}}
+  @page{size:A4 landscape;margin:8mm}
 </style>
 </head>
 <body>
@@ -79,19 +84,20 @@
   <main>
     <div class="stage" id="stage"></div>
     <div class="bar">
-      <button class="b" id="vKvet">Květ</button>
-      <button class="b" id="vTab">Co brzdí</button>
       <button class="b" id="vBar">Barvy týmu</button>
       <button class="b" id="vBar2">Pořadí motivátorů</button>
+      <button class="b" id="vTab">Co brzdí</button>
+      <button class="b" id="vKvet">Květ</button>
       <button class="b" id="vMap">Mapa týmu</button>
       <button class="b primary" id="present">▶ Promítnout na celou obrazovku</button>
       <button class="b" id="png">⬇ Stáhnout obrázek (PNG)</button>
+      <button class="b" id="report-btn">🖨 Tisk všech pohledů (PDF)</button>
       <button class="b" onclick="window.print()">🖨 Tisk / PDF</button>
     </div>
   </main>
 </div>
 <button class="b exit" id="exit">✕ Zavřít</button>
-<div class="pview"><button class="b" id="pvKvet">Květ</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvMap">Mapa týmu</button></div>
+<div class="pview"><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvKvet">Květ</button><button class="b" id="pvMap">Mapa týmu</button></div>
 
 <script>
 var MOTS = [
@@ -134,7 +140,7 @@ function zone(p){ for(var i=0;i<ZONES.length;i++){ if(p<=ZONES[i].max) return ZO
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 var STORE = 'kvet-otevrenosti-v1';
-var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'kvet'};
+var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'bar'};
 function blankPerson(i){ return {name:'Osoba '+(i+1), m:['','',''], p:['','',''], w:''}; }
 
 function load(){
@@ -546,7 +552,19 @@ document.getElementById('png').onclick = function(){
   img.src = url;
 };
 
+
+document.getElementById('report-btn').onclick = function(){
+  var keep = state.view, keepSel = SEL.slice(); SEL = [];
+  var html = '';
+  ['bar','bar2','tab','kvet','map'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
+  state.view = keep; SEL = keepSel;
+  document.getElementById('report').innerHTML = html;
+  document.body.classList.add('printing');
+  setTimeout(function(){ window.print(); }, 150);
+};
+window.addEventListener('afterprint', function(){ document.body.classList.remove('printing'); document.getElementById('report').innerHTML=''; });
 load(); bindForm(); renderForm(); setView(state.view);
 </script>
+<div id="report"></div>
 </body>
 </html>
