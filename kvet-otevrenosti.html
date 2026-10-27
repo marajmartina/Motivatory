@@ -477,7 +477,7 @@ function buildMap(){
     var c=CL[m.k], x=x0+j*cw+cw/2;
     out+='<text x="'+x+'" y="'+(yH+80)+'" text-anchor="middle" font-size="23" font-weight="bold" fill="'+c.c+'">'+m.n+'</text>';
   });
-  var A=null,B=null; if(SEL.length===2){ rows.forEach(function(r){ if(r.num===SEL[0])A=r; if(r.num===SEL[1])B=r; }); }
+  var CNT={}; rows.forEach(function(r){ if(SEL.indexOf(r.num)>=0) r.m.forEach(function(x){ CNT[x]=(CNT[x]||0)+1; }); });
   rows.forEach(function(r,i){
     var y=top+i*rh, on = SEL.length===0 || SEL.indexOf(r.num)>=0, op = on?1:0.18;
     var isSel = SEL.indexOf(r.num)>=0;
@@ -488,7 +488,7 @@ function buildMap(){
     MOTS.forEach(function(m,j){
       var x=x0+j*cw, c=CL[m.k], has=r.m.indexOf(m.n)>=0;
       if(has){
-        var shared = A&&B && isSel && A.m.indexOf(m.n)>=0 && B.m.indexOf(m.n)>=0;
+        var shared = isSel && SEL.length>=2 && (CNT[m.n]||0)>=2;
         out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="'+c.c+'" stroke="'+(shared?'#00897B':c.c)+'" stroke-width="'+(shared?6:0)+'"/>';
         if(shared) out+='<text x="'+(x+cw/2)+'" y="'+(y+rh/2+8)+'" text-anchor="middle" font-size="'+Math.round(Math.min(22,rh*0.34))+'" font-weight="bold" fill="#fff">společné</text>';
       } else {
@@ -505,7 +505,7 @@ document.getElementById('stage').addEventListener('click', function(e){
   var g=e.target.closest ? e.target.closest('[data-row]') : null;
   if(!g){ if(SEL.length){ SEL=[]; draw(); } return; }
   var n=parseInt(g.getAttribute('data-row'),10), k=SEL.indexOf(n);
-  if(k>=0) SEL.splice(k,1); else { SEL.push(n); if(SEL.length>2) SEL.shift(); }
+  if(k>=0) SEL.splice(k,1); else SEL.push(n);
   draw();
 });
 function setView(v){
