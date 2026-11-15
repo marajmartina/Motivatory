@@ -447,6 +447,31 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 .pf-top span{font-family:'Poppins',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.68rem}
 .pf-top b{font-family:'Poppins',sans-serif;font-size:.82rem}
 .pf-bar{height:6px;border-radius:4px;background:#EFE9E1;margin-top:6px;overflow:hidden}.pf-bar i{display:block;height:100%;border-radius:4px}
+
+/* Můj profil + nabídka setkání */
+.ps-lead{font-size:.95rem;line-height:1.7;color:var(--ink);margin:4px 0 16px}
+.ps-lead b{font-family:'Poppins',sans-serif}
+.ps-box{border-radius:16px;padding:14px 18px 10px;margin-bottom:12px;border:1.5px solid}
+.ps-plus{border-color:#0E8F7E;background:#F0FAF8}
+.ps-minus{border-color:#C9761A;background:#FFF7EE}
+.ps-h{font:700 .92rem/1.3 'Poppins',sans-serif;margin-bottom:6px}
+.ps-plus .ps-h{color:#0E8F7E}.ps-minus .ps-h{color:#C9761A}
+.ps-box ul{margin:0 0 4px;padding-left:18px}.ps-box li{font-size:.86rem;line-height:1.6;margin-bottom:3px}
+.ps-ful{font-size:.88rem;line-height:1.6;color:var(--muted);margin:4px 0 0}
+.offer{margin-top:22px;background:var(--rainbow);border-radius:22px;padding:3px}
+.offer-in{background:#fff;border-radius:19px;padding:20px 20px 16px}
+.offer-h{font:800 1.25rem/1.3 'Poppins',sans-serif;color:var(--ink);margin:4px 0 8px;text-align:center}
+.offer-h2{font:700 1rem/1.3 'Poppins',sans-serif;color:var(--ink);margin:14px 0 8px}
+.offer-p{font-size:.88rem;line-height:1.7;margin-bottom:14px}
+.offer-cav{font:700 1.3rem/1.3 'Caveat',cursive;color:#6B4FA0;text-align:center;margin:6px 0 14px}
+.offer-btn{width:100%;display:block}
+.offer-more{display:none}.offer-more.show{display:block}
+.offer-tag{display:inline-block;background:var(--warm-l);border:1.5px solid var(--warm);border-radius:50px;padding:5px 14px;font:700 .8rem 'Poppins',sans-serif;color:var(--ink)}
+.offer-price{background:#FBF8F3;border-radius:14px;padding:12px 14px;font-size:.85rem;line-height:1.6}
+.offer-link{font-size:.74rem;color:var(--muted);text-align:center;margin-top:8px}
+#o5 .contact-hero{margin-bottom:6px}
+#o5 .contact-links{margin-top:16px}
+body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter-bar{display:none!important}
 </style>
 </head>
 <body>
@@ -538,16 +563,34 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
   </div>
 
   <div class="lector-only" style="margin-top:24px;margin-bottom:4px">
-    <div class="mh-sec" style="margin-top:30px">Popisy ostatních motivátorů</div>
+    <div class="mh-sec" style="margin-top:30px">Popisy všech 9 motivátorů</div>
     <div id="all-profiles-o1"></div>
   </div>
 
   <div class="pactions">
-    <button class="btn-sec no-print" onclick="closeO1()">← Upravit výběr</button>
-    <button class="btn-sec" id="btn-pdf-o1" onclick="downloadPersonalPDF('o1-print-area','moje-motivatory','btn-pdf-o1')">⬇ Stáhnout PDF</button>
-    <button class="btn-go" onclick="startP2()">Část 2: Naplněnost →</button>
+    <button class="btn-sec no-print solo-only" onclick="closeO1()">← Upravit výběr</button>
+    <button class="btn-sec solo-only" id="btn-pdf-o1" onclick="downloadPersonalPDF('o1-print-area','moje-motivatory','btn-pdf-o1')">⬇ Stáhnout PDF</button>
+    <button class="btn-go solo-only" onclick="showTopDesc()">Popis vašich TOP motivátorů →</button>
+    <button class="btn-go lector-only" onclick="switchOverlay('o1','o3')">Naplněnost →</button>
   </div>
   <div id="pdf-hint-o1" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
+</div>
+</div>
+
+<!-- O1b: Popis TOP 3 -->
+<div class="overlay" id="o1b">
+<div class="panel" style="max-width:680px">
+  <div class="step-badge" style="margin-bottom:10px">Vaše TOP 3 motivátory</div>
+  <div class="ptitle">Co vás nejvíce pohání</div>
+  <div class="psub">Popis tří motivátorů, které vám v práci i v životě dávají nejvíce energie.</div>
+  <div id="topdesc-profiles"></div>
+  <div class="reflect-box" style="border-color:var(--blue);margin-top:4px">
+    <p>💭 <strong>K zamyšlení:</strong> Jak moc vaše aktuální pracovní prostředí tyto vaše přirozené motivátory podporuje? Kde cítíte největší nesoulad?</p>
+  </div>
+  <div class="pactions" style="margin-top:20px">
+    <button class="btn-sec no-print" onclick="switchOverlay('o1b','o1')">← Zpět</button>
+    <button class="btn-go" onclick="startP2()">Část 2: Naplněnost →</button>
+  </div>
 </div>
 </div>
 
@@ -569,7 +612,7 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
   <div id="p2list"></div>
 
   <div class="pactions" style="margin-top:20px">
-    <button class="btn-sec no-print" onclick="document.getElementById('o2').classList.remove('show');document.getElementById('o1').classList.add('show')">← Zpět</button>
+    <button class="btn-sec no-print" onclick="switchOverlay('o2','o1b')">← Zpět</button>
     <button class="btn-go" onclick="showP2Results()">Zobrazit výsledky naplněnosti →</button>
   </div>
 </div>
@@ -605,9 +648,11 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 
 
   <div class="pactions">
-    <button class="btn-sec no-print" onclick="closeO3()">← Upravit hodnocení</button>
-    <button class="btn-acc" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3')">⬇ Stáhnout PDF</button>
-    <button class="btn-go" onclick="showTop3AndFull()">Moje profily →</button>
+    <button class="btn-sec no-print solo-only" onclick="closeO3()">← Upravit hodnocení</button>
+    <button class="btn-sec no-print lector-only" onclick="switchOverlay('o3','o1')">← Zpět</button>
+    <button class="btn-acc solo-only" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3')">⬇ Stáhnout PDF</button>
+    <button class="btn-go solo-only" onclick="showMyProfile()">Můj profil →</button>
+    <button class="btn-go lector-only" onclick="buildWeakProfiles();switchOverlay('o3','o6')">Nejslabší motivátor →</button>
   </div>
   <div id="pdf-hint-o3" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
 </div>
@@ -643,8 +688,53 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
     <p>💭 <strong>K zamyšlení:</strong> Kde se váš nejslabší motivátor projevuje v práci a ve vztazích? U koho vám jeho jazyk chybí a co by vám pomohlo jeho potřebu lépe pochopit?</p>
   </div>
   <div class="pactions" style="margin-top:20px">
-    <button class="btn-sec no-print" onclick="switchOverlay('o6','o4')">← Zpět</button>
-    <button class="btn-go" onclick="switchOverlay('o6','o7')">Co dál? →</button>
+    <button class="btn-sec no-print" onclick="switchOverlay('o6','o3')">← Zpět</button>
+    <button class="btn-go" id="btn-pdf-full6" onclick="downloadFullPDF('btn-pdf-full6')">🖨 Celá zpráva k tisku (PDF)</button>
+  </div>
+</div>
+</div>
+
+<!-- O5: Můj profil -->
+<div class="overlay" id="o5">
+<div class="panel" style="max-width:640px">
+  <div id="o5-print-area">
+    <div class="step-badge" style="margin-bottom:10px">Můj profil</div>
+    <div class="ptitle">Shrnutí vašich motivátorů</div>
+    <div id="profile-summary"></div>
+  </div>
+  <div class="offer" id="offer">
+    <div class="offer-in">
+      <div id="o5-hero"></div>
+      <div class="offer-h">Chcete znát celou svou mapu?</div>
+      <p class="offer-p">Tento test ukázal vaše tři nejsilnější motivátory. Celá mapa jich má devět a každý z nich ve vašem životě hraje svou roli. Některé mohou ovlivňovat, jak dobře si rozumíte s druhými lidmi, nebo jak snadno se vžijete do jejich pohledu.</p>
+      <ul class="contact-bullets">
+        <li><strong>Kompletní profil všech 9 motivátorů</strong>S podrobným výkladem, co jednotlivé motivátory znamenají právě pro vás.</li>
+        <li><strong>Vy a druzí lidé</strong>Jak se vaše motivace potkává nebo míjí s motivací kolegů a blízkých a jak s tím ve vztazích pracovat.</li>
+        <li><strong>Váš nejslabší motivátor</strong>Jakou roli ve vašem profilu hraje. Někdy stojí za nedorozuměním s druhými, jindy brzdí výsledky, kterých díky svým silným motivátorům dosahujete.</li>
+      </ul>
+      <p class="offer-cav">Vydejte se na cestu k pochopení své mapy a naplno rozviňte svůj potenciál.</p>
+      <button class="btn-go offer-btn no-print" onclick="document.getElementById('offer-more').classList.add('show');this.style.display='none'">Chci se dozvědět víc →</button>
+      <div class="offer-more" id="offer-more">
+        <div class="offer-tag">Online setkání · 60 minut</div>
+        <div class="offer-h2">Co získáte</div>
+        <ul class="contact-bullets">
+          <li>Podrobný pohled na celou svou mapu motivátorů.</li>
+          <li>Konkrétní kroky, jak uvolnit překážky, které vás připravují o motivaci a energii.</li>
+          <li>Rozbor nejslabšího motivátoru: zda ovlivňuje vaši energii, kdy a kde se to děje a co s tím můžete dělat.</li>
+          <li>Tip na osobní nebo odborný rozvoj, který odpovídá tomu, co je pro vás v současné životní fázi nejdůležitější.</li>
+          <li>PDF profil se všemi 9 motivátory.</li>
+        </ul>
+        <div class="offer-price"><b>Cena: 2 490 Kč</b> (pokud setkání není součástí koučovacího balíčku)<br>Platí se předem převodem na účet. Údaje k platbě vám pošlu po naplánování setkání.</div>
+        <a class="btn-calendly no-print" href="https://calendly.com/maraj-martina/individualni-setkani" target="_blank" rel="noopener">📅 Chci se setkat</a>
+        <div class="offer-link">Rezervace termínu: calendly.com/maraj-martina/individualni-setkani</div>
+      </div>
+      <div id="o5-links"></div>
+    </div>
+  </div>
+  <div class="pactions" style="margin-top:20px">
+    <button class="btn-sec no-print" onclick="switchOverlay('o5','o3')">← Zpět</button>
+    <button class="btn-acc" id="btn-pdf-full" onclick="downloadFullPDF('btn-pdf-full')">⬇ Stáhnout výsledky (PDF)</button>
+    <button class="btn-sec no-print" onclick="window.close()" style="background:#f0f0ec;border-color:#ccc;color:#666">✕ Ukončit</button>
   </div>
 </div>
 </div>
@@ -684,7 +774,6 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 
   <div class="pactions" style="margin-top:20px">
     <button class="btn-sec no-print" onclick="switchOverlay('o7','o6')">← Zpět</button>
-    <button class="btn-acc" id="btn-pdf-full" onclick="downloadFullPDF()">⬇ Stáhnout výsledky (PDF)</button>
     <button class="btn-sec no-print" onclick="window.close()" style="background:#f0f0ec;border-color:#ccc;color:#666">✕ Ukončit</button>
   </div>
 </div>
@@ -870,11 +959,11 @@ function showO1(){
     // Build all 9 profiles sorted by importance
     var allProf = d.cats; // sorted by count desc
     document.getElementById('top3-o1').innerHTML = allProf.slice(0,3).map(function(cat,i){ return buildProfileCard(cat,i,true,false); }).join('');
-    var profHtml = allProf.slice(3).map(function(cat,i){ return buildProfileCard(cat,i+3,true,false); }).join('');
+    var profHtml = allProf.map(function(cat,i){ return buildProfileCard(cat,i,true,!!window._viewMode && i<3); }).join('');
     document.getElementById('all-profiles-o1').innerHTML = profHtml;
   });
 }
-function closeO1(){document.getElementById('o1').classList.remove('show');}
+function closeO1(){if(window._viewMode)return;document.getElementById('o1').classList.remove('show');}
 
 // ---- Part 2 ----
 // Nejsilnější motivátory pro naplněnost: první tři, při shodě na 3. místě i ty se stejným počtem karet
@@ -911,7 +1000,14 @@ function startP2(){
 
 
   document.getElementById('o1').classList.remove('show');
+  document.getElementById('o1b').classList.remove('show');
   document.getElementById('o2').classList.add('show');
+}
+function showTopDesc(){
+  var top = calcP1().cats.slice(0,3);
+  document.getElementById('topdesc-profiles').innerHTML = top.map(function(cat,i){ return buildProfileCard(cat,i,true,false); }).join('');
+  switchOverlay('o1','o1b');
+  try{ document.querySelector('#o1b').scrollTop = 0; }catch(e){}
 }
 
 function setStar(btn,gid,cat,val,color){
@@ -1009,7 +1105,34 @@ function showP2Results(){
   });
 }
 
-function closeO3(){document.getElementById('o3').classList.remove('show');document.getElementById('o2').classList.add('show');}
+function closeO3(){if(window._viewMode)return;document.getElementById('o3').classList.remove('show');document.getElementById('o2').classList.add('show');}
+
+function buildWeakProfiles(){
+  var minCount = 999;
+  p2Order.forEach(function(cat){ if(cat.count < minCount) minCount = cat.count; });
+  var weakest = p2Order.filter(function(cat){ return cat.count === minCount; });
+  document.getElementById('weak-profiles').innerHTML = weakest.map(function(cat,i){ return buildProfileCard(cat,i,false,false); }).join('');
+  return weakest;
+}
+function showMyProfile(){
+  var top = getTopN();
+  var nm = top.map(function(c){ return '<b style="color:'+colorHex[c.color]+'">'+c.name+'</b>'; });
+  var list = nm.length>2 ? nm.slice(0,-1).join(', ')+' a '+nm[nm.length-1] : nm.join(' a ');
+  var mot=[], dem=[];
+  top.forEach(function(c){ var p=PROFILES[c.name]; if(p){ mot=mot.concat(p.motivates); dem=dem.concat(p.demotivates); } });
+  var li = function(x){ return '<li>'+x+'</li>'; };
+  var pct = (document.getElementById('ov-pct')||{}).textContent || '';
+  var zn = (document.getElementById('ov-zone')||{}).textContent || '';
+  document.getElementById('profile-summary').innerHTML =
+    '<p class="ps-lead">Z devíti motivátorů, které nás pohánějí v práci i v životě, jsou vaše tři nejsilnější: '+list+'.</p>'+
+    '<div class="ps-box ps-plus"><div class="ps-h">Nejvíce energie a chuti do práce vám dává</div><ul>'+mot.map(li).join('')+'</ul></div>'+
+    '<div class="ps-box ps-minus"><div class="ps-h">O energii vás naopak může připravovat</div><ul>'+dem.map(li).join('')+'</ul></div>'+
+    (pct && pct!=='–' ? '<p class="ps-ful">Vaše nejsilnější motivátory jsou nyní naplněné na <b>'+pct+'</b>'+(zn?' ('+zn+')':'')+'.</p>' : '');
+  var hero = document.querySelector('#o7 .contact-hero'), links = document.querySelector('#o7 .contact-links');
+  if(hero) document.getElementById('o5-hero').appendChild(hero);
+  if(links) document.getElementById('o5-links').appendChild(links);
+  switchOverlay('o3','o5');
+}
 
 function showTop3AndFull() {
   // Build TOP 3 (při shodě i více)
@@ -1108,7 +1231,7 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
 }
 
 // ---- Souhrnné PDF celého testu (TOP 3, nejslabší, naplněnost, kontakt) ----
-function downloadFullPDF(){
+function downloadFullPDF(btnId){
   var wrap = document.getElementById('final-print-wrap');
   if(!wrap){
     wrap = document.createElement('div');
@@ -1117,35 +1240,33 @@ function downloadFullPDF(){
     document.body.appendChild(wrap);
   }
   var top3 = getTopN();
-  var minCount = 999;
-  p2Order.forEach(function(cat){ if(cat.count < minCount) minCount = cat.count; });
-  var weakest = p2Order.filter(function(cat){ return cat.count === minCount; });
-  weakest.sort(function(a,b){ return (catRatings[a.groupId][a.name]||0) - (catRatings[b.groupId][b.name]||0); });
   var jm = (window._leadData && window._leadData.jmeno) ? window._leadData.jmeno : '';
   var brk = '<div class="html2pdf__page-break"></div>';
-  var o3 = document.getElementById('o3-print-area').innerHTML.replace(/ id="[^"]*"/g,'');
-  var o1c = document.getElementById('o1-print-area').cloneNode(true);
-  var t3 = o1c.querySelector('#top3-o1');
-  if(t3){ var t3t = t3.previousElementSibling; if(t3t) t3t.parentNode.removeChild(t3t); t3.parentNode.removeChild(t3); }
-  var o1t = o1c.querySelector('.ptitle'); if(o1t) o1t.parentNode.removeChild(o1t);
-  var o1s = o1c.querySelector('.psub'); if(o1s) o1s.parentNode.removeChild(o1s);
-  var o1html = o1c.innerHTML.replace(/ id="[^"]*"/g,'');
-  var contact = document.querySelector('#o7 .panel').cloneNode(true);
-  var acts = contact.querySelector('.pactions'); if(acts) acts.parentNode.removeChild(acts);
-  wrap.innerHTML = '<div id="final-print-area" style="background:#fff;padding:4px">' +
-    '<div class="ptitle">Moje motivátory</div>' +
-    '<div class="psub">' + (jm ? jm + ' · ' : '') + (window._viewDate || new Date().toLocaleDateString('cs-CZ')) + '</div>' +
-    o1html + brk +
-    '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">' + (top3.length>3 ? 'Moje nejsilnější motivátory' : 'Moje 3 nejsilnější motivátory') + '</div>' +
-    top3.map(function(cat,i){ return buildProfileCard(cat,i,true,true); }).join('') +
-    (window._viewMode ? brk +
-    '<div class="rtitle" style="margin-bottom:14px">' + (weakest.length>1 ? 'Moje nejslabší motivátory' : 'Můj nejslabší motivátor') + '</div>' +
-    weakest.map(function(cat,i){ return buildProfileCard(cat,i,false,false); }).join('') : '') +
-    (window._viewMode ? '' : '<div class="mh-teaser solo-only"><div><div class="t1">Vaše mapa má ještě další motivátory, včetně toho nejslabšího.</div><div class="t2">Právě ten často vysvětluje, proč vás něco vyčerpává. Kompletní mapu s vámi ráda projdu na osobní konzultaci.</div><a class="no-print" href="https://calendly.com/maraj-martina/individualni-setkani" target="_blank" rel="noopener">Sjednat konzultaci →</a></div></div>') +
-    brk + o3 +
-    brk + contact.innerHTML +
-    '</div>';
-  downloadPersonalPDF('final-print-area','vysledky-motivatory','btn-pdf-full');
+  var strip = function(h){ return h.replace(/ id="[^"]*"/g,''); };
+  var o3 = strip(document.getElementById('o3-print-area').innerHTML);
+  var o1html = strip(document.getElementById('o1-print-area').innerHTML);
+  var head = '<div class="ptitle">Moje motivátory</div>' +
+    '<div class="psub">' + (jm ? jm + ' · ' : '') + (window._viewDate || new Date().toLocaleDateString('cs-CZ')) + '</div>';
+  var body;
+  if(window._viewMode){
+    var weakest = buildWeakProfiles();
+    body = o1html + brk +
+      '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">Popisy všech 9 motivátorů</div>' +
+      p2Order.map(function(cat,i){ return buildProfileCard(cat,i,true,i<3); }).join('') +
+      brk + o3 + brk +
+      '<div class="rtitle" style="margin-bottom:14px">' + (weakest.length>1 ? 'Nejslabší motivátory' : 'Nejslabší motivátor') + '</div>' +
+      weakest.map(function(cat,i){ return buildProfileCard(cat,i,false,false); }).join('');
+  } else {
+    var prof = document.querySelector('#o5 .panel').cloneNode(true);
+    prof.querySelectorAll('.pactions,.offer-btn,.btn-calendly').forEach(function(x){ x.parentNode.removeChild(x); });
+    var more = prof.querySelector('.offer-more'); if(more) more.style.display = 'block';
+    body = o1html + brk +
+      '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">Moje 3 nejsilnější motivátory</div>' +
+      top3.map(function(cat,i){ return buildProfileCard(cat,i,true,true); }).join('') +
+      brk + o3 + brk + strip(prof.innerHTML);
+  }
+  wrap.innerHTML = '<div id="final-print-area" style="background:#fff;padding:4px">' + head + body + '</div>';
+  downloadPersonalPDF('final-print-area','vysledky-motivatory', btnId || 'btn-pdf-full');
 }
 
 var PROFILES = {
@@ -1480,7 +1601,7 @@ function buildResultLink(){
   var bar = document.createElement('div');
   bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#263238;color:#fff;font:14px/1.4 sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap';
   var who = (window._leadData.jmeno ? window._leadData.jmeno + ' · ' : '') + (window._viewDate || '');
-  bar.innerHTML = '<span>Náhled výsledku pro lektorku' + (who ? ' · ' + who : '') + '</span>' + '<button id="btn-pdf-view" onclick="downloadFullPDF()" style="background:#00897B;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-weight:600;cursor:pointer">⬇ Stáhnout celé PDF</button>';
+  bar.innerHTML = '<span>Náhled výsledku pro lektorku' + (who ? ' · ' + who : '') + '</span>' + '<button id="btn-pdf-view" onclick="downloadFullPDF(\'btn-pdf-view\')" style="background:#00897B;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-weight:600;cursor:pointer">🖨 Celá zpráva k tisku (PDF)</button>';
   document.body.appendChild(bar);
   var st = document.createElement('style'); st.textContent = '.overlay{padding-top:72px!important}'; document.head.appendChild(st);
 })();
