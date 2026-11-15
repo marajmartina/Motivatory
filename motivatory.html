@@ -471,9 +471,10 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 .offer-link{font-size:.74rem;color:var(--muted);text-align:center;margin-top:8px}
 #o5 .contact-hero{margin-bottom:6px}
 #o5 .contact-links{margin-top:16px}
-#o1-print-area .view-contact{background:#fff;border:1.5px solid var(--warm);border-radius:16px;padding:10px 14px;margin:0 0 14px}
-.vc-name{font:800 1.1rem/1.3 'Poppins',sans-serif;color:var(--ink)}
-.vc-rows{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.84rem;color:var(--muted);margin-top:3px}
+#o1-print-area .view-contact{text-align:center;padding:6px 10px 14px;margin:0 0 14px;border-bottom:1.5px dashed var(--warm)}
+.vc-kick{font:700 .7rem/1 'Poppins',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#6B6585;margin-bottom:6px}
+.vc-name{font:800 1.6rem/1.2 'Poppins',sans-serif;color:var(--ink)}
+.vc-rows{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;font-size:.84rem;color:var(--muted);margin-top:6px}
 body.lector .mh-kicker{display:none!important}
 body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter-bar{display:none!important}
 </style>
@@ -1261,8 +1262,8 @@ function downloadFullPDF(btnId){
   var brk = '<div class="html2pdf__page-break"></div>';
   var strip = function(h){ return h.replace(/ id="[^"]*"/g,''); };
   var o3 = strip(document.getElementById('o3-print-area').innerHTML);
-  var o1html = strip(document.getElementById('o1-print-area').innerHTML);
-  var head = '<div class="ptitle">Moje motivátory</div>' +
+  var o1html = document.getElementById('o1-print-area').outerHTML; // id ponechat kvůli stylům mapy
+  var head = window._viewMode ? '' : '<div class="ptitle">Moje motivátory</div>' +
     (window._viewMode ? '' : '<div class="psub">' + (jm ? jm + ' · ' : '') + new Date().toLocaleDateString('cs-CZ') + '</div>');
   var body;
   if(window._viewMode){
@@ -1613,6 +1614,7 @@ function buildResultLink(){
     if (L.telefon) rows.push('📞 ' + e(L.telefon));
     if (window._viewDate) rows.push('Test vyplněn: ' + e(window._viewDate));
     document.getElementById('view-contact').innerHTML =
+      '<div class="vc-kick">Motivační profil</div>' +
       '<div class="vc-name">' + (L.jmeno ? e(L.jmeno) : 'Jméno nebylo uvedeno') + '</div>' +
       (rows.length ? '<div class="vc-rows">' + rows.map(function(r){ return '<span>'+r+'</span>'; }).join('') + '</div>' : '');
   })();
