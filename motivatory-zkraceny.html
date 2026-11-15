@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moje motivátory</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
@@ -259,30 +259,176 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 .btn-calendly{width:100%;background:linear-gradient(135deg,var(--red),#c0001f);color:white;border:none;padding:16px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:16px;transition:all .2s;text-align:center;display:block;text-decoration:none}
 .btn-calendly:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,25,44,.3)}
 
+
+/* ===== NOVÝ VZHLED VÝSLEDKŮ (styl LinkedIn grafik) ===== */
+:root{--ink:#1F1B3D;--g-vykon:linear-gradient(135deg,#F7845E,#E2445C);--g-vztahy:linear-gradient(135deg,#4CC38A,#1E9A62);--g-rust:linear-gradient(135deg,#5AAEF0,#2F6FD0);--rainbow:linear-gradient(90deg,#F59E0B,#E04A86,#8B5CF6,#3B82F6,#14B8A6)}
+#o1.overlay{background:radial-gradient(circle at 10% 8%,#DCEBFA 0,transparent 38%),radial-gradient(circle at 92% 12%,#FBE0E6 0,transparent 36%),radial-gradient(circle at 85% 90%,#FDEBD3 0,transparent 40%),radial-gradient(circle at 8% 88%,#DDF3E6 0,transparent 38%),#FBF8F3;backdrop-filter:none}
+#o1 .panel{background:transparent;box-shadow:none;padding:28px 18px 30px;max-width:660px}
+#o1-print-area{background:#FBF8F3;border-radius:22px;padding:6px 4px 10px}
+.mh-kicker{text-align:center;font:600 .7rem/1 'Poppins',sans-serif;letter-spacing:.22em;color:#5B5777;margin:6px 0 10px}
+.mh-title{text-align:center;font:800 clamp(1.9rem,7vw,2.6rem)/1.08 'Poppins',sans-serif;color:var(--ink);margin:0}
+.mh-title2{text-align:center;font:800 clamp(1.5rem,5.6vw,2.1rem)/1.15 'Poppins',sans-serif;margin:4px 0 14px}
+.mh-script{text-align:center;font:600 1.35rem/1.2 'Caveat',cursive;color:var(--ink);margin:4px 0 22px}
+.mh-script span{border-bottom:3px solid #F6C445;padding-bottom:1px}
+.mh-sec{font:700 .72rem/1 'Poppins',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5B5777;margin:22px 4px 12px}
+.mh-top{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mh-card{border-radius:20px;padding:16px 10px 16px;color:#fff;text-align:center;box-shadow:0 10px 24px rgba(31,27,61,.12);position:relative}
+.mh-card.red{background:var(--g-vykon)}.mh-card.green{background:var(--g-vztahy)}.mh-card.blue{background:var(--g-rust)}
+.mh-rank{position:absolute;top:10px;left:12px;font:800 .95rem 'Poppins',sans-serif;opacity:.9}
+.mh-pill{display:inline-block;background:#fff;border-radius:20px;padding:3px 10px;font:700 .62rem/1.3 'Poppins',sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.mh-card.red .mh-pill{color:#C8364F}.mh-card.green .mh-pill{color:#1E8A58}.mh-card.blue .mh-pill{color:#2B63BD}
+.mh-ico{width:62px;height:62px;border-radius:50%;background:#fff;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;padding:15px}
+.mh-card.red .mh-ico{color:#D93A55}.mh-card.green .mh-ico{color:#1E9A62}.mh-card.blue .mh-ico{color:#2F6FD0}
+.mh-name{font:800 1.05rem/1.1 'Poppins',sans-serif}
+.mh-tag{font:600 1.02rem/1.15 'Caveat',cursive;margin-top:6px;opacity:.97}
+.mh-clusters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mh-cl{background:#fff;border-radius:16px;padding:12px 12px 13px;box-shadow:0 4px 14px rgba(31,27,61,.06)}
+.mh-cl b{display:block;font:700 .78rem 'Poppins',sans-serif;color:var(--ink)}
+.mh-cl .pct{font:800 1.45rem/1.15 'Poppins',sans-serif}
+.mh-cl .bar{height:7px;border-radius:5px;background:#EEEAF2;overflow:hidden;margin-top:6px}.mh-cl .bar i{display:block;height:100%;border-radius:5px}
+#o1-print-area .sblock{display:none}
+#o1-print-area .rtitle{font:700 .72rem/1 'Poppins',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5B5777;margin:22px 4px 12px}
+#rl1{background:#fff;border-radius:18px;padding:6px 14px;box-shadow:0 4px 14px rgba(31,27,61,.06)}
+#rl1 .rrow{border-bottom:1px dashed #E7E2EC}#rl1 .rrow:last-child{border-bottom:none}
+#rl1 .rnum{font-family:'Poppins',sans-serif;font-weight:800}#rl1 .rname{font-family:'DM Sans',sans-serif}
+#rl1 .rbarbg{height:8px;border-radius:6px;background:#F0ECF3}#rl1 .rbarfill{border-radius:6px}
+.mh-weak{margin-top:12px;background:#fff;border:2px dashed #C9C2D6;border-radius:16px;padding:12px 14px;font-size:.88rem;color:var(--ink)}
+.mh-weak b{font-family:'Poppins',sans-serif}
+.mh-weak .s{font:600 1.08rem/1.25 'Caveat',cursive;color:#6B4FA0;display:block;margin-top:3px}
+#o1-print-area .codebox{border:none;background:#fff;border-radius:18px;position:relative;box-shadow:0 4px 14px rgba(31,27,61,.06);padding:3px}
+#o1-print-area .codebox>*{position:relative}
+#o1-print-area .codebox{background:var(--rainbow);}
+#o1-print-area .codebox .cb-in{background:#fff;border-radius:15px;padding:10px 14px}
+#o1-print-area .codebox{max-width:360px;margin:18px auto 0}
+#o1-print-area .code-val{font-size:1.35rem}
+#o1-print-area .code-hint{margin:4px 0 6px}
+.pdf-compact .no-print{display:none!important}
+.pdf-compact #rl1 .rrow{padding:5px 0}
+.pdf-compact .mh-sec,.pdf-compact .rtitle{margin-top:14px!important;margin-bottom:8px!important}
+.pdf-compact .mh-card{padding:12px 10px}
+.pdf-compact .mh-ico{width:52px;height:52px;padding:12px;margin-bottom:6px}
+.pdf-compact .mh-foot{margin-top:12px}
+.mh-quote{margin-top:22px;background:var(--rainbow);border-radius:20px;padding:3px}
+.mh-quote div{background:#fff;border-radius:17px;padding:16px 18px;text-align:center;font:600 1.45rem/1.2 'Caveat',cursive;color:var(--ink)}
+.mh-quote small{display:block;font:700 .8rem/1.4 'Poppins',sans-serif;color:#C73E7A;margin-top:6px}
+.mh-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px dotted #CFC9D9;margin-top:20px;padding-top:10px;font-size:.74rem;color:#5B5777}
+.mh-foot b{color:var(--ink)}
+#o1 .profile-card{border:none!important;border-radius:20px;background:#fff;box-shadow:0 4px 14px rgba(31,27,61,.06)}
+#o1 .profile-name{font-family:'Poppins',sans-serif;font-weight:800}
+#o1 .profile-rank{font-family:'Poppins',sans-serif}
+#o1 .profile-tagline{font-family:'Caveat',cursive;font-style:normal;font-size:1.15rem;color:var(--ink)}
+#o1 .profile-group{border-radius:20px}
+#o1 .btn-go{background:linear-gradient(90deg,#E04A86,#8B5CF6)}
+@media (max-width:480px){.mh-top{grid-template-columns:1fr}.mh-card{display:grid;grid-template-columns:62px 1fr;gap:4px 14px;text-align:left;align-items:center;padding:14px 16px}.mh-ico{grid-row:1/4;margin:0}.mh-pill{justify-self:start;margin:0}.mh-rank{left:auto;right:14px;top:12px}}
+
+/* ===== NOVÝ VZHLED – úvod a test ===== */
+:root{--red:#E2445C;--green:#1E9A62;--blue:#2F6FD0;--red-l:#FDEEF1;--green-l:#EAF7F0;--blue-l:#EBF2FC}
+body,#welcome{background:radial-gradient(circle at 8% 6%,#DCEBFA 0,transparent 34%),radial-gradient(circle at 94% 10%,#FBE0E6 0,transparent 32%),radial-gradient(circle at 88% 92%,#FDEBD3 0,transparent 36%),radial-gradient(circle at 6% 90%,#DDF3E6 0,transparent 34%),#FBF8F3;background-attachment:fixed}
+.mw{position:relative;overflow:visible;background:#fff;border-radius:28px;box-shadow:0 20px 50px rgba(31,27,61,.12);text-align:center;padding:42px 28px 26px!important;max-width:440px}
+.mw::before,.mw::after{display:none!important}
+.mw-title{font:800 clamp(1.6rem,6.6vw,2.1rem)/1.15 'Poppins',sans-serif;color:var(--ink);margin-top:10px}
+.mw-sub{margin:10px 0 16px!important}
+.mw-script{font:600 1.4rem/1.2 'Caveat',cursive;color:var(--ink);margin:2px 0 14px}.mw-script span{border-bottom:3px solid #F6C445}
+.mw-text{font-size:1rem;line-height:1.6;color:#5B5777;margin-bottom:22px}
+.mw-foot{margin-top:18px;font-size:.74rem;color:#8A86A0}.mw-foot b{color:var(--ink)}
+.mw-dash{position:absolute;height:7px;border-radius:6px}
+.mw-dash.d1{width:46px;top:22px;left:20px;background:linear-gradient(90deg,#5AAEF0,#2F6FD0);transform:rotate(28deg)}
+.mw-dash.d2{width:24px;top:46px;left:16px;background:#7BCB9B;transform:rotate(-8deg)}
+.mw-dash.d3{width:46px;top:22px;right:20px;background:linear-gradient(90deg,#F7845E,#E2445C);transform:rotate(-28deg)}
+.mw-dash.d4{width:24px;top:46px;right:16px;background:#F6C445;transform:rotate(8deg)}
+.btn-start,.btn-main{background:linear-gradient(90deg,#E04A86,#8B5CF6)!important;font-family:'Poppins',sans-serif!important;font-weight:700!important;box-shadow:0 8px 20px rgba(139,92,246,.25)}
+header{background:transparent!important;border-bottom:none!important}
+header::before,header::after{display:none!important}
+header h1{font:700 clamp(1.1rem,3.6vw,1.5rem)/1.35 'Poppins',sans-serif!important;color:var(--ink)}
+.counter-bar{background:rgba(255,255,255,.88)!important;backdrop-filter:blur(6px);border-bottom:none!important}
+.counter-bar .cnum{font-family:'Poppins',sans-serif;font-weight:800}
+.card{border:2px solid transparent!important;border-radius:18px!important;box-shadow:0 4px 14px rgba(31,27,61,.07)!important}
+.ctitle{font-family:'Poppins',sans-serif!important;font-weight:700!important;color:var(--ink)}
+.cdesc{color:#6E6A85!important;font-weight:400!important}
+.cbar{width:34px!important;height:5px!important;border-radius:4px!important}
+.card.sr{border-color:var(--red)!important}.card.sg{border-color:var(--green)!important}.card.sb{border-color:var(--blue)!important}
+.cta-wrap{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(6px)}
+.btn-main{white-space:nowrap;padding:12px 22px!important}
+@media (max-width:480px){.btn-main{font-size:.84rem!important;padding:12px 16px!important}.cta-info{font-size:.78rem}}
+
+#o7.overlay{background:radial-gradient(circle at 10% 8%,#DCEBFA 0,transparent 38%),radial-gradient(circle at 92% 12%,#FBE0E6 0,transparent 36%),radial-gradient(circle at 85% 90%,#FDEBD3 0,transparent 40%),#FBF8F3;backdrop-filter:none}
+#o7 .panel{border-radius:28px;box-shadow:0 20px 50px rgba(31,27,61,.12)}
+#o7 h2,#o7 h3,#o7 .contact-name,#o7 .contact-title,#o7 [class*="title"]{font-family:'Poppins',sans-serif!important;color:var(--ink)}
+
+/* popisy motivátorů */
+#o1 .profile-card{padding:0!important;overflow:hidden}
+#o1 .profile-card-header{padding:16px 18px 14px;margin:0!important;gap:12px}
+#o1 .pc-red .profile-card-header{background:linear-gradient(135deg,#FFF1EE,#FDE7EC)}
+#o1 .pc-green .profile-card-header{background:linear-gradient(135deg,#EAF8F0,#E2F4EA)}
+#o1 .pc-blue .profile-card-header{background:linear-gradient(135deg,#EDF5FD,#E5EEFB)}
+#o1 .pc-ico{width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;padding:10px;color:#fff}
+#o1 .pc-red .pc-ico{background:var(--g-vykon)}#o1 .pc-green .pc-ico{background:var(--g-vztahy)}#o1 .pc-blue .pc-ico{background:var(--g-rust)}
+#o1 .pc-ico svg{width:24px;height:24px}
+#o1 .profile-rank{min-width:auto;font-size:1.1rem}
+#o1 .profile-name{font-size:1.15rem}
+#o1 .profile-tagline,#o1 .profile-section{padding:0 18px}
+#o1 .profile-tagline{margin:14px 0 12px;line-height:1.3}
+#o1 .profile-section:last-child{padding-bottom:16px}
+#o1 .profile-section-title{font-family:'Poppins',sans-serif;letter-spacing:.08em}
+#o1 .profile-section-title i{font-style:normal;width:18px;height:18px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;line-height:1}
+#o1 .pc-plus{color:#0E8F7E!important}#o1 .pc-plus i{background:#14A38F}
+#o1 .pc-minus{color:#C9761A!important}#o1 .pc-minus i{background:#E89A3C}
+#o1 .profile-bullets li{color:#3A3655}
+
+/* kontaktní stránka */
+#o7 .contact-avatar,#o7 .contact-hero img{border-color:#C2479A!important;box-shadow:0 0 0 4px #fff,0 0 0 7px #E9C6F0}
+#o7 .contact-role{font-family:'Caveat',cursive;font-size:1.25rem;color:#6B4FA0}
+#o7 .contact-bullets{display:grid;gap:10px}
+#o7 .contact-bullets li{background:#FBF8F3;border:none!important;border-radius:16px;padding:12px 14px 12px 44px}
+#o7 .contact-bullets li::before{content:'';left:14px;top:15px;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#E04A86,#8B5CF6)}
+#o7 .contact-bullets li::after{content:'→';position:absolute;left:18px;top:13px;color:#fff;font-size:.72rem;font-weight:700}
+#o7 .contact-bullets li strong{font-family:'Poppins',sans-serif;color:var(--ink)}
+#o7 .btn-calendly{background:linear-gradient(90deg,#E04A86,#8B5CF6)!important;font-family:'Poppins',sans-serif;box-shadow:0 8px 20px rgba(139,92,246,.25)}
+#o7 .contact-link{background:#fff;border:1.5px solid #ECE6F2;border-radius:16px}
+#o7 .contact-link:hover{border-color:#C9B6E8;background:#FAF6FE}
+#o7 .contact-link-icon{width:34px;height:34px;border-radius:50%;background:#F3EEFA;display:flex;align-items:center;justify-content:center;font-size:1rem}
+#o7 .btn-acc{background:var(--ink)!important;font-family:'Poppins',sans-serif;font-weight:600}
+
+/* ===== teplejší akcenty (žlutooranžová z grafik) ===== */
+:root{--warm:#F4A93B;--warm-l:#FFF6E6;--warm-b:#F6C26B}
+body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle at 8% 6%,#FFE7C7 0,transparent 34%),radial-gradient(circle at 94% 10%,#FCE1E7 0,transparent 32%),radial-gradient(circle at 90% 92%,#FFE2B8 0,transparent 38%),radial-gradient(circle at 6% 90%,#E3F1FB 0,transparent 34%),#FFF9F1!important}
+#o1-print-area{background:#FFFBF5!important;border:2px solid var(--warm-b);border-radius:24px!important;padding:14px 12px 12px!important}
+.mh-title2{position:relative;padding-bottom:12px}
+.mh-title2::after{content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:120px;height:4px;border-radius:3px;background:linear-gradient(90deg,#F9C74F,#F3722C)}
+.mh-sec,#o1-print-area .rtitle{display:flex;align-items:center;gap:8px}
+.mh-sec::before,#o1-print-area .rtitle::before{content:'';width:18px;height:4px;border-radius:3px;background:linear-gradient(90deg,#F9C74F,#F3722C);flex:none}
+.mh-cl,#rl1{border:1.6px solid var(--warm-b)!important}
+.profile-card{border:1.6px solid var(--warm-b)!important}
+.mw,.panel{border:2px solid var(--warm-b)!important}
+#o1 .panel{border:none!important}
+.card{border-color:#F6E3C2!important}
+.card.sr{border-color:var(--red)!important}.card.sg{border-color:var(--green)!important}.card.sb{border-color:var(--blue)!important}
+.counter-bar{border-bottom:2px solid var(--warm-b)!important}
+.cta-wrap{border-top:2px solid var(--warm-b)!important}
+.contact-bullets li{background:var(--warm-l)!important}
+.contact-link{border-color:var(--warm-b)!important}
+.reflect-box{background:var(--warm-l)!important;border-color:var(--warm)!important}
+.overall{border-width:2px!important}
+.mw-foot,.mh-foot{border-top-color:var(--warm-b)!important}
 </style>
 </head>
 <body>
 
 <!-- WELCOME SCREEN -->
-<div id="welcome" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#FAFAF7;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto">
-  <div class="welcome-card">
-    <div class="welcome-dots">
-      <div class="welcome-dot" style="background:var(--red)"></div>
-      <div class="welcome-dot" style="background:var(--green)"></div>
-      <div class="welcome-dot" style="background:var(--blue)"></div>
-    </div>
-    <div class="welcome-title">Vítejte na stránce vašeho osobního dotazníku</div>
-    <div class="welcome-sub" style="font-size:1.05rem">
-      <strong style="font-size:1.2rem;color:var(--red)">Motivace a diverzita</strong><br><br>
-      Stránka se vám načetla správně. Počkejte prosím na pokyny lektorky, test spustíte tlačítkem níže.
-    </div>
+<div id="welcome" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto">
+  <div class="welcome-card mw">
+    <span class="mw-dash d1"></span><span class="mw-dash d2"></span><span class="mw-dash d3"></span><span class="mw-dash d4"></span>
+    <div class="mw-title">Vítejte na stránce vašeho osobního dotazníku</div>
+    <div class="mh-title2 mw-sub"><span style="color:#F26B3A">Motivace</span> <span style="color:#C2479A">a</span> <span style="color:#7C5CE0">diverzita</span></div>
+    <div class="mw-text">Stránka se vám načetla správně. Počkejte prosím na pokyny lektorky, test spustíte tlačítkem níže.</div>
     <button class="btn-start" id="btn-start" onclick="hideWelcome()">Spustit test →</button>
+    <div class="mw-foot"><b>Martina Maraj</b> · lektorka a koučka vědomé komunikace</div>
   </div>
 </div>
 
 
 <header id="hdr">
-  <div class="step-badge">Test motivátorů</div>
+  <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
   <h1>Označte kompetence, které považujete u sebe za nejvíce motivační faktory v ideálním pracovním prostředí.</h1>
 </header>
 
@@ -307,8 +453,13 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
 <div class="overlay" id="o1" onclick="if(event.target===this)closeO1()">
 <div class="panel">
   <div id="o1-print-area">
-  <div class="ptitle">Vaše motivátory</div>
-  <div class="psub">Pořadí vašich motivátorů podle vybraných kartiček</div>
+  <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
+  <div class="mh-title">Vaše motivátory.</div>
+  <div class="mh-title2"><span style="color:#F26B3A">Co</span> <span style="color:#E04A6E">vás</span> <span style="color:#C2479A">opravdu</span> <span style="color:#7C5CE0">pohání</span><span style="color:#3B82F6">?</span></div>
+  <div class="mh-sec">Vaše 3 nejsilnější motivátory</div>
+  <div class="mh-top" id="mh-top"></div>
+  <div class="mh-sec">Oblasti</div>
+  <div class="mh-clusters" id="mh-clusters"></div>
 
   <div class="sblock">
     <h3>Přehled oblastí</h3>
@@ -317,18 +468,19 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3.2vw,1.7
     <div class="srow"><div class="sdot" style="background:var(--blue)"></div><div class="slbl">Růst</div><div class="sbarbg"><div class="sbarfill" id="sb1r" style="width:0%;background:var(--blue)"></div></div><div class="snums" id="sn1r" style="color:var(--blue)"></div></div>
   </div>
 
-  <div class="rtitle">Pořadí motivátorů (od nejsilnějšího)</div>
+  <div class="rtitle">Pořadí všech 9 motivátorů</div>
   <div id="rl1"></div>
-  <div class="codebox">
+  <div class="codebox"><div class="cb-in">
     <div class="code-lbl">Kód vašeho výsledku</div>
     <div class="code-val" id="res-code">–</div>
-    <div class="code-hint">Uložte si ho (snímek obrazovky nebo PDF). Budete ho potřebovat pro navazující test.</div>
+    <div class="code-hint">Uložte si výsledek svého testu pro další práci.</div>
     <button class="btn-sec no-print" id="btn-copy" onclick="copyCode()">Zkopírovat kód</button>
-  </div>
+  </div></div>
+  <div class="mh-foot"><span><b>Martina Maraj</b> · lektorka a koučka vědomé komunikace</span><span><b>marajmartina.cz</b></span></div>
   </div>
 
   <div style="margin-top:24px;margin-bottom:4px">
-    <div class="rtitle" style="margin-bottom:14px">Profily všech motivátorů</div>
+    <div class="mh-sec" style="margin-top:30px">Popisy všech motivátorů</div>
     <div id="all-profiles-o1"></div>
   </div>
 
@@ -456,8 +608,8 @@ var DATA = [
 ];
 
 // ---- helpers ----
-var colorHex={red:'#E8192C',green:'#2EAA6E',blue:'#1B8ECC'};
-var bgHex={red:'#fff0f1',green:'#f0faf5',blue:'#f0f7fc'};
+var colorHex={red:'#E2445C',green:'#1E9A62',blue:'#2F6FD0'};
+var bgHex={red:'#FDEEF1',green:'#EAF7F0',blue:'#EBF2FC'};
 
 function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
 
@@ -575,7 +727,9 @@ function showO1(){
       '</div>';
     rl.appendChild(row);
   });
+  try{ buildHero(d); }catch(e){ console.log(e); }
   document.getElementById('o1').classList.add('show');
+  sendResultsToMake(); // poslat výsledek hned po zobrazení
   rAF2(function(){
     document.querySelectorAll('#rl1 .rbarfill').forEach(function(b){b.style.width=b.dataset.w+'%';});
     // Build all 9 profiles sorted by importance
@@ -937,9 +1091,10 @@ function buildProfileCard(cat, rank, showRank, showFulfill) {
       '<span style="background:'+zBg[zi.cls]+';color:'+zColors[zi.cls]+';font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:20px">'+v+'/5 · '+pct+'%</span>'+
       '<span style="font-size:.67rem;font-weight:700;padding:1px 7px;border-radius:10px;background:'+zBg[zi.cls]+';color:'+zColors[zi.cls]+'">'+zi.label+'</span>'+
     '</div>' : '';
-  return '<div class="profile-card" style="border-color:'+ch+'20">'+
+  return '<div class="profile-card pc-'+cat.color+'">'+
     '<div class="profile-card-header">'+
       rankHtml+
+      '<div class="pc-ico">'+(typeof MOT_ICONS!=='undefined'?(MOT_ICONS[cat.name]||''):'')+'</div>'+
       '<div>'+
         '<div class="profile-name" style="color:'+ch+'">'+cat.name+'</div>'+
       '</div>'+
@@ -948,11 +1103,11 @@ function buildProfileCard(cat, rank, showRank, showFulfill) {
     '</div>'+
     '<div class="profile-tagline">'+p.tagline+'</div>'+
     '<div class="profile-section">'+
-      '<div class="profile-section-title" style="color:'+ch+'">✅ Co ho motivuje</div>'+
+      '<div class="profile-section-title pc-plus"><i>+</i>Co ho motivuje</div>'+
       '<ul class="profile-bullets">'+motivateItems+'</ul>'+
     '</div>'+
     '<div class="profile-section">'+
-      '<div class="profile-section-title" style="color:var(--action)">⚠️ Co ho demotivuje</div>'+
+      '<div class="profile-section-title pc-minus"><i>–</i>Co ho demotivuje</div>'+
       '<ul class="profile-bullets">'+demotivateItems+'</ul>'+
     '</div>'+
   '</div>';
@@ -993,7 +1148,8 @@ function buildFullOverviewRow(cat, i) {
 // ---- LEAD FORM ----
 
 function sendResultsToMake() {
-  if (!window._leadData) return;
+  // Zkrácený test nemá vstupní formulář – výsledek se posílá vždy (anonymně)
+  var lead = window._leadData || {jmeno: 'anonymní (zkrácený test)', email: '', telefon: ''};
   if (window._resultsSent) return; // send only once
   window._resultsSent = true;
 
@@ -1012,11 +1168,13 @@ function sendResultsToMake() {
 
   var payload = {
     verze_testu: 'zkrácený (jen pořadí motivátorů)',
-    jmeno:   window._leadData.jmeno,
-    email:   window._leadData.email,
-    telefon: window._leadData.telefon,
+    _subject: 'Zkrácený test motivátorů – nový výsledek',
+    jmeno:   lead.jmeno,
+    email:   lead.email,
+    telefon: lead.telefon,
     datum:   new Date().toLocaleDateString('cs-CZ'),
     cas:     new Date().toLocaleTimeString('cs-CZ'),
+    odkaz_na_vysledek: buildResultLink(),
     top3_motivatory:  top3,
     nejslabsi:        nejslabsi,
     vsechny_vysledky: vsechny,
@@ -1082,6 +1240,69 @@ document.addEventListener('click', function(e) {
   card.classList.toggle('sb', sel[id] && color === 'blue');
   updateCounters();
 });
+
+var MOT_ICONS = {'Ředitel':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" /> <path d="M5 21h14" /> </svg>','Odborník':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /> </svg>','Stavitel':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /> <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /> <path d="M4 22h16" /> <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /> <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /> <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /> </svg>','Přítel':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /> </svg>','Hvězda':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /> </svg>','Obránce':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /> </svg>','Tvůrce':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /> </svg>','Hledač':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /> </svg>','Duch':'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" > <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /> </svg>'};
+var CL_INFO = {red:{n:'Výkon',c:'#E2445C',g:'linear-gradient(90deg,#F7845E,#E2445C)'},green:{n:'Vztahy',c:'#1E9A62',g:'linear-gradient(90deg,#4CC38A,#1E9A62)'},blue:{n:'Růst',c:'#2F6FD0',g:'linear-gradient(90deg,#5AAEF0,#2F6FD0)'}};
+
+function buildHero(d){
+  var top = document.getElementById('mh-top'); if(!top) return;
+  top.innerHTML = d.cats.slice(0,3).map(function(c,i){
+    return '<div class="mh-card '+c.color+'"><div class="mh-rank">'+(i+1)+'.</div><div class="mh-ico">'+(MOT_ICONS[c.name]||'')+'</div>'+
+      '<div class="mh-pill">'+CL_INFO[c.color].n+'</div><div class="mh-name">'+c.name+'</div><div class="mh-tag">'+(c.desc||'')+'</div></div>';
+  }).join('');
+  var gt = d.gt, tot = gt.vykon+gt.vztahy+gt.rust || 1;
+  var rows = [['red',gt.vykon],['green',gt.vztahy],['blue',gt.rust]];
+  document.getElementById('mh-clusters').innerHTML = rows.map(function(r){
+    var ci = CL_INFO[r[0]], pct = Math.round(r[1]/tot*100);
+    return '<div class="mh-cl"><b>'+ci.n+'</b><div class="pct" style="color:'+ci.c+'">'+pct+' %</div><div class="bar"><i style="width:'+Math.round(r[1]/15*100)+'%;background:'+ci.g+'"></i></div></div>';
+  }).join('');
+}
+
+// ---- ODKAZ NA VÝSLEDEK (pro lektorku) ----
+// Výsledek se zakóduje do odkazu, který chodí v e-mailu. Po otevření odkazu
+// se stránka sama vykreslí do stejné podoby, jakou viděl účastník.
+var LINK_ORDER = ['Ředitel','Odborník','Stavitel','Přítel','Hvězda','Obránce','Tvůrce','Hledač','Duch'];
+function linkChecksum(digits){
+  var sum = 0; for (var i=0;i<digits.length;i++) sum += (i+1)*parseInt(digits[i],10);
+  return 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23);
+}
+function buildResultLink(){
+  var d = calcP1(), m = {}, g = {};
+  d.cats.forEach(function(c){ m[c.name] = c.count; g[c.name] = c.groupId; });
+  var digits = LINK_ORDER.map(function(n){ return String(m[n]||0); }).join('');
+  if (false) {
+    digits += LINK_ORDER.map(function(n){ return String((catRatings[g[n]]||{})[n]||0); }).join('');
+  }
+  var url = location.origin + location.pathname + '?vysledek=' + digits + linkChecksum(digits) +
+            '&d=' + encodeURIComponent(new Date().toLocaleDateString('cs-CZ'));
+  if (window._leadData && window._leadData.jmeno && false) url += '&j=' + encodeURIComponent(window._leadData.jmeno);
+  return url;
+}
+(function initResultView(){
+  var q; try { q = new URLSearchParams(location.search); } catch(e) { return; }
+  var v = q.get('vysledek'); if (!v) return;
+  var mt = /^(\d{9}|\d{18})([A-Z])$/.exec(v);
+  if (!mt || linkChecksum(mt[1]) !== mt[2]) { alert('Odkaz na výsledek je neplatný nebo neúplný.'); return; }
+  var digits = mt[1];
+  window._viewMode = true;
+  window._resultsSent = true;           // v náhledu nic neodesílat
+  window._viewDate = q.get('d') || '';
+  window._leadData = {jmeno: q.get('j') || '', email: '', telefon: ''};
+  // nastavit výběr karet podle počtu bodů
+  DATA.forEach(function(gr){ gr.categories.forEach(function(c){
+    var idx = LINK_ORDER.indexOf(c.name), n = idx<0 ? 0 : parseInt(digits[idx],10);
+    c.cards.forEach(function(k,i){ sel[gr.groupId+'__'+c.name+'__'+k.title] = i < n; });
+    if (digits.length === 18 && catRatings[gr.groupId]) catRatings[gr.groupId][c.name] = parseInt(digits[9+idx],10) || 0;
+  }); });
+  try { hideWelcome(); } catch(e) {}
+  showO1();
+  var bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#263238;color:#fff;font:14px/1.4 sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap';
+  var who = (window._leadData.jmeno ? window._leadData.jmeno + ' · ' : '') + (window._viewDate || '');
+  bar.innerHTML = '<span>Náhled výsledku pro lektorku' + (who ? ' · ' + who : '') + '</span>' + '<button id="btn-pdf-view" onclick="downloadPersonalPDF(\'o1-print-area\',\'moje-motivatory\',\'btn-pdf-view\')" style="background:#00897B;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-weight:600;cursor:pointer">⬇ Stáhnout PDF</button>';
+  document.body.appendChild(bar);
+  var st = document.createElement('style'); st.textContent = '.overlay{padding-top:72px!important}'; document.head.appendChild(st);
+})();
 </script>
 </body>
 </html>
