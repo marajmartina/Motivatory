@@ -471,6 +471,10 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 .offer-link{font-size:.74rem;color:var(--muted);text-align:center;margin-top:8px}
 #o5 .contact-hero{margin-bottom:6px}
 #o5 .contact-links{margin-top:16px}
+#o1-print-area .view-contact{background:#fff;border:1.5px solid var(--warm);border-radius:16px;padding:10px 14px;margin:0 0 14px}
+.vc-name{font:800 1.1rem/1.3 'Poppins',sans-serif;color:var(--ink)}
+.vc-rows{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.84rem;color:var(--muted);margin-top:3px}
+body.lector .mh-kicker{display:none!important}
 body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter-bar{display:none!important}
 </style>
 </head>
@@ -541,6 +545,7 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
 <div class="overlay" id="o1" onclick="if(event.target===this)closeO1()">
 <div class="panel">
   <div id="o1-print-area">
+  <div class="lector-only view-contact" id="view-contact"></div>
   <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
   <div class="mh-title">Vaše motivátory.</div>
   <div class="mh-title2"><span style="color:#F26B3A">Co</span> <span style="color:#E04A6E">vás</span> <span style="color:#C2479A">opravdu</span> <span style="color:#7C5CE0">pohání</span><span style="color:#3B82F6">?</span></div>
@@ -563,7 +568,6 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
   </div>
 
   <div class="lector-only" style="margin-top:24px;margin-bottom:4px">
-    <div class="mh-sec" style="margin-top:30px">Popisy všech 9 motivátorů</div>
     <div id="all-profiles-o1"></div>
   </div>
 
@@ -652,7 +656,7 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
     <button class="btn-sec no-print lector-only" onclick="switchOverlay('o3','o1')">← Zpět</button>
     <button class="btn-acc solo-only" id="btn-pdf-o3" onclick="downloadPersonalPDF('o3-print-area','naplnenost-motivatoru','btn-pdf-o3')">⬇ Stáhnout PDF</button>
     <button class="btn-go solo-only" onclick="showMyProfile()">Můj profil →</button>
-    <button class="btn-go lector-only" onclick="buildWeakProfiles();switchOverlay('o3','o6')">Nejslabší motivátor →</button>
+    <button class="btn-go lector-only" id="btn-pdf-o3v" onclick="downloadFullPDF('btn-pdf-o3v')">🖨 Celá zpráva k tisku (PDF)</button>
   </div>
   <div id="pdf-hint-o3" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
 </div>
@@ -959,7 +963,7 @@ function showO1(){
     // Build all 9 profiles sorted by importance
     var allProf = d.cats; // sorted by count desc
     document.getElementById('top3-o1').innerHTML = allProf.slice(0,3).map(function(cat,i){ return buildProfileCard(cat,i,true,false); }).join('');
-    var profHtml = allProf.map(function(cat,i){ return buildProfileCard(cat,i,true,!!window._viewMode && i<3); }).join('');
+    var profHtml = groupedProfiles(allProf);
     document.getElementById('all-profiles-o1').innerHTML = profHtml;
   });
 }
@@ -1107,6 +1111,19 @@ function showP2Results(){
 
 function closeO3(){if(window._viewMode)return;document.getElementById('o3').classList.remove('show');document.getElementById('o2').classList.add('show');}
 
+// Popisy pro lektorku: 3 nejsilnější → ostatní → nejslabší (1 nebo víc při shodě)
+function groupedProfiles(cats){
+  var rest = cats.slice(3);
+  var min = Math.min.apply(null, rest.map(function(c){ return c.count; }));
+  var weak = rest.filter(function(c){ return c.count === min; });
+  var other = rest.filter(function(c){ return weak.indexOf(c) < 0; });
+  var sec = function(t){ return '<div class="mh-sec" style="margin-top:30px">'+t+'</div>'; };
+  var card = function(c){ return buildProfileCard(c, cats.indexOf(c), true, false); };
+  var group = function(t, list){ return '<div class="keep-together">' + sec(t) + card(list[0]) + '</div>' + list.slice(1).map(card).join(''); };
+  return group('3 nejsilnější motivátory', cats.slice(0,3)) +
+    (other.length ? group('Ostatní motivátory', other) : '') +
+    group(weak.length>1 ? 'Nejslabší motivátory' : 'Nejslabší motivátor', weak);
+}
 function buildWeakProfiles(){
   var minCount = 999;
   p2Order.forEach(function(cat){ if(cat.count < minCount) minCount = cat.count; });
@@ -1216,7 +1233,7 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
         windowHeight: document.documentElement.scrollHeight
       },
       jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend','.profile-card','.contact-hero','.contact-bullets li','.contact-link'] }
+      pagebreak: { mode:['css','legacy'], avoid: ['.keep-together','.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend','.profile-card','.contact-hero','.contact-bullets li','.contact-link'] }
     };
 
     html2pdf().set(opt).from(el).save().then(function(){
@@ -1246,16 +1263,11 @@ function downloadFullPDF(btnId){
   var o3 = strip(document.getElementById('o3-print-area').innerHTML);
   var o1html = strip(document.getElementById('o1-print-area').innerHTML);
   var head = '<div class="ptitle">Moje motivátory</div>' +
-    '<div class="psub">' + (jm ? jm + ' · ' : '') + (window._viewDate || new Date().toLocaleDateString('cs-CZ')) + '</div>';
+    (window._viewMode ? '' : '<div class="psub">' + (jm ? jm + ' · ' : '') + new Date().toLocaleDateString('cs-CZ') + '</div>');
   var body;
   if(window._viewMode){
-    var weakest = buildWeakProfiles();
     body = o1html + brk +
-      '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">Popisy všech 9 motivátorů</div>' +
-      p2Order.map(function(cat,i){ return buildProfileCard(cat,i,true,i<3); }).join('') +
-      brk + o3 + brk +
-      '<div class="rtitle" style="margin-bottom:14px">' + (weakest.length>1 ? 'Nejslabší motivátory' : 'Nejslabší motivátor') + '</div>' +
-      weakest.map(function(cat,i){ return buildProfileCard(cat,i,false,false); }).join('');
+      groupedProfiles(p2Order) + brk + o3;
   } else {
     var prof = document.querySelector('#o5 .panel').cloneNode(true);
     prof.querySelectorAll('.pactions,.offer-btn,.btn-calendly').forEach(function(x){ x.parentNode.removeChild(x); });
@@ -1571,7 +1583,9 @@ function buildResultLink(){
   }
   var url = location.origin + location.pathname + '?vysledek=' + digits + linkChecksum(digits) +
             '&d=' + encodeURIComponent(new Date().toLocaleDateString('cs-CZ'));
-  if (window._leadData && window._leadData.jmeno && true) url += '&j=' + encodeURIComponent(window._leadData.jmeno);
+  if (window._leadData && window._leadData.jmeno) url += '&j=' + encodeURIComponent(window._leadData.jmeno);
+  if (window._leadData && window._leadData.email) url += '&e=' + encodeURIComponent(window._leadData.email);
+  if (window._leadData && window._leadData.telefon) url += '&t=' + encodeURIComponent(window._leadData.telefon);
   return url;
 }
 (function initResultView(){
@@ -1584,7 +1598,7 @@ function buildResultLink(){
   document.body.classList.add('lector');
   window._resultsSent = true;           // v náhledu nic neodesílat
   window._viewDate = q.get('d') || '';
-  window._leadData = {jmeno: q.get('j') || '', email: '', telefon: ''};
+  window._leadData = {jmeno: q.get('j') || '', email: q.get('e') || '', telefon: q.get('t') || ''};
   // nastavit výběr karet podle počtu bodů
   DATA.forEach(function(gr){ gr.categories.forEach(function(c){
     var idx = LINK_ORDER.indexOf(c.name), n = idx<0 ? 0 : parseInt(digits[idx],10);
@@ -1592,6 +1606,16 @@ function buildResultLink(){
     if (digits.length === 18 && catRatings[gr.groupId]) catRatings[gr.groupId][c.name] = parseInt(digits[9+idx],10) || 0;
   }); });
   try { hideWelcome(); } catch(e) {}
+  (function(){
+    var L = window._leadData, e = function(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;'); };
+    var rows = [];
+    if (L.email) rows.push('✉️ ' + e(L.email));
+    if (L.telefon) rows.push('📞 ' + e(L.telefon));
+    if (window._viewDate) rows.push('Test vyplněn: ' + e(window._viewDate));
+    document.getElementById('view-contact').innerHTML =
+      '<div class="vc-name">' + (L.jmeno ? e(L.jmeno) : 'Jméno nebylo uvedeno') + '</div>' +
+      (rows.length ? '<div class="vc-rows">' + rows.map(function(r){ return '<span>'+r+'</span>'; }).join('') + '</div>' : '');
+  })();
   showO1();
   p2Order = calcP1().cats;
   document.getElementById('o1').classList.remove('show');
