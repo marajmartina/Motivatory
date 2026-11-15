@@ -27,6 +27,10 @@
   .mot{display:flex;flex-direction:column;gap:3px}
   .mot select{padding:5px 4px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.82rem;background:#fff}
   .mot input{width:100%;padding:4px 6px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.9rem;text-align:center}
+  .ms.dup,select.wk.dup{border:2px solid #E2445C;background:#FDEEF1}
+  .dupmsg{display:none;font-size:.76rem;color:#C2304A;margin-top:5px}
+  .dupmsg.on{display:block}
+  .wkrow{display:grid;grid-template-columns:1fr 1fr;gap:6px}
   .mot small{font-size:.68rem;color:var(--grey);text-align:center}
   select.wk{width:100%;margin-top:6px;padding:5px 6px;border:1px dashed #BDBDBD;border-radius:6px;font:inherit;font-size:.82rem;background:#FAFAFA;color:#555}
   .btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
@@ -86,10 +90,10 @@
     <div class="stage" id="stage"></div>
     <div class="bar">
       <button class="b" id="vBar" style="display:none">Barvy týmu</button>
+      <button class="b" id="vMap">Mapa týmu</button>
       <button class="b" id="vBar2">Pořadí motivátorů</button>
       <button class="b" id="vTab">Co brzdí</button>
       <button class="b" id="vKvet">Květ</button>
-      <button class="b" id="vMap">Mapa týmu</button>
       <button class="b" id="vMeet">Silný a slabý</button>
       <button class="b primary" id="present">▶ Promítnout na celou obrazovku</button>
       <button class="b" id="png">⬇ Stáhnout obrázek (PNG)</button>
@@ -99,7 +103,7 @@
   </main>
 </div>
 <button class="b exit" id="exit">✕ Zavřít</button>
-<div class="pview"><button class="b" id="pvBar" style="display:none">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvKvet">Květ</button><button class="b" id="pvMeet">Silný a slabý</button><button class="b" id="pvMap">Mapa týmu</button></div>
+<div class="pview"><button class="b" id="pvBar" style="display:none">Barvy týmu</button><button class="b" id="pvMap">Mapa týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvKvet">Květ</button><button class="b" id="pvMeet">Silný a slabý</button></div>
 
 <script>
 var MOTS = [
@@ -129,7 +133,10 @@ function decodeCode(raw){
   if (m[2] && 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23) !== m[2]) return null;
   var sc = {}; CODE_ORDER.forEach(function(n,i){ sc[n] = parseInt(d[i],10); });
   var rank = TIE_ORDER.slice().sort(function(a,b){ return sc[b]-sc[a] || TIE_ORDER.indexOf(a)-TIE_ORDER.indexOf(b); });
-  return {top: rank.slice(0,3), weak: rank[8]};
+  var rest = rank.slice(3), min = Math.min.apply(null, rest.map(function(n){ return sc[n]; }));
+  var low = rest.filter(function(n){ return sc[n]===min; });
+  for (var j=low.length-1;j>0;j--){ var q=Math.floor(Math.random()*(j+1)), t=low[j]; low[j]=low[q]; low[q]=t; }
+  return {top: rank.slice(0,3), weak: low.slice(0,2)};
 }
 function mot(n){ for(var i=0;i<MOTS.length;i++) if(MOTS[i].n===n) return MOTS[i]; return null; }
 var ZONES = [
@@ -142,8 +149,8 @@ function zone(p){ for(var i=0;i<ZONES.length;i++){ if(p<=ZONES[i].max) return ZO
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 var STORE = 'kvet-otevrenosti-v1';
-var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'bar2'};
-function blankPerson(i){ return {name:'Osoba '+(i+1), m:['','',''], p:['','',''], w:''}; }
+var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'map'};
+function blankPerson(i){ return {name:'Osoba '+(i+1), m:['','',''], p:['','',''], w:'', w2:''}; }
 
 function load(){
   try{ var raw = localStorage.getItem(STORE); if(raw){ var d = JSON.parse(raw); if(d && d.people) state = d; } }catch(e){}
@@ -171,19 +178,28 @@ function renderForm(){
             '<input type="number" min="1" max="7" data-i="'+i+'" data-k="'+k+'" class="mp" value="'+esc(p.p[k])+'" placeholder="body">'+
             '<small>'+(k+1)+'. motivátor</small></div>';
     }
+    var wopts2 = '<option value="">– 2. nejslabší (při shodě) –</option>' + MOTS.map(function(m){ return '<option value="'+m.n+'">'+m.n+'</option>'; }).join('');
     var wopts = '<option value="">– nejslabší (nepovinné) –</option>' + MOTS.map(function(m){ return '<option value="'+m.n+'">'+m.n+'</option>'; }).join('');
     d.innerHTML = '<div class="ph"><input type="text" class="nm" data-i="'+i+'" value="'+esc(p.name)+'">'+
       '<span class="res" id="res'+i+'"></span><button class="del" data-i="'+i+'" title="Odebrat">✕</button></div>'+
       '<div class="mots">'+mh+'</div>'+
-      '<select class="wk" data-i="'+i+'">'+wopts+'</select>';
+      '<div class="wkrow"><select class="wk" data-i="'+i+'">'+wopts+'</select><select class="wk wk2" data-i="'+i+'">'+wopts2+'</select></div>'+
+      '<div class="dupmsg" id="dup'+i+'">Stejný motivátor je vybraný dvakrát. Opravte prosím výběr.</div>';
     box.appendChild(d);
     d.querySelectorAll('select.ms').forEach(function(s){ s.value = p.m[+s.dataset.k] || ''; });
-    d.querySelector('select.wk').value = p.w || '';
+    d.querySelector('select.wk:not(.wk2)').value = p.w || '';
+    d.querySelector('select.wk2').value = p.w2 || '';
   });
   updateResults();
 }
 
 function updateResults(){
+  state.people.forEach(function(p,i){
+    var d = document.querySelectorAll('select[data-i="'+i+'"]'), vals=[], any=false;
+    d.forEach(function(sel){ if(sel.value) vals.push(sel.value); });
+    d.forEach(function(sel){ var dup = sel.value && vals.filter(function(v){ return v===sel.value; }).length>1; sel.classList.toggle('dup', !!dup); if(dup) any=true; });
+    var dm=document.getElementById('dup'+i); if(dm) dm.classList.toggle('on', any);
+  });
   state.people.forEach(function(p,i){
     var el = document.getElementById('res'+i); if(!el) return;
     var s = personSum(p);
@@ -202,7 +218,8 @@ function bindForm(){
       if(m){ state.people[i].p[k]=String(m.p); var inp = box.querySelector('input.mp[data-i="'+i+'"][data-k="'+k+'"]'); if(inp) inp.value=m.p; }
       changed();
     }
-    if(t.classList.contains('wk')){ state.people[+t.dataset.i].w = t.value; changed(); }
+    if(t.classList.contains('wk2')){ state.people[+t.dataset.i].w2 = t.value; changed(); }
+    else if(t.classList.contains('wk')){ state.people[+t.dataset.i].w = t.value; changed(); }
   });
   box.addEventListener('input', function(e){
     var t = e.target;
@@ -234,7 +251,7 @@ function bindForm(){
     var hasData = state.people.some(function(p){ return personSum(p)!==null; });
     if (hasData && !confirm('Nahradit současné lidi v týmu načtenými kódy?')) return;
     state.people = ok.map(function(r,i){
-      return {name:'Osoba '+(i+1), m:r.top.slice(), p:r.top.map(function(n){ return String(mot(n).p); }), w:r.weak};
+      return {name:'Osoba '+(i+1), m:r.top.slice(), p:r.top.map(function(n){ return String(mot(n).p); }), w:r.weak[0]||'', w2:r.weak[1]||''};
     });
     msg.innerHTML = 'Načteno: <b>'+ok.length+'</b> '+(ok.length===1?'člověk':(ok.length<5?'lidé':'lidí')) +
       (bad.length ? '<br><span class="bad">Neplatné kódy ('+bad.length+'): '+bad.map(esc).join(', ')+'</span>' : '');
@@ -422,16 +439,16 @@ function buildBrakes(){
     p.m.forEach(function(n,i){ if(mot(n)){ w[n]+=3-i; c[n]++; any=true; } });
     if(any) people++;
   });
-  var list = MOTS.filter(function(m){ return c[m.n]>0; }).sort(function(a,b){ return w[b.n]-w[a.n] || c[b.n]-c[a.n]; });
+  var list = MOTS.filter(function(m){ return c[m.n]>0; }).sort(function(a,b){ return c[b.n]-c[a.n] || w[b.n]-w[a.n]; });
   if(!list.length){
     out += '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Vyberte motivátory u lidí v týmu, brzdy se seřadí samy</text></svg>';
     return out;
   }
   var top=170, avail=H-top-60, rh=Math.min(104, Math.floor(avail/list.length));
-  var maxw=w[list[0].n];
+  var maxc=c[list[0].n];
   list.forEach(function(m,i){
     var y=top+i*rh, col=CL[m.k].c, bg=CL[m.k].bg, h=rh-12;
-    var bw=Math.round(w[m.n]/maxw*120);
+    var bw=Math.round(c[m.n]/maxc*120);
     out += '<rect x="56" y="'+y+'" width="'+(W-112)+'" height="'+h+'" rx="12" fill="'+bg+'"/>'+
       '<rect x="56" y="'+y+'" width="8" height="'+h+'" rx="4" fill="url(#g'+m.k+')"/>';
     var cy=y+h/2;
@@ -443,7 +460,7 @@ function buildBrakes(){
     out += '<text x="440" y="'+(cy-4).toFixed(0)+'" font-size="'+fs+'" fill="#1F1B3D">• '+esc(DEMOT[m.n][0])+'</text>'+
       '<text x="440" y="'+(cy+fs*0.95).toFixed(0)+'" font-size="'+fs+'" fill="#1F1B3D">• '+esc(DEMOT[m.n][1])+'</text>';
   });
-  out += '<text x="56" y="'+(H-30)+'" font-size="18" fill="#6B6585" font-style="italic">Pořadí podle toho, jak silně je motivátor v týmu zastoupen (1. místo = 3 body, 2. = 2, 3. = 1).</text>';
+  out += '<text x="56" y="'+(H-30)+'" font-size="18" fill="#6B6585" font-style="italic">Pořadí podle toho, u kolika lidí je motivátor mezi třemi nejsilnějšími. Při shodě rozhoduje vyšší umístění.</text>';
   out += '<text x="'+(W-56)+'" y="'+(H-30)+'" text-anchor="end" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
   return out;
 }
@@ -459,7 +476,7 @@ function buildMeet(){
     var st=[], wk=[];
     state.people.forEach(function(p,i){
       if((p.m||[]).indexOf(m.n)>=0) st.push(i+1);
-      else if(p.w===m.n) wk.push(i+1);
+      else if(p.w===m.n || p.w2===m.n) wk.push(i+1);
     });
     if(st.length && wk.length) list.push({m:m, st:st, wk:wk});
   });
@@ -517,6 +534,11 @@ function buildMap(){
   MOTS.forEach(function(m,j){
     var c=CL[m.k], x=x0+j*cw+cw/2;
     out+='<text x="'+x+'" y="'+(yH+80)+'" text-anchor="middle" font-size="23" font-weight="bold" fill="'+c.c+'">'+m.n+'</text>';
+  });
+  var MC={}; rows.forEach(function(r){ r.m.forEach(function(n){ if(mot(n)) MC[n]=(MC[n]||0)+1; }); });
+  if(KT) MOTS.forEach(function(m,j){
+    var x=x0+j*cw+cw/2, yb=top+rows.length*rh+34;
+    out+='<text x="'+x+'" y="'+yb+'" text-anchor="middle" font-size="24" font-weight="bold" fill="'+CL[m.k].c+'">'+Math.round((MC[m.n]||0)/KT*100)+' %</text>';
   });
   var CNT={}; rows.forEach(function(r){ if(SEL.indexOf(r.num)>=0) r.m.forEach(function(x){ CNT[x]=(CNT[x]||0)+1; }); });
   rows.forEach(function(r,i){
@@ -621,7 +643,7 @@ function makePNG(css){
 document.getElementById('report-btn').onclick = function(){
   var keep = state.view, keepSel = SEL.slice(); SEL = [];
   var html = '';
-  ['kvet','bar2','tab','map','meet'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
+  ['map','bar2','tab','kvet','meet'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
   state.view = keep; SEL = keepSel;
   document.getElementById('report').innerHTML = html;
   document.body.classList.add('printing');
