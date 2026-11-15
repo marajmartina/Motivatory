@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tempo týmu ve změně</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Caveat:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--brand:#C62828;--ink:#2B2B2B;--grey:#6B6B6B;--line:#E0E0E0;--bg:#FAFAFA}
+  :root{--brand:#C2479A;--ink:#1F1B3D;--grey:#6B6585;--line:#EFE4D2;--bg:#FFF9F1}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,"Segoe UI",Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',Calibri,"Segoe UI",Arial,sans-serif}
   .app{display:flex;min-height:100vh}
   aside{width:430px;flex:0 0 430px;background:#fff;border-right:1px solid var(--line);padding:20px 20px 30px;overflow-y:auto;max-height:100vh}
   main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;min-width:0}
-  h1{font-family:Georgia,serif;color:var(--brand);font-weight:normal;font-size:1.6rem;margin:0 0 4px}
+  h1{font-family:Poppins,sans-serif;color:var(--ink);font-weight:800;font-size:1.5rem;margin:0 0 4px}
   .lead{font-size:.9rem;color:var(--grey);margin:0 0 16px;line-height:1.45}
   label.f{display:block;font-size:.78rem;font-weight:bold;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px}
   input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.95rem}
@@ -19,7 +20,7 @@
   .person{border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px;margin-bottom:10px;background:#fff}
   .ph{display:flex;gap:8px;align-items:center;margin-bottom:8px}
   .ph input{flex:1;padding:6px 8px;font-size:.92rem}
-  .ph .res{font:bold 1.05rem Georgia,serif;min-width:84px;text-align:right}
+  .ph .res{font:700 1.05rem Poppins,sans-serif;min-width:84px;text-align:right}
   .del{border:none;background:none;color:#aaa;font-size:1.2rem;cursor:pointer;padding:0 4px}
   .del:hover{color:var(--brand)}
   .mots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
@@ -29,17 +30,17 @@
   .mot small{font-size:.68rem;color:var(--grey);text-align:center}
   select.wk{width:100%;margin-top:6px;padding:5px 6px;border:1px dashed #BDBDBD;border-radius:6px;font:inherit;font-size:.82rem;background:#FAFAFA;color:#555}
   .btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-  button.b{font:inherit;font-size:.88rem;padding:8px 14px;border-radius:6px;border:1px solid var(--brand);background:#fff;color:var(--brand);cursor:pointer}
+  button.b{font:600 .86rem Poppins,sans-serif;padding:8px 14px;border-radius:20px;border:1px solid var(--brand);background:#fff;color:var(--brand);cursor:pointer}
   button.b:hover{background:var(--brand);color:#fff}
-  button.b.primary{background:var(--brand);color:#fff}
-  button.b.on{background:#2B2B2B;border-color:#2B2B2B;color:#fff}
+  button.b.primary{background:linear-gradient(90deg,#E04A86,#8B5CF6);border-color:transparent;color:#fff}
+  button.b.on{background:#1F1B3D;border-color:#1F1B3D;color:#fff}
   .pview{position:fixed;top:12px;left:14px;z-index:5;display:none;gap:6px}
   body.present .pview{display:flex}
   textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-family:"Courier New",monospace;font-size:.9rem;resize:vertical}
   .codemsg{font-size:.8rem;line-height:1.4;color:var(--grey);margin-bottom:6px}
-  .codemsg .bad{color:#C62828}
-  .hint{font-size:.78rem;color:var(--grey);line-height:1.45;border-left:3px solid var(--brand);background:#FDF6F6;padding:8px 10px;border-radius:0 6px 6px 0}
-  .stage{width:100%;max-width:1400px;aspect-ratio:16/10;background:#fff;border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.06)}
+  .codemsg .bad{color:#E2445C}
+  .hint{font-size:.78rem;color:var(--grey);line-height:1.45;border-left:3px solid #F6C26B;background:#FFF6E6;padding:8px 10px;border-radius:0 6px 6px 0}
+  .stage{width:100%;max-width:1400px;aspect-ratio:16/10;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(31,27,61,.10);overflow:hidden}
   .stage svg{width:100%;height:100%;display:block}
   .bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
   body.present aside,body.present .bar{display:none}
@@ -84,11 +85,12 @@
   <main>
     <div class="stage" id="stage"></div>
     <div class="bar">
-      <button class="b" id="vBar">Barvy týmu</button>
+      <button class="b" id="vBar" style="display:none">Barvy týmu</button>
       <button class="b" id="vBar2">Pořadí motivátorů</button>
       <button class="b" id="vTab">Co brzdí</button>
       <button class="b" id="vKvet">Květ</button>
       <button class="b" id="vMap">Mapa týmu</button>
+      <button class="b" id="vMeet">Silný a slabý</button>
       <button class="b primary" id="present">▶ Promítnout na celou obrazovku</button>
       <button class="b" id="png">⬇ Stáhnout obrázek (PNG)</button>
       <button class="b" id="report-btn">🖨 Tisk všech pohledů (PDF)</button>
@@ -97,7 +99,7 @@
   </main>
 </div>
 <button class="b exit" id="exit">✕ Zavřít</button>
-<div class="pview"><button class="b" id="pvBar">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvKvet">Květ</button><button class="b" id="pvMap">Mapa týmu</button></div>
+<div class="pview"><button class="b" id="pvBar" style="display:none">Barvy týmu</button><button class="b" id="pvBar2">Pořadí motivátorů</button><button class="b" id="pvTab">Co brzdí</button><button class="b" id="pvKvet">Květ</button><button class="b" id="pvMeet">Silný a slabý</button><button class="b" id="pvMap">Mapa týmu</button></div>
 
 <script>
 var MOTS = [
@@ -105,7 +107,7 @@ var MOTS = [
   {n:'Přítel',p:2,k:'Z'},{n:'Hvězda',p:3,k:'Z'},{n:'Obránce',p:1,k:'Z'},
   {n:'Tvůrce',p:5,k:'R'},{n:'Hledač',p:5,k:'R'},{n:'Duch',p:7,k:'R'}
 ];
-var CL = {V:{n:'Výkon',c:'#D32F2F',bg:'#FDECEC'}, Z:{n:'Vztahy',c:'#2E9E62',bg:'#EAF7F0'}, R:{n:'Růst',c:'#1B8ECC',bg:'#EAF4FC'}};
+var CL = {V:{n:'Výkon',c:'#E2445C',bg:'#FDEEF1'}, Z:{n:'Vztahy',c:'#1E9A62',bg:'#EAF7F0'}, R:{n:'Růst',c:'#2F6FD0',bg:'#EBF2FC'}};
 var DEMOT = {
   'Ředitel':['Práce bez rozhodovacích kompetencí a nejasná hierarchie','Situace, kdy ostatní nerespektují jeho autoritu'],
   'Odborník':['Povrchní klouzání po tématech a práce mimo jeho odbornost','Špatně nastavené procesy, které snižují kvalitu výsledku'],
@@ -131,22 +133,23 @@ function decodeCode(raw){
 }
 function mot(n){ for(var i=0;i<MOTS.length;i++) if(MOTS[i].n===n) return MOTS[i]; return null; }
 var ZONES = [
-  {max:34, num:1, name:'Opatrné tempo',  range:'0–34 %',   c:'#E53935', bg:'#FDECEC'},
-  {max:54, num:2, name:'Rozvážné tempo', range:'35–54 %',  c:'#F57C00', bg:'#FFF3E0'},
-  {max:79, num:3, name:'Plynulé tempo',  range:'55–79 %',  c:'#43A047', bg:'#EDF7EE'},
-  {max:100,num:4, name:'Rychlé tempo',   range:'80–100 %', c:'#8E24AA', bg:'#F5EAF8'}
+  {max:34, num:1, name:'Opatrné tempo',  range:'0–34 %',   c:'#E2445C', bg:'#FDEEF1'},
+  {max:54, num:2, name:'Rozvážné tempo', range:'35–54 %',  c:'#F08A24', bg:'#FFF2E2'},
+  {max:79, num:3, name:'Plynulé tempo',  range:'55–79 %',  c:'#1E9A62', bg:'#EAF7F0'},
+  {max:100,num:4, name:'Rychlé tempo',   range:'80–100 %', c:'#7C5CE0', bg:'#F1ECFC'}
 ];
 function zone(p){ for(var i=0;i<ZONES.length;i++){ if(p<=ZONES[i].max) return ZONES[i]; } return ZONES[3]; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 var STORE = 'kvet-otevrenosti-v1';
-var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'bar'};
+var state = {title:'Tempo týmu ve změně', sub:'', people:[], view:'bar2'};
 function blankPerson(i){ return {name:'Osoba '+(i+1), m:['','',''], p:['','',''], w:''}; }
 
 function load(){
   try{ var raw = localStorage.getItem(STORE); if(raw){ var d = JSON.parse(raw); if(d && d.people) state = d; } }catch(e){}
   if(!state.title || state.title==='Otevřenost týmu ke změně') state.title='Tempo týmu ve změně';
   if(!state.view) state.view='kvet';
+  if(state.view==='bar') state.view='bar2';
   if(!state.people.length){ for(var i=0;i<5;i++) state.people.push(blankPerson(i)); }
 }
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
@@ -250,6 +253,7 @@ function buildSVG(){
   if(state.view==='bar') return buildColors(false);
   if(state.view==='bar2') return buildColors(true);
   if(state.view==='map') return buildMap();
+  if(state.view==='meet') return buildMeet();
   var W=1600, H=1000;
   var done = state.people.filter(function(p){ return personSum(p)!==null; })
     .slice().sort(function(a,b){ return personSum(a)-personSum(b); });
@@ -258,10 +262,10 @@ function buildSVG(){
   var R = n<=6 ? 285 : (n<=9 ? 300 : 315);
   var rc = n<=6 ? 98 : (n<=9 ? 84 : 70);
   var rcen = 150;
-  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
-  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
-  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+esc(state.title)+'</text>';
-  if(state.sub) out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub)+'</text>';
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out += '<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">'+esc(state.title)+'</text>';
+  if(state.sub) out += '<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc(state.sub)+'</text>';
 
   if(n===0){
     out += '<text x="'+cx+'" y="'+cy+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory nebo body alespoň u jednoho člověka</text>';
@@ -275,33 +279,33 @@ function buildSVG(){
       var pc = Math.round(personSum(p)/21*100), z = zone(pc);
       lines += '<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+z.c+'" stroke-width="5" stroke-linecap="round"/>';
       var fs = Math.round(rc*0.56);
-      circles += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+rc+'" fill="#fff" stroke="'+z.c+'" stroke-width="6"/>'+
+      circles += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+rc+'" fill="'+z.bg+'" stroke="'+z.c+'" stroke-width="6"/>'+
         '<text x="'+x.toFixed(1)+'" y="'+(y-rc*0.3).toFixed(1)+'" text-anchor="middle" font-size="'+Math.round(rc*0.26)+'" fill="#555">'+esc(p.name)+'</text>'+
-        '<text x="'+x.toFixed(1)+'" y="'+(y+fs*0.55).toFixed(1)+'" text-anchor="middle" font-size="'+fs+'" font-weight="bold" font-family="Georgia,serif" fill="'+z.c+'">'+pc+' %</text>';
+        '<text x="'+x.toFixed(1)+'" y="'+(y+fs*0.55).toFixed(1)+'" text-anchor="middle" font-size="'+fs+'" font-weight="bold" font-family="Poppins,sans-serif" fill="'+z.c+'">'+pc+' %</text>';
     });
     out += lines;
     out += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rcen+'" fill="'+tz.bg+'" stroke="'+tz.c+'" stroke-width="8"/>'+
       '<text x="'+cx+'" y="'+(cy-56)+'" text-anchor="middle" font-size="30" font-weight="bold" fill="#444">TÝM</text>'+
-      '<text x="'+cx+'" y="'+(cy+28)+'" text-anchor="middle" font-size="86" font-weight="bold" font-family="Georgia,serif" fill="'+tz.c+'">'+tp+' %</text>'+
+      '<text x="'+cx+'" y="'+(cy+28)+'" text-anchor="middle" font-size="86" font-weight="bold" font-family="Poppins,sans-serif" fill="'+tz.c+'">'+tp+' %</text>'+
       '<text x="'+cx+'" y="'+(cy+78)+'" text-anchor="middle" font-size="24" font-weight="bold" fill="'+tz.c+'">'+tz.num+' · '+tz.name+'</text>';
     out += circles;
   }
   // legend: semafor
   var sx=1200, step=118, rl=40, sy=545-1.5*step, pad=58;
-  out += '<rect x="'+(sx-pad)+'" y="'+(sy-pad)+'" width="'+(pad*2)+'" height="'+(step*3+pad*2)+'" rx="'+pad+'" fill="#FAFAFA" stroke="#2B2B2B" stroke-width="5"/>'+
-         '<line x1="'+sx+'" y1="'+(sy+step*3+pad)+'" x2="'+sx+'" y2="'+(sy+step*3+pad+70)+'" stroke="#2B2B2B" stroke-width="6" stroke-linecap="round"/>'+
-         '<line x1="'+(sx-40)+'" y1="'+(sy+step*3+pad+72)+'" x2="'+(sx+40)+'" y2="'+(sy+step*3+pad+72)+'" stroke="#2B2B2B" stroke-width="6" stroke-linecap="round"/>';
+  out += '<rect x="'+(sx-pad)+'" y="'+(sy-pad)+'" width="'+(pad*2)+'" height="'+(step*3+pad*2)+'" rx="'+pad+'" fill="#FFFFFF" stroke="#F6C26B" stroke-width="5"/>'+
+         '<line x1="'+sx+'" y1="'+(sy+step*3+pad)+'" x2="'+sx+'" y2="'+(sy+step*3+pad+70)+'" stroke="#1F1B3D" stroke-width="6" stroke-linecap="round"/>'+
+         '<line x1="'+(sx-40)+'" y1="'+(sy+step*3+pad+72)+'" x2="'+(sx+40)+'" y2="'+(sy+step*3+pad+72)+'" stroke="#1F1B3D" stroke-width="6" stroke-linecap="round"/>';
   var zc={}; ZONES.forEach(function(z){ zc[z.num]=0; });
   state.people.forEach(function(p){ var su=personSum(p); if(su!==null) zc[zone(Math.round(su/21*100)).num]++; });
   function lid(n){ return n===1?'1 člověk':(n>=2&&n<=4? n+' lidé' : n+' lidí'); }
   ZONES.slice().reverse().forEach(function(z,i){
     var y = sy + i*step;
     out += '<circle cx="'+sx+'" cy="'+y+'" r="'+rl+'" fill="'+z.c+'"/>'+
-      '<text x="'+sx+'" y="'+(y+13)+'" text-anchor="middle" font-family="Georgia,serif" font-size="36" font-weight="bold" fill="#fff">'+z.num+'</text>'+
+      '<text x="'+sx+'" y="'+(y+13)+'" text-anchor="middle" font-family="Poppins,sans-serif" font-size="36" font-weight="bold" fill="#fff">'+z.num+'</text>'+
       '<text x="'+(sx+pad+26)+'" y="'+(y-4)+'" font-size="30" font-weight="bold" fill="'+z.c+'">'+z.name+'</text>'+
-      '<text x="'+(sx+pad+26)+'" y="'+(y+30)+'" font-size="24" fill="#6B6B6B">'+z.range+' · <tspan font-weight="bold" fill="'+z.c+'">'+lid(zc[z.num])+'</tspan></text>';
+      '<text x="'+(sx+pad+26)+'" y="'+(y+30)+'" font-size="24" fill="#6B6585">'+z.range+' · <tspan font-weight="bold" fill="'+z.c+'">'+lid(zc[z.num])+'</tspan></text>';
   });
-  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text>';
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text>';
   out += '</svg>';
   return out;
 }
@@ -310,10 +314,10 @@ function buildTable(){
   var W=1600, H=1000;
   var done = state.people.filter(function(p){ return personSum(p)!==null; });
   var n = done.length;
-  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
-  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
-  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+esc(state.title)+'</text>';
-  if(state.sub) out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub)+'</text>';
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out += '<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">'+esc(state.title)+'</text>';
+  if(state.sub) out += '<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc(state.sub)+'</text>';
   if(n===0){
     out += '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory nebo body alespoň u jednoho člověka</text></svg>';
     return out;
@@ -323,7 +327,7 @@ function buildTable(){
   var X=[56,330,1000,1130,1290], Wt=W-112;
   var hy=top+rh*0.65;
   ['Jméno','Tři nejsilnější motivátory','Body','%','Tempo'].forEach(function(h,i){
-    out += '<text x="'+(X[i]+12)+'" y="'+hy.toFixed(0)+'" font-size="'+Math.round(fs*0.8)+'" font-weight="bold" fill="#6B6B6B" letter-spacing="1">'+h.toUpperCase()+'</text>';
+    out += '<text x="'+(X[i]+12)+'" y="'+hy.toFixed(0)+'" font-size="'+Math.round(fs*0.8)+'" font-weight="bold" fill="#6B6585" letter-spacing="1">'+h.toUpperCase()+'</text>';
   });
   var tot=0;
   done.forEach(function(p,i){
@@ -332,21 +336,21 @@ function buildTable(){
     out += '<rect x="56" y="'+y+'" width="'+Wt+'" height="'+(rh-6)+'" rx="10" fill="'+z.bg+'" stroke="'+z.c+'" stroke-width="2"/>';
     var ty=(y+rh*0.62).toFixed(0);
     var mots=p.m.filter(function(m){return m;}).join(', ') || '–';
-    out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+fs+'" fill="#2B2B2B">'+esc(p.name)+'</text>'+
+    out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+fs+'" fill="#1F1B3D">'+esc(p.name)+'</text>'+
       '<text x="'+(X[1]+12)+'" y="'+ty+'" font-size="'+fs+'" fill="#444">'+esc(mots)+'</text>'+
-      '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="#2B2B2B">'+s+'</text>'+
+      '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="#1F1B3D">'+s+'</text>'+
       '<text x="'+(X[3]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="'+z.c+'">'+pc+' %</text>'+
       '<text x="'+(X[4]+12)+'" y="'+ty+'" font-size="'+fs+'" font-weight="bold" fill="'+z.c+'">'+z.num+' · '+z.name+'</text>';
   });
   var tp=Math.round(tot/(n*21)*100), tz=zone(tp), y=top+rh*(n+1)+8;
   out += '<rect x="56" y="'+y+'" width="'+Wt+'" height="'+(rh+4)+'" rx="12" fill="'+tz.bg+'" stroke="'+tz.c+'" stroke-width="4"/>';
   var ty=(y+rh*0.68).toFixed(0), bf=Math.round(fs*1.1);
-  out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#2B2B2B">TÝM</text>'+
+  out += '<text x="'+(X[0]+14)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#1F1B3D">TÝM</text>'+
     '<text x="'+(X[1]+12)+'" y="'+ty+'" font-size="'+fs+'" fill="#444">'+n+' '+(n===1?'osoba':(n<5?'osoby':'osob'))+' · '+tot+' ÷ ('+n+' × 21) × 100</text>'+
-    '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#2B2B2B">'+tot+'</text>'+
+    '<text x="'+(X[2]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="#1F1B3D">'+tot+'</text>'+
     '<text x="'+(X[3]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="'+tz.c+'">'+tp+' %</text>'+
     '<text x="'+(X[4]+12)+'" y="'+ty+'" font-size="'+bf+'" font-weight="bold" fill="'+tz.c+'">'+tz.num+' · '+tz.name+'</text>';
-  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
   return out;
 }
 
@@ -358,10 +362,10 @@ function arc(cx,cy,r0,r1,a0,a1,col){
 }
 function buildColors(byCount){
   var W=1600, H=1000;
-  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
-  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
-  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">'+(byCount?'Pořadí motivátorů v týmu':'Barvy týmu')+'</text>';
-  out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub || 'Tři nejsilnější motivátory všech lidí v týmu')+'</text>';
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out += '<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">'+(byCount?'Pořadí motivátorů v týmu':'Barvy týmu')+'</text>';
+  out += '<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc(state.sub || 'Tři nejsilnější motivátory všech lidí v týmu')+'</text>';
   var ORD=MOTS.filter(function(m){return m.k==='R';}).concat(MOTS.filter(function(m){return m.k==='V';}),MOTS.filter(function(m){return m.k==='Z';}));
   var cnt={}, k={V:0,Z:0,R:0}, tot=0, wk={}, wn=0;
   MOTS.forEach(function(m){ cnt[m.n]=0; wk[m.n]=0; });
@@ -380,48 +384,37 @@ function buildColors(byCount){
   var cx=330, cy=560, r1=230, r0=140, a=-Math.PI/2;
   KORD.forEach(function(key){
     if(!k[key]) return; var da=k[key]/tot*Math.PI*2;
-    out += arc(cx,cy,r0,r1,a,a+da,CL[key].c); a+=da;
+    out += arc(cx,cy,r0,r1,a,a+da,'url(#g'+key+')'); a+=da;
   });
-  out += '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" font-family="Georgia,serif" font-size="64" font-weight="bold" fill="#2B2B2B">'+tot+'</text>'+
-         '<text x="'+cx+'" y="'+(cy+34)+'" text-anchor="middle" font-size="24" fill="#6B6B6B">karet celkem</text>';
+  out += '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" font-family="Poppins,sans-serif" font-size="64" font-weight="bold" fill="#1F1B3D">'+tot+'</text>'+
+         '<text x="'+cx+'" y="'+(cy+34)+'" text-anchor="middle" font-size="24" fill="#6B6585">karet celkem</text>';
   var ly=830;
   KORD.forEach(function(key,i){
     var x=90+i*170, pc=Math.round(k[key]/tot*100);
-    out += '<rect x="'+x+'" y="'+(ly-22)+'" width="24" height="24" rx="5" fill="'+CL[key].c+'"/>'+
+    out += '<rect x="'+x+'" y="'+(ly-22)+'" width="24" height="24" rx="5" fill="url(#g'+key+')"/>'+
       '<text x="'+(x+34)+'" y="'+ly+'" font-size="26" font-weight="bold" fill="'+CL[key].c+'">'+CL[key].n+'</text>'+
       '<text x="'+(x+34)+'" y="'+(ly+34)+'" font-size="24" fill="#444">'+k[key]+' × · '+pc+' %</text>';
   });
   // bars: strongest motivators
-  var bx=660, by=200, bw=wn?420:820, rh=70, max=1;
-  MOTS.forEach(function(m){ if(cnt[m.n]>max) max=cnt[m.n]; if(wk[m.n]>max) max=wk[m.n]; });
-  out += '<text x="'+bx+'" y="'+(by-14)+'" font-size="24" font-weight="bold" fill="#6B6B6B" letter-spacing="1">CO TÝM POHÁNÍ</text>';
+  var bx=660, by=200, bw=820, rh=70, max=1;
+  MOTS.forEach(function(m){ if(cnt[m.n]>max) max=cnt[m.n]; });
+  out += '<text x="'+bx+'" y="'+(by-14)+'" font-size="24" font-weight="bold" fill="#6B6585" letter-spacing="1">CO TÝM POHÁNÍ</text>';
   ORD.forEach(function(m,i){
     var y=by+i*rh+10, c=CL[m.k].c, w=Math.round(cnt[m.n]/max*(bw-150));
-    out += '<text x="'+bx+'" y="'+(y+34)+'" font-size="27" fill="#2B2B2B">'+m.n+'</text>'+
+    out += '<text x="'+bx+'" y="'+(y+34)+'" font-size="27" fill="#1F1B3D">'+m.n+'</text>'+
       '<rect x="'+(bx+140)+'" y="'+(y+8)+'" width="'+(bw-150)+'" height="36" rx="8" fill="'+CL[m.k].bg+'"/>'+
-      (w>0?'<rect x="'+(bx+140)+'" y="'+(y+8)+'" width="'+w+'" height="36" rx="8" fill="'+c+'"/>':'')+
+      (w>0?'<rect x="'+(bx+140)+'" y="'+(y+8)+'" width="'+w+'" height="36" rx="8" fill="url(#g'+m.k+')"/>':'')+
       '<text x="'+(bx+150+Math.max(w,0))+'" y="'+(y+35)+'" font-size="26" font-weight="bold" fill="'+(w>40?'#fff':c)+'" '+(w>40?'text-anchor="end" dx="-22"':'dx="6"')+'>'+cnt[m.n]+'</text>';
   });
-  if(wn){
-    var wx=1140;
-    out += '<text x="'+wx+'" y="'+(by-14)+'" font-size="24" font-weight="bold" fill="#6B6B6B" letter-spacing="1">CO TÝMU CHYBÍ</text>';
-    ORD.forEach(function(m,i){
-      var y=by+i*rh+10, c=CL[m.k].c, ww=Math.round(wk[m.n]/max*260);
-      out += '<rect x="'+wx+'" y="'+(y+8)+'" width="260" height="36" rx="8" fill="#F5F5F5"/>'+
-        (ww>0?'<rect x="'+wx+'" y="'+(y+8)+'" width="'+ww+'" height="36" rx="8" fill="none" stroke="'+c+'" stroke-width="3" stroke-dasharray="7 5"/>':'')+
-        '<text x="'+(wx+275)+'" y="'+(y+35)+'" font-size="26" font-weight="bold" fill="'+(wk[m.n]?c:'#BDBDBD')+'">'+wk[m.n]+'</text>';
-    });
-    out += '<text x="'+wx+'" y="'+(by+9*rh+40)+'" font-size="20" fill="#6B6B6B" font-style="italic">Nejslabší motivátor: zadáno u '+wn+' z '+state.people.length+' lidí</text>';
-  }
-  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  out += '<text x="'+(W/2)+'" y="'+(H-22)+'" text-anchor="middle" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
   return out;
 }
 function buildBrakes(){
   var W=1600, H=1000;
-  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
-  out += '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>';
-  out += '<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#C62828">Co může brzdit výkon týmu</text>';
-  out += '<text x="58" y="130" font-size="24" fill="#6B6B6B" font-style="italic">'+esc((state.sub? state.sub+' · ' : '')+'Demotivátory podle tří nejsilnějších motivátorů lidí v týmu')+'</text>';
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out += '<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out += '<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">Co může brzdit výkon týmu</text>';
+  out += '<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc((state.sub? state.sub+' · ' : '')+'Demotivátory podle tří nejsilnějších motivátorů lidí v týmu')+'</text>';
   var w={}, c={}, people=0;
   MOTS.forEach(function(m){ w[m.n]=0; c[m.n]=0; });
   state.people.forEach(function(p){
@@ -440,18 +433,64 @@ function buildBrakes(){
     var y=top+i*rh, col=CL[m.k].c, bg=CL[m.k].bg, h=rh-12;
     var bw=Math.round(w[m.n]/maxw*120);
     out += '<rect x="56" y="'+y+'" width="'+(W-112)+'" height="'+h+'" rx="12" fill="'+bg+'"/>'+
-      '<rect x="56" y="'+y+'" width="8" height="'+h+'" rx="4" fill="'+col+'"/>';
+      '<rect x="56" y="'+y+'" width="8" height="'+h+'" rx="4" fill="url(#g'+m.k+')"/>';
     var cy=y+h/2;
     out += '<text x="84" y="'+(cy-4).toFixed(0)+'" font-size="'+Math.min(32,Math.round(h*0.36))+'" font-weight="bold" fill="'+col+'">'+m.n+'</text>'+
       '<text x="84" y="'+(cy+Math.min(28,h*0.32)).toFixed(0)+'" font-size="'+Math.min(22,Math.round(h*0.26))+'" fill="#555">u '+c[m.n]+' z '+people+' lidí</text>';
     out += '<rect x="290" y="'+(cy-9).toFixed(0)+'" width="120" height="18" rx="9" fill="#fff"/>'+
-      '<rect x="290" y="'+(cy-9).toFixed(0)+'" width="'+bw+'" height="18" rx="9" fill="'+col+'"/>';
+      '<rect x="290" y="'+(cy-9).toFixed(0)+'" width="'+bw+'" height="18" rx="9" fill="url(#g'+m.k+')"/>';
     var fs=Math.min(26,Math.round(h*0.3));
-    out += '<text x="440" y="'+(cy-4).toFixed(0)+'" font-size="'+fs+'" fill="#2B2B2B">• '+esc(DEMOT[m.n][0])+'</text>'+
-      '<text x="440" y="'+(cy+fs*0.95).toFixed(0)+'" font-size="'+fs+'" fill="#2B2B2B">• '+esc(DEMOT[m.n][1])+'</text>';
+    out += '<text x="440" y="'+(cy-4).toFixed(0)+'" font-size="'+fs+'" fill="#1F1B3D">• '+esc(DEMOT[m.n][0])+'</text>'+
+      '<text x="440" y="'+(cy+fs*0.95).toFixed(0)+'" font-size="'+fs+'" fill="#1F1B3D">• '+esc(DEMOT[m.n][1])+'</text>';
   });
-  out += '<text x="56" y="'+(H-30)+'" font-size="18" fill="#6B6B6B" font-style="italic">Pořadí podle toho, jak silně je motivátor v týmu zastoupen (1. místo = 3 body, 2. = 2, 3. = 1).</text>';
-  out += '<text x="'+(W-56)+'" y="'+(H-30)+'" text-anchor="end" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  out += '<text x="56" y="'+(H-30)+'" font-size="18" fill="#6B6585" font-style="italic">Pořadí podle toho, jak silně je motivátor v týmu zastoupen (1. místo = 3 body, 2. = 2, 3. = 1).</text>';
+  out += '<text x="'+(W-56)+'" y="'+(H-30)+'" text-anchor="end" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
+  return out;
+}
+
+function buildMeet(){
+  var W=1600, H=1000;
+  var out='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out+='<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out+='<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">Kde se potkává silný a slabý motivátor</text>';
+  out+='<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc(state.sub || 'Pro jednoho mezi nejsilnějšími, pro druhého nejslabší')+'</text>';
+  var list=[];
+  MOTS.forEach(function(m){
+    var st=[], wk=[];
+    state.people.forEach(function(p,i){
+      if((p.m||[]).indexOf(m.n)>=0) st.push(i+1);
+      else if(p.w===m.n) wk.push(i+1);
+    });
+    if(st.length && wk.length) list.push({m:m, st:st, wk:wk});
+  });
+  if(!list.length){
+    out+='<text x="800" y="520" text-anchor="middle" font-size="30" fill="#9E9E9E">V týmu se u nikoho nepotkává silný motivátor s nejslabším motivátorem jiného člověka</text>';
+  out+='<text x="'+(W-56)+'" y="'+(H-22)+'" text-anchor="end" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
+    return out;
+  }
+  var top=230, avail=H-top-70, rh=Math.min(120, Math.floor(avail/list.length));
+  var cx=800, nameW=300;
+  out+='<text x="'+(cx-nameW/2-30)+'" y="'+(top-24)+'" text-anchor="end" font-size="22" font-weight="bold" fill="#6B6585" letter-spacing="1">MEZI TŘEMI NEJSILNĚJŠÍMI</text>'+
+       '<text x="'+(cx+nameW/2+30)+'" y="'+(top-24)+'" font-size="22" font-weight="bold" fill="#6B6585" letter-spacing="1">NEJSLABŠÍ MOTIVÁTOR</text>';
+  list.forEach(function(it,i){
+    var y=top+i*rh, h=rh-14, my=y+h/2, c=CL[it.m.k], r=Math.min(28, h*0.34), step=2*r+12;
+    out+='<rect x="56" y="'+y+'" width="'+(W-112)+'" height="'+h+'" rx="14" fill="#fff" fill-opacity="0.7" stroke="#F1E6D6" stroke-width="1.5"/>';
+    out+='<line x1="'+(cx-nameW/2-20)+'" y1="'+my+'" x2="'+(cx+nameW/2+20)+'" y2="'+my+'" stroke="'+c.c+'" stroke-width="3" stroke-opacity="0.35"/>';
+    out+='<rect x="'+(cx-nameW/2)+'" y="'+(my-h*0.32)+'" width="'+nameW+'" height="'+(h*0.64)+'" rx="'+(h*0.32)+'" fill="'+c.bg+'" stroke="'+c.c+'" stroke-width="3"/>'+
+      '<text x="'+cx+'" y="'+(my+Math.min(11,h*0.12))+'" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="'+Math.round(Math.min(30,h*0.32))+'" fill="'+c.c+'">'+it.m.n+'</text>';
+    var fs=Math.round(Math.min(26,r*0.95));
+    it.st.forEach(function(n,k){
+      var x=cx-nameW/2-40-r-(it.st.length-1-k)*step;
+      out+='<circle cx="'+x+'" cy="'+my+'" r="'+r+'" fill="url(#g'+it.m.k+')"/>'+
+        '<text x="'+x+'" y="'+(my+fs*0.36)+'" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="'+fs+'" fill="#fff">'+n+'</text>';
+    });
+    it.wk.forEach(function(n,k){
+      var x=cx+nameW/2+40+r+k*step;
+      out+='<circle cx="'+x+'" cy="'+my+'" r="'+(r-1.5)+'" fill="#fff" stroke="'+c.c+'" stroke-width="3" stroke-dasharray="6 4"/>'+
+        '<text x="'+x+'" y="'+(my+fs*0.36)+'" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="'+fs+'" fill="'+c.c+'">'+n+'</text>';
+    });
+  });
+  out+='<text x="'+(W-56)+'" y="'+(H-22)+'" text-anchor="end" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
   return out;
 }
 
@@ -460,16 +499,18 @@ function buildMap(){
   var W=1600, H=1000;
   var rows=[]; state.people.forEach(function(p,i){ var m=(p.m||[]).filter(function(x){return x;}); if(m.length) rows.push({num:i+1, m:m}); });
   SEL = SEL.filter(function(x){ return rows.some(function(r){return r.num===x;}); });
-  var out='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="Calibri,Segoe UI,Arial,sans-serif">';
-  out+='<rect width="'+W+'" height="'+H+'" fill="#fff"/>';
-  out+='<text x="56" y="88" font-family="Georgia,serif" font-size="52" fill="#00897B">Mapa týmu</text>';
-  out+='<text x="58" y="128" font-size="24" fill="#6B6B6B" font-style="italic">'+esc(state.sub || 'Tři nejsilnější motivátory každého člověka')+'</text>';
+  var out='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" font-family="DM Sans,Calibri,Segoe UI,Arial,sans-serif">';
+  out+='<defs><radialGradient id="bgA" cx="6%" cy="6%" r="45%"><stop offset="0" stop-color="#FFE7C7"/><stop offset="1" stop-color="#FFE7C7" stop-opacity="0"/></radialGradient><radialGradient id="bgB" cx="96%" cy="8%" r="40%"><stop offset="0" stop-color="#FCE1E7"/><stop offset="1" stop-color="#FCE1E7" stop-opacity="0"/></radialGradient><radialGradient id="bgC" cx="94%" cy="96%" r="45%"><stop offset="0" stop-color="#FFE2B8"/><stop offset="1" stop-color="#FFE2B8" stop-opacity="0"/></radialGradient><radialGradient id="bgD" cx="4%" cy="94%" r="40%"><stop offset="0" stop-color="#E3F1FB"/><stop offset="1" stop-color="#E3F1FB" stop-opacity="0"/></radialGradient><linearGradient id="warmL" x1="0" x2="1"><stop offset="0" stop-color="#F9C74F"/><stop offset="1" stop-color="#F3722C"/></linearGradient><linearGradient id="gV" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7845E"/><stop offset="1" stop-color="#E2445C"/></linearGradient><linearGradient id="gZ" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4CC38A"/><stop offset="1" stop-color="#1E9A62"/></linearGradient><linearGradient id="gR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#5AAEF0"/><stop offset="1" stop-color="#2F6FD0"/></linearGradient></defs><rect width="'+W+'" height="'+H+'" fill="#FFF9F1"/><rect width="'+W+'" height="'+H+'" fill="url(#bgA)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgB)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgC)"/><rect width="'+W+'" height="'+H+'" fill="url(#bgD)"/><text x="58" y="44" font-family="Poppins,sans-serif" font-weight="700" font-size="17" letter-spacing="4" fill="#6B6585">MOTIVACE A DIVERZITA V TÝMU</text><rect x="58" y="112" width="110" height="7" rx="3.5" fill="url(#warmL)"/>';
+  out+='<text x="56" y="88" font-family="Poppins,sans-serif" font-weight="800" font-size="48" fill="#1F1B3D">Mapa týmu</text>';
+  out+='<text x="184" y="124" font-family="Caveat,cursive" font-weight="700" font-size="32" fill="#1F1B3D">'+esc(state.sub || 'Tři nejsilnější motivátory každého člověka')+'</text>';
   if(!rows.length){ out+='<text x="800" y="520" text-anchor="middle" font-size="30" fill="#9E9E9E">Zadejte motivátory alespoň u jednoho člověka</text></svg>'; return out; }
   var x0=200, cw=(W-x0-60)/9, yH=170, hh=96, top=yH+hh+10;
   var avail=H-top-110, rh=Math.min(70, avail/rows.length);
-  // cluster headers
+  // cluster headers (podíl karet ve skupině)
+  var KC={V:0,Z:0,R:0}, KT=0; rows.forEach(function(r){ r.m.forEach(function(n){ var mm=mot(n); if(mm){ KC[mm.k]++; KT++; } }); });
   ['V','Z','R'].forEach(function(k,ci){
     var c=CL[k], x=x0+ci*3*cw;
+    c = {n:c.n+(KT?' · '+Math.round(KC[k]/KT*100)+' %':''), c:c.c, bg:c.bg};
     out+='<rect x="'+(x+4)+'" y="'+yH+'" width="'+(3*cw-8)+'" height="40" rx="10" fill="'+c.bg+'" stroke="'+c.c+'" stroke-width="3"/>'+
       '<text x="'+(x+1.5*cw)+'" y="'+(yH+29)+'" text-anchor="middle" font-size="26" font-weight="bold" fill="'+c.c+'">'+c.n+'</text>';
   });
@@ -482,14 +523,14 @@ function buildMap(){
     var y=top+i*rh, on = SEL.length===0 || SEL.indexOf(r.num)>=0, op = on?1:0.18;
     var isSel = SEL.indexOf(r.num)>=0;
     out+='<g data-row="'+r.num+'" style="cursor:pointer" opacity="'+op+'">';
-    out+='<rect x="40" y="'+(y+3)+'" width="'+(W-80)+'" height="'+(rh-6)+'" rx="10" fill="'+(isSel?'#F3F7F8':'#fff')+'" stroke="'+(isSel?'#00897B':'#ECEFF1')+'" stroke-width="'+(isSel?3:1.5)+'"/>';
-    out+='<circle cx="120" cy="'+(y+rh/2)+'" r="'+Math.min(26,rh*0.38)+'" fill="#fff" stroke="#00897B" stroke-width="3"/>'+
-      '<text x="120" y="'+(y+rh/2+Math.min(10,rh*0.15))+'" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="'+Math.round(Math.min(28,rh*0.42))+'" fill="#00897B">'+r.num+'</text>';
+    out+='<rect x="40" y="'+(y+3)+'" width="'+(W-80)+'" height="'+(rh-6)+'" rx="10" fill="'+(isSel?'#FFF6E6':'#fff')+'" stroke="'+(isSel?'#F3722C':'#F1E6D6')+'" stroke-width="'+(isSel?3:1.5)+'"/>';
+    out+='<circle cx="120" cy="'+(y+rh/2)+'" r="'+Math.min(26,rh*0.38)+'" fill="#FFF6E6" stroke="#F6C26B" stroke-width="3"/>'+
+      '<text x="120" y="'+(y+rh/2+Math.min(10,rh*0.15))+'" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="bold" font-size="'+Math.round(Math.min(28,rh*0.42))+'" fill="#1F1B3D">'+r.num+'</text>';
     MOTS.forEach(function(m,j){
       var x=x0+j*cw, c=CL[m.k], has=r.m.indexOf(m.n)>=0;
       if(has){
         var shared = isSel && SEL.length>=2 && (CNT[m.n]||0)>=2;
-        out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="'+c.c+'" stroke="'+(shared?'#00897B':c.c)+'" stroke-width="'+(shared?6:0)+'"/>';
+        out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="url(#g'+m.k+')" stroke="'+(shared?'#F3722C':c.c)+'" stroke-width="'+(shared?6:0)+'"/>';
         if(shared) out+='<text x="'+(x+cw/2)+'" y="'+(y+rh/2+8)+'" text-anchor="middle" font-size="'+Math.round(Math.min(22,rh*0.34))+'" font-weight="bold" fill="#fff">společné</text>';
       } else {
         out+='<rect x="'+(x+10)+'" y="'+(y+9)+'" width="'+(cw-20)+'" height="'+(rh-18)+'" rx="10" fill="#fff" stroke="#E0E0E0" stroke-width="1.5"/>';
@@ -497,7 +538,7 @@ function buildMap(){
     });
     out+='</g>';
   });
-  out+='<text x="'+(W-56)+'" y="'+(H-22)+'" text-anchor="end" font-size="16" fill="#6B6B6B">Martina Maraj · marajmartina.cz</text></svg>';
+  out+='<text x="'+(W-56)+'" y="'+(H-22)+'" text-anchor="end" font-size="16" fill="#6B6585"><tspan font-weight="bold" fill="#1F1B3D">Martina Maraj</tspan> · lektorka a koučka vědomé komunikace · marajmartina.cz</text></svg>';
   return out;
 }
 document.getElementById('stage').addEventListener('click', function(e){
@@ -515,6 +556,7 @@ function setView(v){
   ['vBar','pvBar'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar'); });
   ['vBar2','pvBar2'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='bar2'); });
   ['vMap','pvMap'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='map'); });
+  ['vMeet','pvMeet'].forEach(function(id){ document.getElementById(id).classList.toggle('on', v==='meet'); });
 }
 function draw(){ document.getElementById('stage').innerHTML = buildSVG(); }
 document.getElementById('vKvet').onclick=function(){ setView('kvet'); };
@@ -527,6 +569,8 @@ document.getElementById('vBar2').onclick=function(){ setView('bar2'); };
 document.getElementById('pvBar2').onclick=function(){ setView('bar2'); };
 document.getElementById('vMap').onclick=function(){ setView('map'); };
 document.getElementById('pvMap').onclick=function(){ setView('map'); };
+document.getElementById('vMeet').onclick=function(){ setView('meet'); };
+document.getElementById('pvMeet').onclick=function(){ setView('meet'); };
 
 document.getElementById('present').onclick = function(){
   document.body.classList.add('present');
@@ -537,8 +581,29 @@ document.getElementById('exit').onclick = exitPresent;
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') document.body.classList.remove('present'); });
 document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement) document.body.classList.remove('present'); });
 
+// písma do obrázku PNG (SVG v obrázku nevidí písma stránky, proto se vloží přímo)
+var FONT_CSS = null;
+function loadFontCSS(){
+  if(FONT_CSS!==null) return Promise.resolve(FONT_CSS);
+  var href = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
+  if(!href || !window.fetch) return Promise.resolve(FONT_CSS='');
+  return fetch(href.href).then(function(r){ return r.text(); }).then(function(css){
+    css = css.replace(/\/\*\s*([\w-]+)\s*\*\/\s*@font-face\s*{[^}]*}/g, function(m,sub){ return (sub==='latin'||sub==='latin-ext') ? m : ''; });
+    var urls = css.match(/url\([^)]+\)/g) || [];
+    return Promise.all(urls.map(function(u){
+      var src = u.slice(4,-1).replace(/['"]/g,'');
+      return fetch(src).then(function(r){ return r.blob(); }).then(function(bl){
+        return new Promise(function(res){ var fr=new FileReader(); fr.onload=function(){ res([u,'url('+fr.result+')']); }; fr.readAsDataURL(bl); });
+      });
+    })).then(function(pairs){ pairs.forEach(function(p){ css = css.split(p[0]).join(p[1]); }); return FONT_CSS = css; });
+  }).catch(function(){ return FONT_CSS=''; });
+}
 document.getElementById('png').onclick = function(){
+  loadFontCSS().then(function(css){ makePNG(css); });
+};
+function makePNG(css){
   var svg = buildSVG();
+  if(css) svg = svg.replace(/(<svg[^>]*>)/, '$1<style>'+css.replace(/<\//g,'')+'</style>');
   var img = new Image();
   var url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   img.onload = function(){
@@ -550,13 +615,13 @@ document.getElementById('png').onclick = function(){
     a.href = c.toDataURL('image/png'); a.click();
   };
   img.src = url;
-};
+}
 
 
 document.getElementById('report-btn').onclick = function(){
   var keep = state.view, keepSel = SEL.slice(); SEL = [];
   var html = '';
-  ['bar','bar2','tab','kvet','map'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
+  ['kvet','bar2','tab','map','meet'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
   state.view = keep; SEL = keepSel;
   document.getElementById('report').innerHTML = html;
   document.body.classList.add('printing');
