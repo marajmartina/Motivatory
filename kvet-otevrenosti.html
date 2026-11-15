@@ -643,7 +643,7 @@ function makePNG(css){
 document.getElementById('report-btn').onclick = function(){
   var keep = state.view, keepSel = SEL.slice(); SEL = [];
   var html = '';
-  ['map','bar2','tab','kvet','meet'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG()+'</div>'; });
+  ['map','bar2','tab','kvet','meet'].forEach(function(v){ state.view = v; html += '<div class="rp">'+buildSVG().replace(/ id="([\w-]+)"/g,' id="$1_'+v+'"').replace(/url\(#([\w-]+)\)/g,'url(#$1_'+v+')')+'</div>'; });
   state.view = keep; SEL = keepSel;
   document.getElementById('report').innerHTML = html;
   document.body.classList.add('printing');
