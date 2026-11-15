@@ -452,6 +452,7 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 <!-- O1: Part 1 results -->
 <div class="overlay" id="o1" onclick="if(event.target===this)closeO1()">
 <div class="panel">
+  <div id="o1all-print-area">
   <div id="o1-print-area">
   <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
   <div class="mh-title">Vaše motivátory.</div>
@@ -479,17 +480,19 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
   <div class="mh-foot"><span><b>Martina Maraj</b> · lektorka a koučka vědomé komunikace</span><span><b>marajmartina.cz</b></span></div>
   </div>
 
+  <div class="html2pdf__page-break"></div>
   <div style="margin-top:24px;margin-bottom:4px">
     <div class="mh-sec" style="margin-top:30px">Popisy všech motivátorů</div>
     <div id="all-profiles-o1"></div>
   </div>
+  </div>
 
   <div class="pactions">
     <button class="btn-sec no-print" onclick="closeO1()">← Upravit výběr</button>
-    <button class="btn-sec" id="btn-pdf-o1" onclick="downloadPersonalPDF('o1-print-area','moje-motivatory','btn-pdf-o1')">⬇ Stáhnout PDF</button>
+    <button class="btn-sec" id="btn-pdf-o1" onclick="downloadPersonalPDF('o1all-print-area','moje-motivatory','btn-pdf-o1')">⬇ Stáhnout PDF</button>
     <button class="btn-go" onclick="switchOverlay('o1','o7')">Co dál? →</button>
   </div>
-  <div id="pdf-hint-o1" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
+  <div id="pdf-hint-o1all" style="display:none;font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6;text-align:center">Stahování PDF neproběhlo. Zkuste prosím otevřít tuto stránku přímo v Safari/Chrome (ne uvnitř e‑mailu, Teams či jiné aplikace) a zkuste to znovu.</div>
 </div>
 </div>
 
@@ -528,7 +531,7 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 
   <div class="pactions" style="margin-top:20px">
     <button class="btn-sec no-print" onclick="switchOverlay('o7','o1')">← Zpět</button>
-    <button class="btn-acc" onclick="switchOverlay('o7','o1'); setTimeout(function(){ downloadPersonalPDF('o1-print-area','moje-motivatory','btn-pdf-o1'); }, 400);">⬇ Stáhnout výsledky (PDF)</button>
+    <button class="btn-acc" onclick="switchOverlay('o7','o1'); setTimeout(function(){ downloadPersonalPDF('o1all-print-area','moje-motivatory','btn-pdf-o1'); }, 400);">⬇ Stáhnout výsledky (PDF)</button>
     <button class="btn-sec no-print" onclick="window.close()" style="background:#f0f0ec;border-color:#ccc;color:#666">✕ Ukončit</button>
   </div>
 </div>
@@ -1004,7 +1007,7 @@ function downloadPersonalPDF(containerId, filenamePrefix, btnId, includeTeamCode
         windowHeight: document.documentElement.scrollHeight
       },
       jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend'] }
+      pagebreak: { mode:['css','legacy'], avoid: ['.fulfill-result-row','.rrow','.sblock','.overall','.zone-legend','.profile-card'] }
     };
 
     html2pdf().set(opt).from(el).save().then(function(){
@@ -1299,7 +1302,7 @@ function buildResultLink(){
   var bar = document.createElement('div');
   bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#263238;color:#fff;font:14px/1.4 sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap';
   var who = (window._leadData.jmeno ? window._leadData.jmeno + ' · ' : '') + (window._viewDate || '');
-  bar.innerHTML = '<span>Náhled výsledku pro lektorku' + (who ? ' · ' + who : '') + '</span>' + '<button id="btn-pdf-view" onclick="downloadPersonalPDF(\'o1-print-area\',\'moje-motivatory\',\'btn-pdf-view\')" style="background:#00897B;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-weight:600;cursor:pointer">⬇ Stáhnout PDF</button>';
+  bar.innerHTML = '<span>Náhled výsledku pro lektorku' + (who ? ' · ' + who : '') + '</span>' + '<button id="btn-pdf-view" onclick="downloadPersonalPDF(\'o1all-print-area\',\'moje-motivatory\',\'btn-pdf-view\')" style="background:#00897B;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-weight:600;cursor:pointer">⬇ Stáhnout PDF</button>';
   document.body.appendChild(bar);
   var st = document.createElement('style'); st.textContent = '.overlay{padding-top:72px!important}'; document.head.appendChild(st);
 })();
