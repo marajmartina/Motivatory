@@ -476,6 +476,59 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 .vc-name{font:800 1.6rem/1.2 'Poppins',sans-serif;color:var(--ink)}
 .vc-rows{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;font-size:.84rem;color:var(--muted);margin-top:6px}
 body.lector .mh-kicker{display:none!important}
+.mh-intro{margin:16px 6px 4px;font-size:.86rem;line-height:1.65;color:#3A3655}
+.mh-intro p{margin:0 0 9px}
+.mh-intro b{font-family:'Poppins',sans-serif;color:var(--ink)}
+.mh-intro-h{font:700 .95rem/1.3 'Poppins',sans-serif;color:var(--ink);margin:12px 0 6px}
+/* PDF pro účastníka: menší karty, každá část na jedné stránce */
+.solo-pdf > .ptitle{font-size:1.1rem!important;margin-bottom:0}
+.solo-pdf > .psub{margin-bottom:6px!important}
+.solo-pdf .mh-title{font-size:1.75rem}
+.solo-pdf .mh-title2{font-size:1.35rem;margin-bottom:10px}
+.solo-pdf .mh-top{max-width:470px;margin:0 auto;gap:8px}
+.solo-pdf .mh-card{padding:9px 6px 10px!important;border-radius:14px;box-shadow:none}
+.solo-pdf .mh-ico{width:38px!important;height:38px!important;padding:9px!important;margin-bottom:4px!important}
+.solo-pdf .mh-rank{font-size:.75rem}
+.solo-pdf .mh-pill{font-size:.55rem;padding:2px 7px}
+.solo-pdf .mh-name{font-size:.88rem}
+.solo-pdf .mh-tag{font-size:.84rem;margin-top:3px}
+.solo-pdf .mh-intro{font-size:.8rem;line-height:1.55}
+.solo-pdf .profile-card{margin-bottom:9px!important}
+.solo-pdf .profile-card-header{padding:8px 14px!important}
+.solo-pdf .pc-ico{transform:scale(.8)}
+.solo-pdf .profile-name{font-size:1rem}
+.solo-pdf .pc-fulfill{margin:7px 14px 0;padding:5px 10px}
+.solo-pdf .profile-tagline{margin:7px 0 5px!important;font-size:1rem!important}
+.solo-pdf .profile-tagline,.solo-pdf .profile-section{padding:0 14px}
+.solo-pdf .profile-section{margin-bottom:4px}
+.solo-pdf .profile-section:last-child{padding-bottom:9px}
+.solo-pdf .profile-section-title{font-size:.62rem;margin-bottom:2px}
+.solo-pdf .profile-bullets li{font-size:.74rem;line-height:1.4;padding:1px 0 1px 14px}
+.solo-pdf .ps-lead{font-size:.82rem;margin:2px 0 8px}
+.solo-pdf .ps-box{padding:8px 14px 4px;margin-bottom:8px}
+.solo-pdf .ps-h{font-size:.8rem;margin-bottom:3px}
+.solo-pdf .ps-box li{font-size:.74rem;line-height:1.4;margin-bottom:1px}
+.solo-pdf .ps-ful{font-size:.76rem}
+.solo-pdf .offer{margin-top:0}
+.solo-pdf .offer-in{padding:12px 16px 10px}
+.solo-pdf .contact-hero{padding:0 0 4px!important;margin:0!important}
+.solo-pdf .contact-hero img{width:64px!important;height:64px!important}
+.solo-pdf .contact-name{font-size:1rem}
+.solo-pdf .contact-role{font-size:1rem}
+.solo-pdf .offer-h{font-size:1.05rem;margin:2px 0 4px}
+.solo-pdf .offer-h2{font-size:.88rem;margin:8px 0 5px}
+.solo-pdf .offer-p{font-size:.78rem;line-height:1.5;margin-bottom:8px}
+.solo-pdf .contact-bullets{gap:5px;margin-bottom:8px}
+.solo-pdf .contact-bullets li{font-size:.74rem;line-height:1.4;padding:6px 10px 6px 36px}
+.solo-pdf .contact-bullets li::before{left:10px;top:8px;width:16px;height:16px}
+.solo-pdf .contact-bullets li::after{left:14px;top:7px}
+.solo-pdf .offer-cav{font-size:1.1rem;margin:4px 0 6px}
+.solo-pdf .offer-tag{font-size:.7rem;padding:3px 10px}
+.solo-pdf .offer-price{font-size:.74rem;padding:7px 10px}
+.solo-pdf .offer-link{font-size:.68rem;margin-top:4px}
+.solo-pdf .contact-links{flex-direction:row!important;flex-wrap:wrap;gap:6px!important;margin-top:8px!important}
+.solo-pdf .contact-link{padding:5px 10px!important;font-size:.72rem!important;flex:1 1 45%}
+.solo-pdf .contact-link-icon{transform:scale(.8)}
 body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter-bar{display:none!important}
 </style>
 </head>
@@ -490,7 +543,6 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
       <div class="welcome-dot" style="background:var(--green)"></div>
       <div class="welcome-dot" style="background:var(--blue)"></div>
     </div>
-    <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
     <div class="mw-title">Zjistěte, co vás</div>
     <div class="mh-title2"><span style="color:#F26B3A">opravdu</span> <span style="color:#C2479A">motivuje</span><span style="color:#7C5CE0">.</span></div>
     <div class="welcome-sub">
@@ -547,11 +599,16 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
 <div class="panel">
   <div id="o1-print-area">
   <div class="lector-only view-contact" id="view-contact"></div>
-  <div class="mh-kicker">MOTIVACE A DIVERZITA V TÝMU</div>
   <div class="mh-title">Vaše motivátory.</div>
   <div class="mh-title2"><span style="color:#F26B3A">Co</span> <span style="color:#E04A6E">vás</span> <span style="color:#C2479A">opravdu</span> <span style="color:#7C5CE0">pohání</span><span style="color:#3B82F6">?</span></div>
   <div class="mh-sec">Vaše 3 nejsilnější motivátory</div>
   <div class="mh-top" id="mh-top"></div>
+  <div class="mh-intro solo-only">
+    <p><b>Motivační mapy jsou velmi praktický nástroj, jak získat okamžitý pohled na to, co nás v práci i v životě motivuje, dává nám energii a táhne kupředu. A také na to, co nás vyčerpává a bere nám síly.</b></p>
+    <div class="mh-intro-h">Co se stane, když motivátor není naplněn?</div>
+    <p>Nenaplněný motivátor se neprojeví okamžitě. Změna přichází postupně: nejdříve jako drobná nespokojenost, pak jako pokles energie, nakonec jako konflikt nebo odchod. Člověk, který potřebuje uznání a nedostává ho, se začne vyhýbat odpovědnosti. Člověk, který potřebuje jasná pravidla, začne dělat chyby. Člověk, který potřebuje smysl a nevidí ho, je v práci přítomen tělem, ale ne hlavou.</p>
+    <p>Naučit se tyto signály rozeznávat u sebe i u druhých je jedna z nejcennějších dovedností. Když znáte své motivátory a víte, co vás brzdí, můžete v životě i v práci udělat změny dříve, než se vytratí vaše energie a radost z práce vystřídá únava a nedostatek nápadů.</p>
+  </div>
   <div class="lector-only"><div class="mh-sec">Oblasti</div>
   <div class="mh-clusters" id="mh-clusters"></div></div>
 
@@ -1259,7 +1316,7 @@ function downloadFullPDF(btnId){
   }
   var top3 = getTopN();
   var jm = (window._leadData && window._leadData.jmeno) ? window._leadData.jmeno : '';
-  var brk = '<div class="html2pdf__page-break"></div>';
+  var brk = '<div class="html2pdf__page-break"></div><div style="height:14px"></div>';
   var strip = function(h){ return h.replace(/ id="[^"]*"/g,''); };
   var o3 = strip(document.getElementById('o3-print-area').innerHTML);
   var o1html = document.getElementById('o1-print-area').outerHTML; // id ponechat kvůli stylům mapy
@@ -1270,15 +1327,18 @@ function downloadFullPDF(btnId){
     body = o1html + brk +
       groupedProfiles(p2Order) + brk + o3;
   } else {
-    var prof = document.querySelector('#o5 .panel').cloneNode(true);
-    prof.querySelectorAll('.pactions,.offer-btn,.btn-calendly').forEach(function(x){ x.parentNode.removeChild(x); });
-    var more = prof.querySelector('.offer-more'); if(more) more.style.display = 'block';
+    var offer = document.getElementById('offer').cloneNode(true);
+    offer.querySelectorAll('.offer-btn,.btn-calendly').forEach(function(x){ x.parentNode.removeChild(x); });
+    var more = offer.querySelector('.offer-more'); if(more) more.style.display = 'block';
+    var sum = document.getElementById('profile-summary');
     body = o1html + brk +
-      '<div class="rtitle" style="margin-top:12px;margin-bottom:14px">Moje 3 nejsilnější motivátory</div>' +
+      '<div class="rtitle" style="margin-top:4px;margin-bottom:10px">Moje 3 nejsilnější motivátory</div>' +
       top3.map(function(cat,i){ return buildProfileCard(cat,i,true,true); }).join('') +
-      brk + o3 + brk + strip(prof.innerHTML);
+      brk + o3 +
+      (sum && sum.innerHTML ? '<div class="rtitle" style="margin-top:14px;margin-bottom:8px">Shrnutí mých motivátorů</div>' + strip(sum.innerHTML) : '') +
+      brk + strip(offer.outerHTML);
   }
-  wrap.innerHTML = '<div id="final-print-area" style="background:#fff;padding:4px">' + head + body + '</div>';
+  wrap.innerHTML = '<div id="final-print-area" class="'+(window._viewMode?'':'solo-pdf')+'" style="background:#fff;padding:4px">' + head + body + '</div>';
   downloadPersonalPDF('final-print-area','vysledky-motivatory', btnId || 'btn-pdf-full');
 }
 
