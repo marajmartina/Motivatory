@@ -555,6 +555,19 @@ body.lector #main, body.lector .cta-wrap, body.lector #hdr, body.lector .counter
 .solo-pdf .offer-link{margin-top:8px}
 .solo-pdf .contact-links{margin-top:18px!important;gap:8px!important}
 .solo-pdf .contact-link{padding:7px 12px!important}
+
+/* iPhone: nezvětšovat písmo automaticky (jinak se PDF roztáhne na víc stran) */
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#final-print-wrap,#final-print-wrap *,.pdf-compact,.pdf-compact *{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}
+
+/* PDF z mobilu: i na úzkém displeji vytvořit PDF v rozvržení jako na počítači */
+@media (max-width:480px){
+  .pdf-compact .mh-top{grid-template-columns:repeat(3,1fr)}
+  .pdf-compact .mh-card{display:block;text-align:center}
+  .pdf-compact .mh-ico{grid-row:auto;margin:0 auto 10px}
+  .pdf-compact .mh-pill{margin:0 0 10px}
+  .pdf-compact .mh-rank{left:12px;right:auto;top:10px}
+}
 </style>
 </head>
 <body>
@@ -1014,6 +1027,7 @@ function calcP1(){
 }
 
 function showO1(){
+  sendPart1Results();
   var d=calcP1();
   var gt=d.gt; var tot=gt.vykon+gt.vztahy+gt.rust;
   function fp(v){return tot===0?'0%':Math.round(v/tot*100)+'%';}
@@ -1350,7 +1364,7 @@ function downloadFullPDF(btnId){
   var body;
   if(window._viewMode){
     body = o1html + brk +
-      groupedProfiles(p2Order) + brk + o3;
+      groupedProfiles(p2Order) + (window._noP2 ? '' : brk + o3);
   } else {
     var offer = document.getElementById('offer').cloneNode(true);
     offer.querySelectorAll('.offer-btn,.btn-calendly').forEach(function(x){ x.parentNode.removeChild(x); });
@@ -1494,6 +1508,30 @@ function buildFullOverviewRow(cat, i) {
 
 // ---- LEAD FORM ----
 
+// E-mail už po 1. části (3 nejsilnější motivátory) – i když člověk naplněnost nedokončí
+function sendPart1Results(){
+  if (window._viewMode || !window._leadData || window._part1Sent) return;
+  window._part1Sent = true;
+  try {
+    var cats = calcP1().cats;
+    var min = Math.min.apply(null, cats.slice(3).map(function(c){ return c.count; }));
+    var payload = {
+      jmeno: window._leadData.jmeno, email: window._leadData.email, telefon: window._leadData.telefon,
+      souhlas_nabidky: window._leadData.souhlas_nabidky,
+      typ: 'Výsledky – 1. část (3 nejsilnější motivátory)',
+      verze_testu: 'kompletní',
+      datum: new Date().toLocaleDateString('cs-CZ'), cas: new Date().toLocaleTimeString('cs-CZ'),
+      odkaz_na_vysledek: buildResultLink(true),
+      top3_motivatory: cats.slice(0,3).map(function(c){ return c.name+' ('+c.group+')'; }).join(', '),
+      nejslabsi: cats.slice(3).filter(function(c){ return c.count===min; }).map(function(c){ return c.name+' ('+c.group+')'; }).join(', '),
+      vsechny_vysledky: cats.map(function(c,i){ return (i+1)+'. '+c.name+' – '+c.count+'/5'; }).join(' | '),
+      poznamka: 'Naplněnost zatím není vyplněná. Když ji dokončí, přijde ještě e-mail „Výsledky testu“ s kompletním výsledkem.'
+    };
+    fetch(FORMSPREE_URL, {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload)})
+      .catch(function(e){ console.log('Formspree:', e); });
+  } catch(e) {}
+}
+
 function sendResultsToMake() {
   if (!window._leadData) return;
   if (window._resultsSent) return; // send only once
@@ -1593,16 +1631,6 @@ function submitLead() {
   // Store contact for later use when sending full results
   window._leadData = {jmeno: name, email: email, telefon: phone, souhlas_nabidky: offer ? 'ano' : 'ne'};
 
-  // Kontakt se uloží hned při spuštění testu, i kdyby ho člověk nedokončil
-  try {
-    fetch(FORMSPREE_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({typ:'Zahájení testu (kontakt)', verze_testu:'kompletní', jmeno:name, email:email, telefon:phone,
-        souhlas_zpracovani:'ano', souhlas_nabidky: offer ? 'ano' : 'ne',
-        datum:new Date().toLocaleDateString('cs-CZ'), cas:new Date().toLocaleTimeString('cs-CZ')})
-    }).catch(function(e){ console.log('Formspree:', e); });
-  } catch(e) {}
 
   // Immediately hide welcome and start test
   hideWelcome();
@@ -1660,11 +1688,11 @@ function linkChecksum(digits){
   var sum = 0; for (var i=0;i<digits.length;i++) sum += (i+1)*parseInt(digits[i],10);
   return 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23);
 }
-function buildResultLink(){
+function buildResultLink(partOnly){
   var d = calcP1(), m = {}, g = {};
   d.cats.forEach(function(c){ m[c.name] = c.count; g[c.name] = c.groupId; });
   var digits = LINK_ORDER.map(function(n){ return String(m[n]||0); }).join('');
-  if (true) {
+  if (!partOnly) {
     digits += LINK_ORDER.map(function(n){ return String((catRatings[g[n]]||{})[n]||0); }).join('');
   }
   var url = location.origin + location.pathname + '?vysledek=' + digits + linkChecksum(digits) +
@@ -1698,6 +1726,7 @@ function buildResultLink(){
     if (L.email) rows.push('✉️ ' + e(L.email));
     if (L.telefon) rows.push('📞 ' + e(L.telefon));
     if (window._viewDate) rows.push('Test vyplněn: ' + e(window._viewDate));
+    if (digits.length === 9) { window._noP2 = true; rows.push('Naplněnost nevyplněna (jen 1. část)'); }
     document.getElementById('view-contact').innerHTML =
       '<div class="vc-kick">Motivační profil</div>' +
       '<div class="vc-name">' + (L.jmeno ? e(L.jmeno) : 'Jméno nebylo uvedeno') + '</div>' +
@@ -1709,6 +1738,10 @@ function buildResultLink(){
   showP2Results();
   document.getElementById('o3').classList.remove('show');
   document.getElementById('o1').classList.add('show');
+  if (window._noP2) {
+    var nb = document.querySelector('#o1 .btn-go.lector-only');
+    if (nb) { nb.id = 'btn-pdf-o1v'; nb.textContent = '🖨 Celá zpráva k tisku (PDF)'; nb.removeAttribute('onclick'); nb.onclick = function(){ downloadFullPDF('btn-pdf-o1v'); }; }
+  }
   var bar = document.createElement('div');
   bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#263238;color:#fff;font:14px/1.4 sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap';
   var who = (window._leadData.jmeno ? window._leadData.jmeno + ' · ' : '') + (window._viewDate || '');
