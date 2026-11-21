@@ -410,6 +410,19 @@ body,#welcome,.overlay,#o1.overlay,#o7.overlay{background:radial-gradient(circle
 .reflect-box{background:var(--warm-l)!important;border-color:var(--warm)!important}
 .overall{border-width:2px!important}
 .mw-foot,.mh-foot{border-top-color:var(--warm-b)!important}
+
+/* iPhone: nezvětšovat písmo automaticky (jinak se PDF roztáhne na víc stran) */
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#final-print-wrap,#final-print-wrap *,.pdf-compact,.pdf-compact *{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}
+
+/* PDF z mobilu: i na úzkém displeji vytvořit PDF v rozvržení jako na počítači */
+@media (max-width:480px){
+  .pdf-compact .mh-top{grid-template-columns:repeat(3,1fr)}
+  .pdf-compact .mh-card{display:block;text-align:center}
+  .pdf-compact .mh-ico{grid-row:auto;margin:0 auto 10px}
+  .pdf-compact .mh-pill{margin:0 0 10px}
+  .pdf-compact .mh-rank{left:12px;right:auto;top:10px}
+}
 </style>
 </head>
 <body>
@@ -1151,6 +1164,7 @@ function buildFullOverviewRow(cat, i) {
 // ---- LEAD FORM ----
 
 function sendResultsToMake() {
+  return; // zkrácený test nic neodesílá (výsledky lektorka vidí přímo na workshopu)
   // Zkrácený test nemá vstupní formulář – výsledek se posílá vždy (anonymně)
   var lead = window._leadData || {jmeno: 'anonymní (zkrácený test)', email: '', telefon: ''};
   if (window._resultsSent) return; // send only once
