@@ -540,7 +540,8 @@
   .vc-name { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
   .vc-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; font-size: .86rem; color: #777; margin-top: 6px; }
   body.lector .cta-next-btn, body.lector .restart-row { display: none !important; }
-  #print-profiles { display: none; }
+  #print-profiles { margin-top: 26px; }
+  #print-profiles.pp-none { display: none; }
   .pp-title { font-size: 1.25rem; font-weight: 800; margin: 8px 0 14px; }
   .pp-card { border: 1.5px solid #e0e0e0; border-radius: 14px; overflow: hidden; margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid; }
   .pp-head { color: #fff; font-weight: 800; font-size: 1.1rem; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -569,7 +570,8 @@
     .sabo-bar-bg { height: 5px !important; margin: 0 0 2px !important; }
     .sabo-bar-fill { height: 5px !important; }
     .sabo-band-label { font-size: .68rem !important; margin: 0 !important; line-height: 1.2 !important; }
-    #print-profiles { display: block; break-before: page; page-break-before: always; }
+    #print-profiles { display: block; break-before: page; page-break-before: always; margin-top: 0 !important; }
+    #print-profiles.pp-none { display: none !important; }
     #print-profiles.pp-none { display: none; }
     .pp-invite { margin: 10px 0 0 !important; padding: 10px 14px !important; font-size: .85rem !important; }
     .pp-btn-row { margin-top: 8px !important; }
