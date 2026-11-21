@@ -535,6 +535,11 @@
     .q-text { font-size: 1.15rem; }
   }
 
+  .view-contact { text-align: center; padding: 6px 10px 16px; margin-bottom: 18px; border-bottom: 1.5px dashed #ccc; }
+  .vc-kick { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+  .vc-name { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+  .vc-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; font-size: .86rem; color: #777; margin-top: 6px; }
+  body.lector .cta-next-btn, body.lector .restart-row { display: none !important; }
   @media print {
     .print-btn, .restart-row, .progress-wrap, .nav-row, .cta-next-btn { display: none !important; }
     .sabo-tap-hint { display: none !important; }
@@ -1023,11 +1028,11 @@ function getBand(pct) {
   return { color: '#bdbdbd', shortLabel: 'Nepodstatný vliv', label: 'Tento sabotér ve vašem životě sehrává minimální roli.', cls: 'band-gray' };
 }
 
-function showResults() {
+function showResults(scoresFromLink) {
   document.getElementById('screen-quiz').classList.add('hidden');
   document.getElementById('screen-results').classList.remove('hidden');
 
-  const scores = computeScores();
+  const scores = scoresFromLink || computeScores();
   const maxPerSabo = 20; // 5 questions * 4 max points
 
   // Ranking of all 9 saboteurs (Soudce is not part of the scored test)
@@ -1058,8 +1063,85 @@ function showResults() {
     listWrap.appendChild(card);
   });
 
+  if (!scoresFromLink) sendResults(scores, ranked, maxPerSabo);
   window.scrollTo(0, 0);
 }
+
+/* =====================================================
+   ODESLÁNÍ LEKTORCE (Formspree) + ODKAZ NA HOTOVÝ VÝSLEDEK
+   ===================================================== */
+const FORMSPREE_URL = 'https://formspree.io/f/mzdwzbpd';
+let resultsSent = false;
+
+function sendToFormspree(data) {
+  try {
+    data.verze_testu = 'test sabotérů (autopiloti)';
+    data.datum = new Date().toLocaleDateString('cs-CZ');
+    data.cas = new Date().toLocaleTimeString('cs-CZ');
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(e => console.log('Formspree:', e));
+  } catch (e) {}
+}
+
+function linkChecksum(digits) {
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) sum += (i + 1) * parseInt(digits[i], 10);
+  return 'ABCDEFGHJKLMNPRSTUVWXYZ'.charAt(sum % 23);
+}
+
+function buildResultLink(scores) {
+  const digits = SABO_ORDER.map(k => String(Math.max(0, Math.min(20, scores[k] || 0))).padStart(2, '0')).join('');
+  let url = location.origin + location.pathname + '?vysledek=' + digits + linkChecksum(digits) +
+    '&d=' + encodeURIComponent(new Date().toLocaleDateString('cs-CZ'));
+  if (contactData.name) url += '&j=' + encodeURIComponent(contactData.name);
+  if (contactData.email) url += '&e=' + encodeURIComponent(contactData.email);
+  if (contactData.phone) url += '&t=' + encodeURIComponent(contactData.phone);
+  return url;
+}
+
+function sendResults(scores, ranked, maxPerSabo) {
+  if (resultsSent || window._viewMode) return;
+  resultsSent = true;
+  const pct = k => Math.round(scores[k] / maxPerSabo * 100);
+  const strong = ranked.filter(k => pct(k) >= 60);
+  sendToFormspree({
+    typ: 'Test sabotérů – výsledky',
+    jmeno: contactData.name, email: contactData.email, telefon: contactData.phone,
+    nejsilnejsi: (strong.length ? strong : ranked.slice(0, 3)).map(k => SABOTEURS[k].name + ' ' + pct(k) + ' %').join(', '),
+    poradi: ranked.map((k, i) => (i + 1) + '. ' + SABOTEURS[k].name + ' – ' + pct(k) + ' % (' + getBand(pct(k)).shortLabel + ')').join(' | '),
+    odkaz_na_vysledek: buildResultLink(scores)
+  });
+}
+
+// Náhled pro lektorku: otevření odkazu ?vysledek=...
+(function initResultView() {
+  let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  const v = q.get('vysledek'); if (!v) return;
+  const m = /^(\d{18})([A-Z])$/.exec(v);
+  if (!m || linkChecksum(m[1]) !== m[2]) { alert('Odkaz na výsledek je neplatný nebo neúplný.'); return; }
+  window._viewMode = true;
+  const scores = {};
+  SABO_ORDER.forEach((k, i) => { scores[k] = Math.min(20, parseInt(m[1].substr(i * 2, 2), 10) || 0); });
+  contactData = { name: q.get('j') || '', email: q.get('e') || '', phone: q.get('t') || '' };
+  document.body.classList.add('lector');
+  document.getElementById('screen-intro').classList.add('hidden');
+  showResults(scores);
+  const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const rows = [];
+  if (contactData.email) rows.push('✉️ ' + esc(contactData.email));
+  if (contactData.phone) rows.push('📞 ' + esc(contactData.phone));
+  if (q.get('d')) rows.push('Test vyplněn: ' + esc(q.get('d')));
+  const box = document.createElement('div');
+  box.className = 'view-contact';
+  box.innerHTML = '<div class="vc-kick">Test sabotérů · náhled pro lektorku</div>' +
+    '<div class="vc-name">' + (contactData.name ? esc(contactData.name) : 'Jméno nebylo uvedeno') + '</div>' +
+    (rows.length ? '<div class="vc-rows">' + rows.map(r => '<span>' + r + '</span>').join('') + '</div>' : '');
+  const res = document.getElementById('screen-results');
+  res.insertBefore(box, res.firstChild);
+})();
 
 /* =====================================================
    DETAIL OVERLAY
