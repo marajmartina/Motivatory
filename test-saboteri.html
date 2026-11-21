@@ -540,7 +540,41 @@
   .vc-name { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
   .vc-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; font-size: .86rem; color: #777; margin-top: 6px; }
   body.lector .cta-next-btn, body.lector .restart-row { display: none !important; }
+  #print-profiles { display: none; }
+  .pp-title { font-size: 1.25rem; font-weight: 800; margin: 8px 0 14px; }
+  .pp-card { border: 1.5px solid #e0e0e0; border-radius: 14px; overflow: hidden; margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid; }
+  .pp-head { color: #fff; font-weight: 800; font-size: 1.1rem; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pp-head span { font-size: .8rem; font-weight: 600; opacity: .95; }
+  .pp-body { padding: 12px 16px 6px; }
+  .pp-invite { border: 1.5px solid #b39ddb; background: #f6f2fd; border-radius: 14px; padding: 14px 18px; font-size: .95rem; line-height: 1.55; break-inside: avoid; page-break-inside: avoid; }
+  .pp-invite b { font-size: 1.05rem; }
+  .pp-invite { margin: 22px 0 6px; }
+  .pp-btn-row { text-align: center; margin-top: 12px; }
+  .pp-btn { display: inline-block; background: linear-gradient(90deg,#E04A86,#8B5CF6); color: #fff !important; text-decoration: none; font-weight: 700; border-radius: 999px; padding: 11px 26px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pp-link { margin-top: 8px; font-size: .8rem; color: #888; text-align: center; }
   @media print {
+    @page { margin: 10mm; }
+    /* žebříček na jednu stránku */
+    .view-contact { padding: 0 0 8px; margin-bottom: 10px; }
+    .vc-name { font-size: 1.3rem; }
+    .results h1 { font-size: 1.5rem; margin-bottom: 2px; }
+    .results .subtitle { margin-bottom: 10px; font-size: .9rem; }
+    .results .intro-box { padding: 8px 12px; margin-bottom: 10px !important; font-size: .76rem; }
+    .results .legend-row { margin: 2px 0 !important; line-height: 1.3; }
+    .results .section-label { margin: 0 0 6px; }
+    .sabo-card { padding: 5px 12px 4px !important; margin-bottom: 4px !important; border-radius: 10px !important; break-inside: avoid; page-break-inside: avoid; }
+    .sabo-top-row { margin-bottom: 2px !important; }
+    .sabo-name { font-size: .98rem !important; }
+    .sabo-score { font-size: .95rem !important; }
+    .sabo-bar-bg { height: 5px !important; margin: 0 0 2px !important; }
+    .sabo-bar-fill { height: 5px !important; }
+    .sabo-band-label { font-size: .68rem !important; margin: 0 !important; line-height: 1.2 !important; }
+    #print-profiles { display: block; break-before: page; page-break-before: always; }
+    #print-profiles.pp-none { display: none; }
+    .pp-invite { margin: 10px 0 0 !important; padding: 10px 14px !important; font-size: .85rem !important; }
+    .pp-btn-row { margin-top: 8px !important; }
+    .pp-card { margin-bottom: 0 !important; }
+    .results { padding-bottom: 0 !important; margin-bottom: 0 !important; }
     .print-btn, .restart-row, .progress-wrap, .nav-row, .cta-next-btn { display: none !important; }
     .sabo-tap-hint { display: none !important; }
     .overlay-close, .overlay-actions { display: none !important; }
@@ -651,6 +685,13 @@
 
     <div class="section-label">Vašich 9 sabotérů</div>
     <div id="sabo-list"></div>
+    <div id="print-profiles"></div>
+    <div class="pp-invite">
+      <b>Chcete poznat celou mapu svých sabotérů?</b><br>
+      Pokud máte zájem seznámit se s celou svou mapou, sjednejte si online setkání. Projdeme spolu všech 9 sabotérů, jak se u vás projevují a co s nimi můžete dělat.
+      <div class="pp-btn-row"><a class="pp-btn" href="https://calendly.com/maraj-martina/individualni-setkani" target="_blank" rel="noopener">📅 Chci se setkat</a></div>
+      <div class="pp-link">marajmartina.cz</div>
+    </div>
 
     <button class="btn cta-next-btn" onclick="showCTA()">Co dál? →</button>
     <button class="btn btn-secondary print-btn" onclick="window.print()">Uložit jako PDF / Vytisknout</button>
@@ -1062,6 +1103,25 @@ function showResults(scoresFromLink) {
     `;
     listWrap.appendChild(card);
   });
+
+  // Profily sabotérů s extrémním vlivem (70 % a víc) – ukládají se do PDF spolu s žebříčkem
+  const pctOf = k => Math.round(scores[k] / maxPerSabo * 100);
+  const pick = ranked.filter(k => pctOf(k) >= 70);
+  const pp = document.getElementById('print-profiles');
+  pp.classList.toggle('pp-none', !pick.length);
+  pp.innerHTML =
+    (pick.length ? '<div class="pp-title">' + (pick.length > 1 ? 'Profily vašich hlavních sabotérů' : 'Profil vašeho hlavního sabotéra') + '</div>' : '') +
+    pick.map(k => {
+      const sabo = SABOTEURS[k], p = sabo.profile, band = getBand(pctOf(k));
+      return '<div class="pp-card">' +
+        '<div class="pp-head" style="background:' + sabo.color + ';">' + sabo.name + '<span>' + pctOf(k) + ' % · ' + band.shortLabel + '</span></div>' +
+        '<div class="pp-body">' +
+        (p.citace ? '<div class="overlay-quote">„' + p.citace + '“</div>' : '') +
+        (p.prozivani ? paragraphHTML('Moje myšlenky a prožívání v práci', p.prozivani) : '') +
+        (p.druhym ? paragraphHTML('Co tím dělám druhým', p.druhym) : '') +
+        (p.sobe ? paragraphHTML('Co tím způsobuju sobě', p.sobe) : '') +
+        '</div></div>';
+    }).join('');
 
   if (!scoresFromLink) sendResults(scores, ranked, maxPerSabo);
   window.scrollTo(0, 0);
